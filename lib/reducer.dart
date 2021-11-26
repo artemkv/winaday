@@ -1,0 +1,27 @@
+import 'model.dart';
+import 'messages.dart';
+import 'commands.dart';
+
+class ModelAndCommand {
+  final Model model;
+  final Command command;
+
+  ModelAndCommand(this.model, this.command);
+  ModelAndCommand.justModel(Model model) : this(model, Command.none());
+}
+
+// reduce must be a pure function!
+
+class Reducer {
+  static ModelAndCommand reduce(Model model, Message message) {
+    if (message is DailyWinViewLoaded) {
+      return ModelAndCommand.justModel(
+          DailyWinViewModel(message.date, message.win));
+    }
+    if (message is EditWinRequested) {
+      return ModelAndCommand.justModel(
+          WinEditorViewModel(message.date, message.win));
+    }
+    return ModelAndCommand.justModel(model);
+  }
+}
