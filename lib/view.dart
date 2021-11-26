@@ -17,11 +17,14 @@ class View {
     if (model is DailyWinViewLoadingModel) {
       return DailyWinViewLoading(model: model, dispatch: dispatch);
     }
-    if (model is WinEditorViewModel) {
-      return WinEditorView(model: model);
-    }
     if (model is DailyWinViewModel) {
       return DailyWinView(model: model, dispatch: dispatch);
+    }
+    if (model is WinEditorViewModel) {
+      return WinEditorView(model: model, dispatch: dispatch);
+    }
+    if (model is WinEditorViewSavingModel) {
+      return WinEditorSavingView(model: model, dispatch: dispatch);
     }
     return UnknownModelWidget(model: model);
   }
@@ -65,19 +68,45 @@ class DailyWinView extends StatelessWidget {
     return Column(children: [
       GestureDetector(
         child: Text("DailyWin: " + model.win),
-        onTap: () => dispatch(EditWinRequested(model.date, model.win)),
+        onTap: () {
+          dispatch(EditWinRequested(model.date, model.win));
+        },
       )
     ]);
   }
 }
 
 class WinEditorView extends StatelessWidget {
+  final void Function(Message) dispatch;
   final WinEditorViewModel model;
 
-  const WinEditorView({Key? key, required this.model}) : super(key: key);
+  const WinEditorView({Key? key, required this.model, required this.dispatch})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Text("Editor: " + model.win);
+    return Column(children: [
+      Text("Editor: " + model.win),
+      ElevatedButton(
+        onPressed: () {
+          dispatch(WinSaveRequested(model.date, model.win));
+        },
+        child: const Text('Save'),
+      )
+    ]);
+  }
+}
+
+class WinEditorSavingView extends StatelessWidget {
+  final void Function(Message) dispatch;
+  final WinEditorViewSavingModel model;
+
+  const WinEditorSavingView(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [Text("Saving... " + model.date.toString())]);
   }
 }

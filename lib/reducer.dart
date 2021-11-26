@@ -22,6 +22,14 @@ class Reducer {
       return ModelAndCommand.justModel(
           WinEditorViewModel(message.date, message.win));
     }
+    if (message is WinSaveRequested) {
+      return ModelAndCommand(WinEditorViewSavingModel(message.date),
+          SaveWin(message.date, message.win));
+    }
+    if (message is WinSaved) {
+      return ModelAndCommand(
+          DailyWinViewLoadingModel(message.date), LoadDailyWin(message.date));
+    }
     return ModelAndCommand.justModel(model);
   }
 }

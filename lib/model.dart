@@ -25,3 +25,9 @@ class WinEditorViewModel extends Model {
 
   WinEditorViewModel(this.date, this.win);
 }
+
+class WinEditorViewSavingModel extends Model {
+  final DateTime date;
+
+  WinEditorViewSavingModel(this.date);
+}

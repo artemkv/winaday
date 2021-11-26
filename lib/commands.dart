@@ -27,6 +27,41 @@ class LoadTodaysWin implements Command {
     Future.delayed(
       const Duration(seconds: 2),
       () => 'My win today retrieved asynchronously',
-    ).then((value) => dispatch(DailyWinViewLoaded(date, value)));
+    ).then((value) {
+      dispatch(DailyWinViewLoaded(date, value));
+    });
+  }
+}
+
+class LoadDailyWin implements Command {
+  final DateTime date;
+
+  LoadDailyWin(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future.delayed(
+      const Duration(seconds: 2),
+      () => 'My win saved',
+    ).then((value) {
+      dispatch(DailyWinViewLoaded(date, value));
+    });
+  }
+}
+
+class SaveWin implements Command {
+  final DateTime date;
+  final String win;
+
+  SaveWin(this.date, this.win);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future.delayed(
+      const Duration(seconds: 2),
+      () {
+        dispatch(WinSaved(date));
+      },
+    );
   }
 }
