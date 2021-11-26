@@ -14,16 +14,19 @@ class View {
   }
 
   static Widget getBody(Model model, void Function(Message) dispatch) {
-    if (model is DailyWinViewLoadingModel) {
+    if (model is UserNotSignedInModel) {
+      return UserNotSignedInView(model: model, dispatch: dispatch);
+    }
+    if (model is DailyWinLoadingModel) {
       return DailyWinViewLoading(model: model, dispatch: dispatch);
     }
-    if (model is DailyWinViewModel) {
+    if (model is DailyWinModel) {
       return DailyWinView(model: model, dispatch: dispatch);
     }
-    if (model is WinEditorViewModel) {
+    if (model is WinEditorModel) {
       return WinEditorView(model: model, dispatch: dispatch);
     }
-    if (model is WinEditorViewSavingModel) {
+    if (model is WinEditorSavingModel) {
       return WinEditorSavingView(model: model, dispatch: dispatch);
     }
     return UnknownModelWidget(model: model);
@@ -41,9 +44,23 @@ class UnknownModelWidget extends StatelessWidget {
   }
 }
 
+class UserNotSignedInView extends StatelessWidget {
+  final void Function(Message) dispatch;
+  final UserNotSignedInModel model;
+
+  const UserNotSignedInView(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("Welcome");
+  }
+}
+
 class DailyWinViewLoading extends StatelessWidget {
   final void Function(Message) dispatch;
-  final DailyWinViewLoadingModel model;
+  final DailyWinLoadingModel model;
 
   const DailyWinViewLoading(
       {Key? key, required this.model, required this.dispatch})
@@ -58,7 +75,7 @@ class DailyWinViewLoading extends StatelessWidget {
 
 class DailyWinView extends StatelessWidget {
   final void Function(Message) dispatch;
-  final DailyWinViewModel model;
+  final DailyWinModel model;
 
   const DailyWinView({Key? key, required this.model, required this.dispatch})
       : super(key: key);
@@ -78,7 +95,7 @@ class DailyWinView extends StatelessWidget {
 
 class WinEditorView extends StatelessWidget {
   final void Function(Message) dispatch;
-  final WinEditorViewModel model;
+  final WinEditorModel model;
 
   const WinEditorView({Key? key, required this.model, required this.dispatch})
       : super(key: key);
@@ -99,7 +116,7 @@ class WinEditorView extends StatelessWidget {
 
 class WinEditorSavingView extends StatelessWidget {
   final void Function(Message) dispatch;
-  final WinEditorViewSavingModel model;
+  final WinEditorSavingModel model;
 
   const WinEditorSavingView(
       {Key? key, required this.model, required this.dispatch})

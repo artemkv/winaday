@@ -16,19 +16,19 @@ class Reducer {
   static ModelAndCommand reduce(Model model, Message message) {
     if (message is DailyWinViewLoaded) {
       return ModelAndCommand.justModel(
-          DailyWinViewModel(message.date, message.win));
+          DailyWinModel(message.date, message.win));
     }
     if (message is EditWinRequested) {
       return ModelAndCommand.justModel(
-          WinEditorViewModel(message.date, message.win));
+          WinEditorModel(message.date, message.win));
     }
     if (message is WinSaveRequested) {
-      return ModelAndCommand(WinEditorViewSavingModel(message.date),
+      return ModelAndCommand(WinEditorSavingModel(message.date),
           SaveWin(message.date, message.win));
     }
     if (message is WinSaved) {
       return ModelAndCommand(
-          DailyWinViewLoadingModel(message.date), LoadDailyWin(message.date));
+          DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
     }
     return ModelAndCommand.justModel(model);
   }

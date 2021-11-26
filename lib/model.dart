@@ -1,33 +1,36 @@
 // Should all be immutable classes and no logic!
+// No side effects allowed!
 
 abstract class Model {
   static Model getInitialModel() {
-    return DailyWinViewLoadingModel(DateTime.now());
+    return UserNotSignedInModel();
   }
 }
 
-class DailyWinViewLoadingModel extends Model {
+class UserNotSignedInModel extends Model {}
+
+class DailyWinLoadingModel extends Model {
   final DateTime date;
 
-  DailyWinViewLoadingModel(this.date);
+  DailyWinLoadingModel(this.date);
 }
 
-class DailyWinViewModel extends Model {
+class DailyWinModel extends Model {
   final DateTime date;
   final String win;
 
-  DailyWinViewModel(this.date, this.win);
+  DailyWinModel(this.date, this.win);
 }
 
-class WinEditorViewModel extends Model {
+class WinEditorModel extends Model {
   final DateTime date;
   final String win;
 
-  WinEditorViewModel(this.date, this.win);
+  WinEditorModel(this.date, this.win);
 }
 
-class WinEditorViewSavingModel extends Model {
+class WinEditorSavingModel extends Model {
   final DateTime date;
 
-  WinEditorViewSavingModel(this.date);
+  WinEditorSavingModel(this.date);
 }

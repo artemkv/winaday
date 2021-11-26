@@ -10,7 +10,7 @@ abstract class Command {
   }
 
   static Command getInitialCommand() {
-    return LoadTodaysWin();
+    return Command.none();
   }
 }
 
