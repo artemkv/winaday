@@ -2,6 +2,33 @@
 
 abstract class Message {}
 
+class AppInitializedNotSignedIn implements Message {}
+
+class AppInitializationFailed implements Message {
+  final String reason;
+
+  AppInitializationFailed(this.reason);
+}
+
+class SignInRequested implements Message {}
+
+class UserSignedIn implements Message {
+  final DateTime date;
+  final String tokenId;
+
+  UserSignedIn(this.date, this.tokenId);
+}
+
+class SignInFailed implements Message {
+  final String reason;
+
+  SignInFailed(this.reason);
+}
+
+class SignOutRequested implements Message {}
+
+class UserSignedOut implements Message {}
+
 class DailyWinViewLoaded implements Message {
   final DateTime date;
   final String win;

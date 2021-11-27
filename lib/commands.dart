@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'messages.dart';
+import 'services/google_sign_in.dart';
 
 // This is the only place where side-effects are allowed!
 
@@ -10,7 +12,7 @@ abstract class Command {
   }
 
   static Command getInitialCommand() {
-    return Command.none();
+    return InitializeApp();
   }
 }
 
@@ -19,16 +21,43 @@ class None implements Command {
   void execute(void Function(Message) dispatch) {}
 }
 
-class LoadTodaysWin implements Command {
+class InitializeApp implements Command {
   @override
   void execute(void Function(Message) dispatch) {
-    var date = DateTime.now();
+    Firebase.initializeApp().then((_) {
+      GoogleSignInFacade.subscribeToIdTokenChanges(
+        (idToken) {
+          dispatch(UserSignedIn(DateTime.now(), idToken));
+        },
+        () {
+          dispatch(UserSignedOut());
+        },
+        (err) {
+          dispatch(SignInFailed(err.toString()));
+        },
+      );
+    }).catchError((err) {
+      dispatch(AppInitializationFailed(err.toString()));
+    });
+  }
+}
 
-    Future.delayed(
-      const Duration(seconds: 2),
-      () => 'My win today retrieved asynchronously',
-    ).then((value) {
-      dispatch(DailyWinViewLoaded(date, value));
+class SignIn implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    GoogleSignInFacade.signInWithGoogle().catchError((err) {
+      dispatch(SignInFailed(err.toString()));
+    });
+  }
+}
+
+class SignOut implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    GoogleSignInFacade.signOut().then((_) {
+      dispatch(UserSignedOut());
+    }).catchError((err) {
+      dispatch(UserSignedOut());
     });
   }
 }
@@ -42,7 +71,7 @@ class LoadDailyWin implements Command {
   void execute(void Function(Message) dispatch) {
     Future.delayed(
       const Duration(seconds: 2),
-      () => 'My win saved',
+      () => 'My win today retrieved asynchronously',
     ).then((value) {
       dispatch(DailyWinViewLoaded(date, value));
     });

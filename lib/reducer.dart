@@ -14,6 +14,31 @@ class ModelAndCommand {
 
 class Reducer {
   static ModelAndCommand reduce(Model model, Message message) {
+    if (message is AppInitializedNotSignedIn) {
+      return ModelAndCommand.justModel(UserNotSignedInModel());
+    }
+    if (message is AppInitializationFailed) {
+      return ModelAndCommand.justModel(
+          ApplicationFailedToInitializeModel(message.reason));
+    }
+
+    if (message is SignInRequested) {
+      return ModelAndCommand(SignInInProgressModel(), SignIn());
+    }
+    if (message is UserSignedIn) {
+      return ModelAndCommand(
+          DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+    }
+    if (message is SignInFailed) {
+      return ModelAndCommand.justModel(UserNotSignedInModel());
+    }
+    if (message is SignOutRequested) {
+      return ModelAndCommand(SignOutInProgressModel(), SignOut());
+    }
+    if (message is UserSignedOut) {
+      return ModelAndCommand.justModel(UserNotSignedInModel());
+    }
+
     if (message is DailyWinViewLoaded) {
       return ModelAndCommand.justModel(
           DailyWinModel(message.date, message.win));

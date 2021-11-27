@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1097881828275",
+    "project_id": "winaday-afabd",
+    "storage_bucket": "winaday-afabd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097881828275:android:90e946fefa3916fe8869c6",
+        "android_client_info": {
+          "package_name": "net.artemkv.winaday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097881828275-3e7okrp26pahe627p1cbiu6eohj2glcn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.artemkv.winaday",
+            "certificate_hash": "79a15175f74f541253ba823627b18bf19b95a0d4"
+          }
+        },
+        {
+          "client_id": "1097881828275-n8cn44g1hslffltb07tqg69l93pi7jgq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXi-3--8X5eL1M3js4O9FMM6Vwym3K4AM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097881828275-n8cn44g1hslffltb07tqg69l93pi7jgq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

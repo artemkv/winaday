@@ -3,11 +3,23 @@
 
 abstract class Model {
   static Model getInitialModel() {
-    return UserNotSignedInModel();
+    return ApplicationNotInitializedModel();
   }
 }
 
+class ApplicationNotInitializedModel extends Model {}
+
+class ApplicationFailedToInitializeModel extends Model {
+  final String reason;
+
+  ApplicationFailedToInitializeModel(this.reason);
+}
+
 class UserNotSignedInModel extends Model {}
+
+class SignInInProgressModel extends Model {}
+
+class SignOutInProgressModel extends Model {}
 
 class DailyWinLoadingModel extends Model {
   final DateTime date;
