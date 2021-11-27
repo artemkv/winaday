@@ -38,12 +38,12 @@ class AppState extends State<RootWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return View.getHomeView(model, dispatch);
+    return getHomeView(model, dispatch);
   }
 
   void dispatch(Message message) {
     setState(() {
-      ModelAndCommand result = Reducer.reduce(model, message);
+      ModelAndCommand result = reduce(model, message);
 
       model = result.model;
 

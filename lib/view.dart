@@ -4,48 +4,45 @@ import 'messages.dart';
 
 // These should be all stateless! No side effects allowed!
 
-class View {
-  static Widget getHomeView(Model model, void Function(Message) dispatch) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Win a day'),
-        ),
-        body: View.getBody(model, dispatch));
+Widget getHomeView(Model model, void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        title: const Text('Win a day'),
+      ),
+      body: getBody(model, dispatch));
+}
+
+Widget getBody(Model model, void Function(Message) dispatch) {
+  if (model is ApplicationNotInitializedModel) {
+    return ApplicationNotInitializedView(model: model, dispatch: dispatch);
+  }
+  if (model is ApplicationFailedToInitializeModel) {
+    return ApplicationFailedToInitializeView(model: model, dispatch: dispatch);
   }
 
-  static Widget getBody(Model model, void Function(Message) dispatch) {
-    if (model is ApplicationNotInitializedModel) {
-      return ApplicationNotInitializedView(model: model, dispatch: dispatch);
-    }
-    if (model is ApplicationFailedToInitializeModel) {
-      return ApplicationFailedToInitializeView(
-          model: model, dispatch: dispatch);
-    }
-
-    if (model is UserNotSignedInModel) {
-      return UserNotSignedInView(model: model, dispatch: dispatch);
-    }
-    if (model is SignInInProgressModel) {
-      return SignInInProgressView(model: model);
-    }
-    if (model is SignOutInProgressModel) {
-      return SignOutInProgressView(model: model);
-    }
-
-    if (model is DailyWinLoadingModel) {
-      return DailyWinViewLoading(model: model, dispatch: dispatch);
-    }
-    if (model is DailyWinModel) {
-      return DailyWinView(model: model, dispatch: dispatch);
-    }
-    if (model is WinEditorModel) {
-      return WinEditorView(model: model, dispatch: dispatch);
-    }
-    if (model is WinEditorSavingModel) {
-      return WinEditorSavingView(model: model, dispatch: dispatch);
-    }
-    return UnknownModelWidget(model: model);
+  if (model is UserNotSignedInModel) {
+    return UserNotSignedInView(model: model, dispatch: dispatch);
   }
+  if (model is SignInInProgressModel) {
+    return SignInInProgressView(model: model);
+  }
+  if (model is SignOutInProgressModel) {
+    return SignOutInProgressView(model: model);
+  }
+
+  if (model is DailyWinLoadingModel) {
+    return DailyWinViewLoading(model: model, dispatch: dispatch);
+  }
+  if (model is DailyWinModel) {
+    return DailyWinView(model: model, dispatch: dispatch);
+  }
+  if (model is WinEditorModel) {
+    return WinEditorView(model: model, dispatch: dispatch);
+  }
+  if (model is WinEditorSavingModel) {
+    return WinEditorSavingView(model: model, dispatch: dispatch);
+  }
+  return UnknownModelWidget(model: model);
 }
 
 class UnknownModelWidget extends StatelessWidget {
