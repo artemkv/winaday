@@ -1,0 +1,2 @@
+- get rid of classes with only static members
+- Maybe show sign-in/sign-out error somehow, now are hidden

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'messages.dart';
 import 'services/google_sign_in.dart';
+import 'services/session_api.dart';
+import 'messages.dart';
 
 // This is the only place where side-effects are allowed!
 
@@ -27,12 +28,15 @@ class InitializeApp implements Command {
     Firebase.initializeApp().then((_) {
       GoogleSignInFacade.subscribeToIdTokenChanges(
         (idToken) {
+          setIdToken(idToken);
           dispatch(UserSignedIn(DateTime.now(), idToken));
         },
         () {
+          cleanIdToken();
           dispatch(UserSignedOut());
         },
         (err) {
+          cleanIdToken();
           dispatch(SignInFailed(err.toString()));
         },
       );
@@ -46,6 +50,7 @@ class SignIn implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     GoogleSignInFacade.signInWithGoogle().catchError((err) {
+      cleanIdToken();
       dispatch(SignInFailed(err.toString()));
     });
   }
@@ -54,6 +59,7 @@ class SignIn implements Command {
 class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
+    cleanIdToken();
     GoogleSignInFacade.signOut().then((_) {
       dispatch(UserSignedOut());
     }).catchError((err) {
@@ -69,6 +75,8 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
+    someApiRequest();
+
     Future.delayed(
       const Duration(seconds: 2),
       () => 'My win today retrieved asynchronously',
