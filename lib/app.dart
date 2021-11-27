@@ -38,7 +38,7 @@ class AppState extends State<RootWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return getHomeView(model, dispatch);
+    return home(model, dispatch);
   }
 
   void dispatch(Message message) {
