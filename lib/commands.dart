@@ -75,13 +75,10 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    someApiRequest();
-
-    Future.delayed(
-      const Duration(seconds: 2),
-      () => 'My win today retrieved asynchronously',
-    ).then((value) {
-      dispatch(DailyWinViewLoaded(date, value));
+    getTest().then((value) {
+      dispatch(DailyWinViewLoaded(date, value.toString()));
+    }).catchError((err) {
+      // TODO: dispatch DailyWinViewLoadingFailed
     });
   }
 }
