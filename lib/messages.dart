@@ -1,5 +1,7 @@
 // Should all be immutable classes and no logic!
 
+import 'domain.dart';
+
 abstract class Message {}
 
 class AppInitializedNotSignedIn implements Message {}
@@ -31,21 +33,21 @@ class UserSignedOut implements Message {}
 
 class DailyWinViewLoaded implements Message {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   DailyWinViewLoaded(this.date, this.win);
 }
 
 class EditWinRequested implements Message {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   EditWinRequested(this.date, this.win);
 }
 
 class WinSaveRequested implements Message {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   WinSaveRequested(this.date, this.win);
 }

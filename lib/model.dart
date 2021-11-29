@@ -1,6 +1,8 @@
 // Should all be immutable classes and no logic!
 // No side effects allowed!
 
+import 'domain.dart';
+
 abstract class Model {
   static Model getInitialModel() {
     return ApplicationNotInitializedModel();
@@ -29,14 +31,14 @@ class DailyWinLoadingModel extends Model {
 
 class DailyWinModel extends Model {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   DailyWinModel(this.date, this.win);
 }
 
 class WinEditorModel extends Model {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   WinEditorModel(this.date, this.win);
 }

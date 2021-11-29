@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
 
@@ -88,7 +89,7 @@ Widget dailyWinLoading(DailyWinLoadingModel model) {
 Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
   return Column(children: [
     GestureDetector(
-      child: Text("DailyWin: " + model.win),
+      child: Text("DailyWin: " + model.win.text),
       onTap: () {
         dispatch(EditWinRequested(model.date, model.win));
       },
@@ -104,10 +105,11 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
 
 Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
   return Column(children: [
-    Text("Editor: " + model.win),
+    Text("Editor: " + model.win.text),
     ElevatedButton(
       onPressed: () {
-        dispatch(WinSaveRequested(model.date, model.win));
+        var updatedWin = WinData(model.win.text + "_upd");
+        dispatch(WinSaveRequested(model.date, updatedWin));
       },
       child: const Text('Save'),
     )

@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:winaday/domain.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'messages.dart';
@@ -75,8 +76,9 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    getTest().then((value) {
-      dispatch(DailyWinViewLoaded(date, value.toString()));
+    getWin().then((json) {
+      var winData = WinData.fromJson(json);
+      dispatch(DailyWinViewLoaded(date, winData));
     }).catchError((err) {
       // TODO: dispatch DailyWinViewLoadingFailed
     });
@@ -85,17 +87,16 @@ class LoadDailyWin implements Command {
 
 class SaveWin implements Command {
   final DateTime date;
-  final String win;
+  final WinData win;
 
   SaveWin(this.date, this.win);
 
   @override
   void execute(void Function(Message) dispatch) {
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        dispatch(WinSaved(date));
-      },
-    );
+    postWin(win).then((_) {
+      dispatch(WinSaved(date));
+    }).catchError((err) {
+      // TODO: dispatch SavingWinFailed
+    });
   }
 }
