@@ -45,6 +45,12 @@ class EditWinRequested implements Message {
   EditWinRequested(this.date, this.win);
 }
 
+class CancelEditingWinRequested implements Message {
+  final DateTime date;
+
+  CancelEditingWinRequested(this.date);
+}
+
 class WinSaveRequested implements Message {
   final DateTime date;
   final WinData win;

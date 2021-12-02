@@ -44,6 +44,10 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is EditWinRequested) {
     return ModelAndCommand.justModel(WinEditorModel(message.date, message.win));
   }
+  if (message is CancelEditingWinRequested) {
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+  }
   if (message is WinSaveRequested) {
     return ModelAndCommand(
         WinEditorSavingModel(message.date), SaveWin(message.date, message.win));

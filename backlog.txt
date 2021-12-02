@@ -1,2 +1,2 @@
-- get rid of classes with only static members
+- Create a nice API layer that works with domain objects
 - Maybe show sign-in/sign-out error somehow, now are hidden

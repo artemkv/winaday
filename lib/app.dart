@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:winaday/commands.dart';
 
+import 'theme.dart';
 import 'model.dart';
 import 'reducer.dart';
 import 'messages.dart';
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Win a day',
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      theme: ThemeData(primarySwatch: oceanPurple),
       home: const RootWidget(),
     );
   }

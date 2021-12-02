@@ -26,7 +26,12 @@ class None implements Command {
 class InitializeApp implements Command {
   @override
   void execute(void Function(Message) dispatch) {
-    Firebase.initializeApp().then((_) {
+    Firebase.initializeApp()
+        .then((app) => Future<FirebaseApp>.delayed(
+              const Duration(seconds: 2),
+              () => app,
+            ))
+        .then((_) {
       GoogleSignInFacade.subscribeToIdTokenChanges(
         (idToken) {
           setIdToken(idToken);
