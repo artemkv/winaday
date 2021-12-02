@@ -152,11 +152,20 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
       appBar: AppBar(
         title: const Text('One win a day'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            tooltip: 'Menu',
-            onPressed: () {},
-          ),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("Sign out"),
+              ),
+            ],
+            onSelected: (val) {
+              if (val == 0) {
+                // this is if you add more items
+                dispatch(SignOutRequested());
+              }
+            },
+          )
         ],
       ),
       body: Center(
@@ -166,13 +175,7 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
               child: Text(
                 model.win.text,
                 style: const TextStyle(fontSize: TEXT_FONT_SIZE),
-              )),
-          ElevatedButton(
-            onPressed: () {
-              dispatch(SignOutRequested());
-            },
-            child: const Text('Sign out'),
-          )
+              ))
         ]),
       ),
       floatingActionButton: FloatingActionButton(
