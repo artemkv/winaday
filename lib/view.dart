@@ -4,6 +4,7 @@ import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'theme.dart';
+import 'dateutil.dart';
 
 // These should be all stateless! No side effects allowed!
 
@@ -124,11 +125,14 @@ Widget signInInProgress() {
           )));
 }
 
-// TODO:
 Widget signOutInProgress() {
-  return Column(
-    children: const [],
-  );
+  return Material(
+      type: MaterialType.transparency,
+      child: Container(
+          decoration: const BoxDecoration(color: THEME_COLOR),
+          child: Column(
+            children: const [],
+          )));
 }
 
 Widget dailyWinLoading(
@@ -136,21 +140,27 @@ Widget dailyWinLoading(
   return Scaffold(
     appBar: AppBar(
       title: const Text('One win a day'),
+      elevation: 0.0,
     ),
     body: Center(
         // TODO: single-source
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [CircularProgressIndicator(value: null)])),
+        child: Column(children: [
+      calendarStripe(model.date, dispatch),
+      Expanded(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const [CircularProgressIndicator(value: null)],
+      ))
+    ])),
   );
 }
 
-// TODO: add the calendar etc.
 Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
   return Scaffold(
       appBar: AppBar(
         title: const Text('One win a day'),
+        elevation: 0.0,
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -170,6 +180,7 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
       ),
       body: Center(
         child: Column(children: [
+          calendarStripe(model.date, dispatch),
           Padding(
               padding: const EdgeInsets.all(TEXT_PADDING),
               child: Text(
@@ -185,6 +196,55 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
         child: const Icon(Icons.edit),
         backgroundColor: melonYellow,
       ));
+}
+
+Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
+  return Container(
+      decoration: const BoxDecoration(color: THEME_COLOR),
+      child: Material(
+          type: MaterialType.transparency,
+          child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.only(
+                    top: TEXT_PADDING, bottom: TEXT_PADDING * 2),
+                child: Row(children: [
+                  IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      color: Colors.white,
+                      tooltip: 'Next',
+                      onPressed: () {
+                        dispatch(MoveToPrevDay(date));
+                      }),
+                  Expanded(
+                      child: Center(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(children: [
+                                Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(date.year.toString(),
+                                        style: GoogleFonts.yesevaOne(
+                                            textStyle: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16.0)))),
+                                Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(getDayString(date),
+                                        style: GoogleFonts.yesevaOne(
+                                            textStyle: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 24.0))))
+                              ])))),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_right),
+                    color: Colors.white,
+                    tooltip: 'Next',
+                    onPressed: () {
+                      dispatch(MoveToNextDay(date));
+                    },
+                  )
+                ]))
+          ])));
 }
 
 Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {

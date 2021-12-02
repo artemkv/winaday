@@ -63,3 +63,15 @@ class WinSaved implements Message {
 
   WinSaved(this.date);
 }
+
+class MoveToNextDay implements Message {
+  final DateTime date;
+
+  MoveToNextDay(this.date);
+}
+
+class MoveToPrevDay implements Message {
+  final DateTime date;
+
+  MoveToPrevDay(this.date);
+}

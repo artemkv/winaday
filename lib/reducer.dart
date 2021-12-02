@@ -56,5 +56,15 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(
         DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
   }
+
+  if (message is MoveToPrevDay) {
+    return ModelAndCommand(
+        model, LoadDailyWin(message.date.subtract(const Duration(days: 1))));
+  }
+  if (message is MoveToNextDay) {
+    return ModelAndCommand(
+        model, LoadDailyWin(message.date.add(const Duration(days: 1))));
+  }
+
   return ModelAndCommand.justModel(model);
 }
