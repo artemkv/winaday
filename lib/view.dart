@@ -12,7 +12,7 @@ import 'dateutil.dart';
 
 const TEXT_PADDING = 12.0;
 const TEXT_FONT_SIZE = 16.0;
-const THEME_COLOR = oceanPurple;
+const THEME_COLOR = magenta;
 
 Widget home(Model model, void Function(Message) dispatch) {
   if (model is ApplicationNotInitializedModel) {
@@ -197,7 +197,7 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
           dispatch(EditWinRequested(model.date, model.win));
         },
         child: const Icon(Icons.edit),
-        backgroundColor: melonYellow,
+        backgroundColor: denimBlue,
       ));
 }
 
