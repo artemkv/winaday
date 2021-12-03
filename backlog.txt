@@ -1,7 +1,11 @@
 - --Error screens v1--
+- --UI state for no win registered--
 
-- Connect to db
-- UI state for no win registered
-
-- Create a nice API layer that works with domain objects
+- Allow registering the day overall quality:
+    - "No win yet"
+    - "Got my win"
+    - "Could not get my win"
+    - "Awesome achievement"
+    - "Grind"
+- Connect to db to actually load and save for real
 - Maybe show sign-in/sign-out error somehow, now are hidden
