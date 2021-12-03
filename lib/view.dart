@@ -140,57 +140,65 @@ Widget signOutInProgress() {
 Widget dailyWinLoading(
     DailyWinLoadingModel model, void Function(Message) dispatch) {
   return Scaffold(
-    appBar: AppBar(
-      title: const Text('One win a day'),
-      elevation: 0.0,
-    ),
-    body: Center(
-        // TODO: single-source
-        child: Column(children: [
-      calendarStripe(model.date, dispatch),
-      Expanded(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [CircularProgressIndicator(value: null)],
-      ))
-    ])),
-  );
+      appBar: AppBar(
+        title: const Text('One win a day'),
+        elevation: 0.0,
+        actions: getContextMenu(dispatch),
+      ),
+      body: Center(
+          // TODO: single-source
+          child: Column(children: [
+        calendarStripe(model.date, dispatch),
+        Expanded(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [CircularProgressIndicator(value: null)],
+        ))
+      ])));
 }
 
 Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
+  const yesterday = 1;
+  const today = 2;
+  const tomorrow = 3;
+
+  final PageController controller = PageController(initialPage: today);
+
   return Scaffold(
       appBar: AppBar(
         title: const Text('One win a day'),
         elevation: 0.0,
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem<int>(
-                value: 0,
-                child: Text("Sign out"),
-              ),
-            ],
-            onSelected: (val) {
-              if (val == 0) {
-                // this is if you add more items
-                dispatch(SignOutRequested());
-              }
-            },
-          )
-        ],
+        actions: getContextMenu(dispatch),
       ),
       body: Column(children: [
         calendarStripe(model.date, dispatch),
         Expanded(
             child: Center(
-                child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(TEXT_PADDING),
-            child: Text(model.win.text,
-                style: const TextStyle(fontSize: TEXT_FONT_SIZE)),
-          )
-        ])))
+                child: PageView.builder(
+                    onPageChanged: (page) {
+                      if (page == yesterday) {
+                        dispatch(MoveToPrevDay(model.date));
+                      } else if (page == tomorrow) {
+                        dispatch(MoveToNextDay(model.date));
+                      }
+                    },
+                    scrollDirection: Axis.horizontal,
+                    controller: controller,
+                    itemBuilder: (context, index) {
+                      if (index == today) {
+                        return Padding(
+                            padding: const EdgeInsets.all(TEXT_PADDING),
+                            child: Text(model.win.text,
+                                style:
+                                    const TextStyle(fontSize: TEXT_FONT_SIZE)));
+                      } else {
+                        return const Padding(
+                            padding: EdgeInsets.all(TEXT_PADDING),
+                            child: Text("",
+                                style: TextStyle(fontSize: TEXT_FONT_SIZE)));
+                      }
+                    })))
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -214,7 +222,7 @@ Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
                   IconButton(
                       icon: const Icon(Icons.arrow_left),
                       color: Colors.white,
-                      tooltip: 'Next',
+                      tooltip: 'Prev',
                       onPressed: () {
                         dispatch(MoveToPrevDay(date));
                       }),
@@ -248,6 +256,25 @@ Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
                   )
                 ]))
           ])));
+}
+
+List<Widget> getContextMenu(void Function(Message) dispatch) {
+  return <Widget>[
+    PopupMenuButton(
+      itemBuilder: (context) => [
+        const PopupMenuItem<int>(
+          value: 0,
+          child: Text("Sign out"),
+        ),
+      ],
+      onSelected: (val) {
+        if (val == 0) {
+          // this is if you add more items
+          dispatch(SignOutRequested());
+        }
+      },
+    )
+  ];
 }
 
 Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
