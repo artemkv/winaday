@@ -143,18 +143,12 @@ Widget dailyWinLoading(
       appBar: AppBar(
         title: const Text('One win a day'),
         elevation: 0.0,
-        actions: getContextMenu(dispatch),
+        actions: contextMenu(dispatch),
       ),
       body: Center(
-          // TODO: single-source
           child: Column(children: [
         calendarStripe(model.date, dispatch),
-        Expanded(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [CircularProgressIndicator(value: null)],
-        ))
+        Expanded(child: spinner())
       ])));
 }
 
@@ -169,7 +163,7 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
       appBar: AppBar(
         title: const Text('One win a day'),
         elevation: 0.0,
-        actions: getContextMenu(dispatch),
+        actions: contextMenu(dispatch),
       ),
       body: Column(children: [
         calendarStripe(model.date, dispatch),
@@ -258,7 +252,7 @@ Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
           ])));
 }
 
-List<Widget> getContextMenu(void Function(Message) dispatch) {
+List<Widget> contextMenu(void Function(Message) dispatch) {
   return <Widget>[
     PopupMenuButton(
       itemBuilder: (context) => [
@@ -302,17 +296,18 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
           return false;
         },
         child: Column(children: [
-          Padding(
-              padding: const EdgeInsets.all(TEXT_PADDING),
-              child: TextField(
-                controller: controller,
-                style: const TextStyle(fontSize: TEXT_FONT_SIZE),
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Write down you win here'),
-              ))
+          Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.all(TEXT_PADDING),
+                  child: TextField(
+                    controller: controller,
+                    style: const TextStyle(fontSize: TEXT_FONT_SIZE),
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Write down you win here'),
+                  )))
         ])),
   );
 }
@@ -320,13 +315,15 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
 Widget winEditorSaving(WinEditorSavingModel model) {
   return Scaffold(
     appBar: AppBar(
-      title: const Text('One win a day'),
+      title: const Text('Saving'),
     ),
-    body: Center(
-        // TODO: single-source
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [CircularProgressIndicator(value: null)])),
+    body: Center(child: spinner()),
   );
+}
+
+Widget spinner() {
+  return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: const [CircularProgressIndicator(value: null)]);
 }
