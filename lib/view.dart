@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
+import 'domain.dart';
 import 'theme.dart';
 import 'dateutil.dart';
 
@@ -10,7 +11,7 @@ import 'dateutil.dart';
 
 const TEXT_PADDING = 12.0;
 const TEXT_FONT_SIZE = 16.0;
-const THEME_COLOR = magenta;
+const THEME_COLOR = brownsOrange;
 
 Widget home(Model model, void Function(Message) dispatch) {
   if (model is ApplicationNotInitializedModel) {
@@ -327,7 +328,7 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
           icon: const Icon(Icons.check),
           tooltip: 'Save',
           onPressed: () {
-            var updatedWin = WinData(model.win.text + "_upd");
+            var updatedWin = WinData(controller.text, model.win.overallResult);
             dispatch(WinSaveRequested(model.date, updatedWin));
           },
         )
@@ -339,6 +340,13 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
           return false;
         },
         child: Column(children: [
+          dayOverallResult(controller, model, dispatch),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 12,
+            endIndent: 12,
+          ),
           Expanded(
               child: Padding(
                   padding: const EdgeInsets.all(TEXT_PADDING),
@@ -396,4 +404,73 @@ Widget winEditorFailedToSave(
                           fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
     ])),
   );
+}
+
+Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
+    void Function(Message) dispatch) {
+  return Padding(
+      padding: const EdgeInsets.all(TEXT_PADDING),
+      child: Row(children: [
+        const Padding(
+            padding: EdgeInsets.only(right: TEXT_PADDING * 2),
+            child: Text("How was it?",
+                style: TextStyle(fontSize: TEXT_FONT_SIZE))),
+        DropdownButton<int>(
+          value: model.win.overallResult,
+          onChanged: (int? newValue) {
+            if (newValue != null) {
+              var updatedWin = WinData(controller.text, newValue);
+              dispatch(EditWinRequested(model.date, updatedWin));
+            }
+          },
+          items: <int>[
+            OverallDayResult.gotMyWin,
+            OverallDayResult.awesomeAchievement,
+            OverallDayResult.grind,
+            OverallDayResult.couldNotGetWin
+          ].map<DropdownMenuItem<int>>((int value) {
+            return DropdownMenuItem<int>(
+              value: value,
+              child: Row(children: [
+                Padding(
+                    padding: const EdgeInsets.only(right: TEXT_PADDING / 2),
+                    child: Text(overallDayResultText(value))),
+                Text(overallDayResultEmoji(value))
+              ]),
+            );
+          }).toList(),
+        )
+      ]));
+}
+
+String overallDayResultText(int index) {
+  switch (index) {
+    case OverallDayResult.noWinYet:
+      return "No win yet";
+    case OverallDayResult.gotMyWin:
+      return "Got my win";
+    case OverallDayResult.couldNotGetWin:
+      return "Could not get my win";
+    case OverallDayResult.grind:
+      return "Invested in tomorrow";
+    case OverallDayResult.awesomeAchievement:
+      return "Awesome achievement";
+  }
+  throw "Unknown value of overall result: $index";
+}
+
+String overallDayResultEmoji(int index) {
+  switch (index) {
+    case OverallDayResult.noWinYet:
+      return "🙄";
+    case OverallDayResult.gotMyWin:
+      return "😊";
+    case OverallDayResult.couldNotGetWin:
+      return "😕";
+    case OverallDayResult.grind:
+      return "😅";
+    case OverallDayResult.awesomeAchievement:
+      return "🤩";
+  }
+  throw "Unknown value of overall result: $index";
 }

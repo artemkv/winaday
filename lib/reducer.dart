@@ -1,3 +1,5 @@
+import 'package:winaday/domain.dart';
+
 import 'model.dart';
 import 'messages.dart';
 import 'commands.dart';
@@ -50,7 +52,12 @@ ModelAndCommand reduce(Model model, Message message) {
         DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
   }
   if (message is EditWinRequested) {
-    return ModelAndCommand.justModel(WinEditorModel(message.date, message.win));
+    var winToEdit = WinData(
+        message.win.text,
+        message.win.overallResult == OverallDayResult.noWinYet
+            ? OverallDayResult.gotMyWin
+            : message.win.overallResult);
+    return ModelAndCommand.justModel(WinEditorModel(message.date, winToEdit));
   }
   if (message is CancelEditingWinRequested) {
     return ModelAndCommand(
