@@ -225,11 +225,41 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                                           fontSize: TEXT_FONT_SIZE,
                                           color: Colors.grey))));
                         }
-                        return Padding(
-                            padding: const EdgeInsets.all(TEXT_PADDING),
-                            child: Text(model.win.text,
-                                style:
-                                    const TextStyle(fontSize: TEXT_FONT_SIZE)));
+                        return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                  child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(TEXT_PADDING),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: TEXT_PADDING / 2),
+                                                child: Text(
+                                                    overallDayResultText(
+                                                      model.win.overallResult,
+                                                    ),
+                                                    style: const TextStyle(
+                                                        fontSize:
+                                                            TEXT_FONT_SIZE))),
+                                            Text(
+                                                overallDayResultEmoji(
+                                                    model.win.overallResult),
+                                                style: const TextStyle(
+                                                    fontSize: TEXT_FONT_SIZE))
+                                          ]))),
+                              Expanded(
+                                  child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(TEXT_PADDING),
+                                      child: Text(model.win.text,
+                                          style: const TextStyle(
+                                              fontSize: TEXT_FONT_SIZE))))
+                            ]);
                       } else {
                         return const Padding(
                             padding: EdgeInsets.all(TEXT_PADDING),
