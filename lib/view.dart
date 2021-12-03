@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/domain.dart';
@@ -178,23 +180,18 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
           )
         ],
       ),
-      body: RefreshIndicator(
-          onRefresh: () {
-            return Future.delayed(Duration(seconds: 2), () {});
-          },
-          child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                calendarStripe(model.date, dispatch),
-                Center(
-                    child: Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.all(TEXT_PADDING),
-                    child: Text(model.win.text,
-                        style: const TextStyle(fontSize: TEXT_FONT_SIZE)),
-                  )
-                ]))
-              ])),
+      body: Column(children: [
+        calendarStripe(model.date, dispatch),
+        Expanded(
+            child: Center(
+                child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(TEXT_PADDING),
+            child: Text(model.win.text,
+                style: const TextStyle(fontSize: TEXT_FONT_SIZE)),
+          )
+        ])))
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           dispatch(EditWinRequested(model.date, model.win));
