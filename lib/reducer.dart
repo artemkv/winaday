@@ -41,6 +41,14 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is DailyWinViewLoaded) {
     return ModelAndCommand.justModel(DailyWinModel(message.date, message.win));
   }
+  if (message is DailyWinViewLoadingFailed) {
+    return ModelAndCommand.justModel(
+        DailyWinFailedToLoadModel(message.date, message.reason));
+  }
+  if (message is DailyWinViewReloadRequested) {
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+  }
   if (message is EditWinRequested) {
     return ModelAndCommand.justModel(WinEditorModel(message.date, message.win));
   }
@@ -55,6 +63,10 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is WinSaved) {
     return ModelAndCommand(
         DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+  }
+  if (message is SavingWinFailed) {
+    return ModelAndCommand.justModel(
+        WinEditorFailedToSaveModel(message.date, message.win, message.reason));
   }
 
   if (message is MoveToPrevDay) {

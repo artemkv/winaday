@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/domain.dart';
@@ -35,6 +33,9 @@ Widget home(Model model, void Function(Message) dispatch) {
   if (model is DailyWinLoadingModel) {
     return dailyWinLoading(model, dispatch);
   }
+  if (model is DailyWinFailedToLoadModel) {
+    return dailyWinFailedToLoad(model, dispatch);
+  }
   if (model is DailyWinModel) {
     return dailyWin(model, dispatch);
   }
@@ -43,6 +44,9 @@ Widget home(Model model, void Function(Message) dispatch) {
   }
   if (model is WinEditorSavingModel) {
     return winEditorSaving(model);
+  }
+  if (model is WinEditorFailedToSaveModel) {
+    return winEditorFailedToSave(model, dispatch);
   }
   return unknownModel(model);
 }
@@ -56,6 +60,7 @@ Widget applicationNotInitialized() {
 }
 
 Widget applicationFailedToInitialize(ApplicationFailedToInitializeModel model) {
+  // TODO: nicer view for rendering this error
   return Text("Failed to initialize: " + model.reason);
 }
 
@@ -152,6 +157,35 @@ Widget dailyWinLoading(
       ])));
 }
 
+Widget dailyWinFailedToLoad(
+    DailyWinFailedToLoadModel model, void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        title: const Text('One win a day'),
+        elevation: 0.0,
+        actions: contextMenu(dispatch),
+      ),
+      body: Center(
+          child: Column(children: [
+        calendarStripe(model.date, dispatch),
+        // TODO: maybe think about nicer way to show errors
+        Padding(
+            padding: const EdgeInsets.all(TEXT_PADDING),
+            child: Text("Failed to contact the server: " + model.reason,
+                style: const TextStyle(
+                    fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+        Expanded(
+            child: GestureDetector(
+                onTap: () {
+                  dispatch(DailyWinViewReloadRequested(model.date));
+                },
+                child: const Center(
+                    child: Text("Click to reload",
+                        style: TextStyle(
+                            fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
+      ])));
+}
+
 Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
   const yesterday = 1;
   const today = 2;
@@ -181,6 +215,15 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                     controller: controller,
                     itemBuilder: (context, index) {
                       if (index == today) {
+                        if (model.win.text == "") {
+                          return const Padding(
+                              padding: EdgeInsets.all(TEXT_PADDING),
+                              child: Center(
+                                  child: Text("No win recorded",
+                                      style: TextStyle(
+                                          fontSize: TEXT_FONT_SIZE,
+                                          color: Colors.grey))));
+                        }
                         return Padding(
                             padding: const EdgeInsets.all(TEXT_PADDING),
                             child: Text(model.win.text,
@@ -326,4 +369,31 @@ Widget spinner() {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: const [CircularProgressIndicator(value: null)]);
+}
+
+Widget winEditorFailedToSave(
+    WinEditorFailedToSaveModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Failed to save'),
+    ),
+    body: Center(
+        child: Column(children: [
+      // TODO: maybe think about nicer way to show errors
+      Padding(
+          padding: const EdgeInsets.all(TEXT_PADDING),
+          child: Text("Failed to contact the server: " + model.reason,
+              style: const TextStyle(
+                  fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+      Expanded(
+          child: GestureDetector(
+              onTap: () {
+                dispatch(WinSaveRequested(model.date, model.win));
+              },
+              child: const Center(
+                  child: Text("Click to re-try",
+                      style: TextStyle(
+                          fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
+    ])),
+  );
 }

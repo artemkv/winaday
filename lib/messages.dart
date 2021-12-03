@@ -38,6 +38,31 @@ class DailyWinViewLoaded implements Message {
   DailyWinViewLoaded(this.date, this.win);
 }
 
+class DailyWinViewLoadingFailed implements Message {
+  final DateTime date;
+  final String reason;
+
+  DailyWinViewLoadingFailed(this.date, this.reason);
+}
+
+class DailyWinViewReloadRequested implements Message {
+  final DateTime date;
+
+  DailyWinViewReloadRequested(this.date);
+}
+
+class MoveToNextDay implements Message {
+  final DateTime date;
+
+  MoveToNextDay(this.date);
+}
+
+class MoveToPrevDay implements Message {
+  final DateTime date;
+
+  MoveToPrevDay(this.date);
+}
+
 class EditWinRequested implements Message {
   final DateTime date;
   final WinData win;
@@ -64,14 +89,10 @@ class WinSaved implements Message {
   WinSaved(this.date);
 }
 
-class MoveToNextDay implements Message {
+class SavingWinFailed implements Message {
   final DateTime date;
+  final WinData win;
+  final String reason;
 
-  MoveToNextDay(this.date);
-}
-
-class MoveToPrevDay implements Message {
-  final DateTime date;
-
-  MoveToPrevDay(this.date);
+  SavingWinFailed(this.date, this.win, this.reason);
 }

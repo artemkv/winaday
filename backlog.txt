@@ -1,6 +1,7 @@
+- --Error screens v1--
+
 - Connect to db
 - UI state for no win registered
-- Error screens
 
 - Create a nice API layer that works with domain objects
 - Maybe show sign-in/sign-out error somehow, now are hidden

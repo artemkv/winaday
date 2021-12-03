@@ -85,7 +85,8 @@ class LoadDailyWin implements Command {
       var winData = WinData.fromJson(json);
       dispatch(DailyWinViewLoaded(date, winData));
     }).catchError((err) {
-      // TODO: dispatch DailyWinViewLoadingFailed
+      dispatch(
+          DailyWinViewLoadingFailed(date, err?.message ?? "Unknown error"));
     });
   }
 }
@@ -101,7 +102,7 @@ class SaveWin implements Command {
     postWin(win).then((_) {
       dispatch(WinSaved(date));
     }).catchError((err) {
-      // TODO: dispatch SavingWinFailed
+      dispatch(SavingWinFailed(date, win, err?.message ?? "Unknown error"));
     });
   }
 }

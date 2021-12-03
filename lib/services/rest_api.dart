@@ -1,8 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:winaday/domain.dart';
-
 // Android emulator:
 // http://10.0.2.2:8700/
 // Real device:

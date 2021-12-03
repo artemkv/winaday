@@ -29,6 +29,13 @@ class DailyWinLoadingModel extends Model {
   DailyWinLoadingModel(this.date);
 }
 
+class DailyWinFailedToLoadModel extends Model {
+  final DateTime date;
+  final String reason;
+
+  DailyWinFailedToLoadModel(this.date, this.reason);
+}
+
 class DailyWinModel extends Model {
   final DateTime date;
   final WinData win;
@@ -47,4 +54,12 @@ class WinEditorSavingModel extends Model {
   final DateTime date;
 
   WinEditorSavingModel(this.date);
+}
+
+class WinEditorFailedToSaveModel extends Model {
+  final DateTime date;
+  final WinData win;
+  final String reason;
+
+  WinEditorFailedToSaveModel(this.date, this.win, this.reason);
 }
