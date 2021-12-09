@@ -252,13 +252,19 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                                                 style: const TextStyle(
                                                     fontSize: TEXT_FONT_SIZE))
                                           ]))),
+                              const Divider(
+                                height: 12,
+                                thickness: 1,
+                                indent: 64,
+                                endIndent: 64,
+                              ),
                               Expanded(
                                   child: Padding(
-                                      padding:
-                                          const EdgeInsets.all(TEXT_PADDING),
+                                      padding: const EdgeInsets.all(
+                                          TEXT_PADDING * 1.4),
                                       child: Text(model.win.text,
                                           style: const TextStyle(
-                                              fontSize: TEXT_FONT_SIZE))))
+                                              fontSize: TEXT_FONT_SIZE * 1.4))))
                             ]);
                       } else {
                         return const Padding(
