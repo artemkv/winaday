@@ -9,3 +9,5 @@
     - "Grind"
 - Connect to db to actually load and save for real
 - Maybe show sign-in/sign-out error somehow, now are hidden
+
+- Add Privacy Policy and Terms of Use (https://stackoverflow.com/questions/43583411/how-to-create-a-hyperlink-in-flutter-widget)

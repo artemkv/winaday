@@ -118,7 +118,42 @@ Widget welcomeScreen(bool showSignInButton, void Function() onSignInClick) {
                                     color: THEME_COLOR,
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold)),
-                          )))
+                          ))),
+                  Visibility(
+                      visible: showSignInButton,
+                      maintainState: true,
+                      maintainAnimation: true,
+                      maintainSize: true,
+                      child: Column(children: [
+                        Row(children: [
+                          Checkbox(
+                            value: false,
+                            fillColor: MaterialStateProperty.resolveWith(
+                                (states) => Colors.white),
+                            onChanged: (bool? newValue) {},
+                          ),
+                          const Flexible(
+                              child: Text(
+                                  "I agree to Privacy Policy and Terms of Use.",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: TEXT_FONT_SIZE)))
+                        ]),
+                        Row(children: [
+                          Checkbox(
+                            value: false,
+                            fillColor: MaterialStateProperty.resolveWith(
+                                (states) => Colors.white),
+                            onChanged: (bool? newValue) {},
+                          ),
+                          const Flexible(
+                              child: Text(
+                                  "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: TEXT_FONT_SIZE)))
+                        ])
+                      ])),
                 ]))),
   );
 }
