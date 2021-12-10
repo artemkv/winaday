@@ -2,7 +2,7 @@
     package="com.example.winaday">
    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="OneWinADay"
+        android:label="One win a day"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
