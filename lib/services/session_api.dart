@@ -51,10 +51,10 @@ Future<dynamic> callApi(Future<dynamic> Function() f) async {
   }
 }
 
-Future<dynamic> getWin() {
-  return callApi(() => rest.getWin(session));
+Future<dynamic> getWin(String date) {
+  return callApi(() => rest.getWin(date, session));
 }
 
-Future<dynamic> postWin(Object data) {
-  return callApi(() => rest.postWin(data, session));
+Future<dynamic> postWin(String date, Object data) {
+  return callApi(() => rest.postWin(date, data, session));
 }

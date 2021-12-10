@@ -91,10 +91,10 @@ Future<dynamic> signIn(String idToken) async {
   return await postJson('/signin', {'id_token': idToken});
 }
 
-Future<dynamic> getWin(String session) async {
-  return await getJson('/win', session);
+Future<dynamic> getWin(String date, String session) async {
+  return await getJson('/win/$date', session);
 }
 
-Future<dynamic> postWin(Object data, String session) async {
-  return await postJson('/win', data, session: session);
+Future<dynamic> postWin(String date, Object data, String session) async {
+  return await postJson('/win/$date', data, session: session);
 }

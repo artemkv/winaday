@@ -296,7 +296,7 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                               Expanded(
                                   child: Padding(
                                       padding: const EdgeInsets.all(
-                                          TEXT_PADDING * 1.4),
+                                          TEXT_PADDING * 1.6),
                                       child: Text(model.win.text,
                                           style: const TextStyle(
                                               fontSize: TEXT_FONT_SIZE * 1.4))))
@@ -326,7 +326,7 @@ Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
           child: Column(children: [
             Padding(
                 padding: const EdgeInsets.only(
-                    top: TEXT_PADDING, bottom: TEXT_PADDING * 2),
+                    top: TEXT_PADDING / 2, bottom: TEXT_PADDING),
                 child: Row(children: [
                   IconButton(
                       icon: const Icon(Icons.arrow_left),

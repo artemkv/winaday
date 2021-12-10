@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:winaday/domain.dart';
+import 'package:intl/intl.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'messages.dart';
@@ -81,7 +82,7 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    getWin().then((json) {
+    getWin(toCompact(date)).then((json) {
       var winData = WinData.fromJson(json);
       dispatch(DailyWinViewLoaded(date, winData));
     }).catchError((err) {
@@ -99,10 +100,15 @@ class SaveWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    postWin(win).then((_) {
+    postWin(toCompact(date), win).then((_) {
       dispatch(WinSaved(date));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err?.message ?? "Unknown error"));
     });
   }
+}
+
+String toCompact(DateTime date) {
+  final DateFormat formatter = DateFormat('yyyyMMdd');
+  return formatter.format(date);
 }
