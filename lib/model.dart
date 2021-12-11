@@ -17,6 +17,12 @@ class ApplicationFailedToInitializeModel extends Model {
   ApplicationFailedToInitializeModel(this.reason);
 }
 
+class UserFailedToSignInModel extends Model {
+  final String reason;
+
+  UserFailedToSignInModel(this.reason);
+}
+
 class UserNotSignedInModel extends Model {}
 
 class SignInInProgressModel extends Model {}

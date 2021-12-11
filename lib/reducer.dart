@@ -31,7 +31,7 @@ ModelAndCommand reduce(Model model, Message message) {
         DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
   }
   if (message is SignInFailed) {
-    return ModelAndCommand.justModel(UserNotSignedInModel());
+    return ModelAndCommand.justModel(UserFailedToSignInModel(message.reason));
   }
   if (message is SignOutRequested) {
     return ModelAndCommand(SignOutInProgressModel(), SignOut());

@@ -27,6 +27,9 @@ Widget home(Model model, void Function(Message) dispatch) {
   if (model is SignInInProgressModel) {
     return signInInProgress();
   }
+  if (model is UserFailedToSignInModel) {
+    return userFailedToSignIn(model);
+  }
   if (model is SignOutInProgressModel) {
     return signOutInProgress();
   }
@@ -69,6 +72,11 @@ Widget userNotSignedIn(void Function(Message) dispatch) {
   return welcomeScreen(true, () {
     dispatch(SignInRequested());
   });
+}
+
+Widget userFailedToSignIn(UserFailedToSignInModel model) {
+  // TODO: nicer view for rendering this error
+  return Text("Failed to sign in: " + model.reason);
 }
 
 Widget welcomeScreen(bool showSignInButton, void Function() onSignInClick) {
