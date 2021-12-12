@@ -457,9 +457,11 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
                   padding: const EdgeInsets.all(TEXT_PADDING),
                   child: TextField(
                     controller: controller,
+                    autofocus: true,
                     style: const TextStyle(fontSize: TEXT_FONT_SIZE),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Write down you win here'),
