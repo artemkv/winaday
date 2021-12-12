@@ -15,14 +15,14 @@ const THEME_COLOR = brownsOrange;
 
 Widget home(Model model, void Function(Message) dispatch) {
   if (model is ApplicationNotInitializedModel) {
-    return applicationNotInitialized();
+    return applicationNotInitialized(dispatch);
   }
   if (model is ApplicationFailedToInitializeModel) {
     return applicationFailedToInitialize(model);
   }
 
   if (model is UserNotSignedInModel) {
-    return userNotSignedIn(dispatch);
+    return userNotSignedIn(model, dispatch);
   }
   if (model is SignInInProgressModel) {
     return signInInProgress();
@@ -59,8 +59,29 @@ Widget unknownModel(Model model) {
   return Text("Unknown model: " + model.runtimeType.toString());
 }
 
-Widget applicationNotInitialized() {
-  return welcomeScreen(false, () {});
+Widget applicationNotInitialized(void Function(Message) dispatch) {
+  return Material(
+    type: MaterialType.transparency,
+    child: Container(
+        decoration: const BoxDecoration(color: THEME_COLOR),
+        child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(children: [
+              Expanded(child: Row()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [mottoLine1(), mottoLine2()]))
+                ],
+              ),
+              Expanded(child: Row()),
+            ]))),
+  );
 }
 
 Widget applicationFailedToInitialize(ApplicationFailedToInitializeModel model) {
@@ -68,18 +89,8 @@ Widget applicationFailedToInitialize(ApplicationFailedToInitializeModel model) {
   return Text("Failed to initialize: " + model.reason);
 }
 
-Widget userNotSignedIn(void Function(Message) dispatch) {
-  return welcomeScreen(true, () {
-    dispatch(SignInRequested());
-  });
-}
-
-Widget userFailedToSignIn(UserFailedToSignInModel model) {
-  // TODO: nicer view for rendering this error
-  return Text("Failed to sign in: " + model.reason);
-}
-
-Widget welcomeScreen(bool showSignInButton, void Function() onSignInClick) {
+Widget userNotSignedIn(
+    UserNotSignedInModel model, void Function(Message) dispatch) {
   return Material(
     type: MaterialType.transparency,
     child: Container(
@@ -107,12 +118,17 @@ Widget welcomeScreen(bool showSignInButton, void Function() onSignInClick) {
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                          signInButton(showSignInButton, onSignInClick),
-                          userConsent(showSignInButton)
+                          signInButton(model, dispatch),
+                          userConsent(model, dispatch)
                         ]))
                   ])),
             ]))),
   );
+}
+
+Widget userFailedToSignIn(UserFailedToSignInModel model) {
+  // TODO: nicer view for rendering this error
+  return Text("Failed to sign in: " + model.reason);
 }
 
 Widget mottoLine1() {
@@ -133,63 +149,61 @@ Widget mottoLine2() {
   );
 }
 
-Widget signInButton(bool isVisible, void Function() onSignInClick) {
-  return Visibility(
-      visible: isVisible,
-      maintainState: true,
-      maintainAnimation: true,
-      maintainSize: true,
-      child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
-            onPressed: () {
-              onSignInClick();
-            },
-            child: const Text("Sign in",
-                style: TextStyle(
-                    color: THEME_COLOR,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold)),
-          )));
+Widget signInButton(
+    UserNotSignedInModel model, void Function(Message) dispatch) {
+  var consentGiven =
+      (model.privacyPolicyAccepted && model.personalDataProcessingAccepted);
+
+  return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            primary: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
+        onPressed: consentGiven
+            ? () {
+                dispatch(SignInRequested());
+              }
+            : null,
+        child: const Text("Sign in",
+            style: TextStyle(
+                color: THEME_COLOR, fontSize: 24, fontWeight: FontWeight.bold)),
+      ));
 }
 
-Widget userConsent(bool isVisible) {
-  return Visibility(
-      visible: isVisible,
-      maintainState: true,
-      maintainAnimation: true,
-      maintainSize: true,
-      child: Column(children: [
-        Row(children: [
-          Checkbox(
-            value: false,
-            fillColor:
-                MaterialStateProperty.resolveWith((states) => Colors.white),
-            onChanged: (bool? newValue) {},
-          ),
-          const Flexible(
-              child: Text("I agree to Privacy Policy and Terms of Use.",
-                  style:
-                      TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
-        ]),
-        Row(children: [
-          Checkbox(
-            value: false,
-            fillColor:
-                MaterialStateProperty.resolveWith((states) => Colors.white),
-            onChanged: (bool? newValue) {},
-          ),
-          const Flexible(
-              child: Text(
-                  "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
-                  style:
-                      TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
-        ])
-      ]));
+Widget userConsent(
+    UserNotSignedInModel model, void Function(Message) dispatch) {
+  return Column(children: [
+    Row(children: [
+      Checkbox(
+        value: model.privacyPolicyAccepted,
+        checkColor: brownsOrange,
+        fillColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+        onChanged: (bool? accepted) {
+          dispatch(UserConsentUpdated(
+              accepted == true, model.personalDataProcessingAccepted));
+        },
+      ),
+      const Flexible(
+          child: Text("I agree to Privacy Policy and Terms of Use.",
+              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+    ]),
+    Row(children: [
+      Checkbox(
+        value: model.personalDataProcessingAccepted,
+        checkColor: brownsOrange,
+        fillColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+        onChanged: (bool? accepted) {
+          dispatch(UserConsentUpdated(
+              model.privacyPolicyAccepted, accepted == true));
+        },
+      ),
+      const Flexible(
+          child: Text(
+              "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
+              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+    ])
+  ]);
 }
 
 Widget signInInProgress() {

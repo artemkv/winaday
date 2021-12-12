@@ -12,6 +12,14 @@ class AppInitializationFailed implements Message {
   AppInitializationFailed(this.reason);
 }
 
+class UserConsentUpdated implements Message {
+  final bool privacyPolicyAccepted;
+  final bool personalDataProcessingAccepted;
+
+  UserConsentUpdated(
+      this.privacyPolicyAccepted, this.personalDataProcessingAccepted);
+}
+
 class SignInRequested implements Message {}
 
 class UserSignedIn implements Message {

@@ -16,7 +16,11 @@ class ModelAndCommand {
 
 ModelAndCommand reduce(Model model, Message message) {
   if (message is AppInitializedNotSignedIn) {
-    return ModelAndCommand.justModel(UserNotSignedInModel());
+    return ModelAndCommand.justModel(UserNotSignedInModel(false, false));
+  }
+  if (message is UserConsentUpdated) {
+    return ModelAndCommand.justModel(UserNotSignedInModel(
+        message.privacyPolicyAccepted, message.personalDataProcessingAccepted));
   }
   if (message is AppInitializationFailed) {
     return ModelAndCommand.justModel(
@@ -37,7 +41,7 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(SignOutInProgressModel(), SignOut());
   }
   if (message is UserSignedOut) {
-    return ModelAndCommand.justModel(UserNotSignedInModel());
+    return ModelAndCommand.justModel(UserNotSignedInModel(false, false));
   }
 
   if (message is DailyWinViewLoaded) {

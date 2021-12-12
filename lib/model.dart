@@ -23,7 +23,13 @@ class UserFailedToSignInModel extends Model {
   UserFailedToSignInModel(this.reason);
 }
 
-class UserNotSignedInModel extends Model {}
+class UserNotSignedInModel extends Model {
+  final bool privacyPolicyAccepted;
+  final bool personalDataProcessingAccepted;
+
+  UserNotSignedInModel(
+      this.privacyPolicyAccepted, this.personalDataProcessingAccepted);
+}
 
 class SignInInProgressModel extends Model {}
 
