@@ -533,7 +533,6 @@ Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
           items: <int>[
             OverallDayResult.gotMyWin,
             OverallDayResult.awesomeAchievement,
-            OverallDayResult.grind,
             OverallDayResult.couldNotGetWin
           ].map<DropdownMenuItem<int>>((int value) {
             return DropdownMenuItem<int>(
@@ -559,7 +558,7 @@ String overallDayResultText(int index) {
     case OverallDayResult.couldNotGetWin:
       return "Could not get my win";
     case OverallDayResult.grind:
-      return "Invested in tomorrow";
+      return "Prepared tomorrow's win";
     case OverallDayResult.awesomeAchievement:
       return "Awesome achievement";
   }
