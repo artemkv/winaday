@@ -86,84 +86,110 @@ Widget welcomeScreen(bool showSignInButton, void Function() onSignInClick) {
         decoration: const BoxDecoration(color: THEME_COLOR),
         child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Column(
+            child: Column(children: [
+              Expanded(child: Row()),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    "All you need is",
-                    style: GoogleFonts.yesevaOne(
-                        textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                  Text(
-                    "one win a day",
-                    style: GoogleFonts.yesevaOne(
-                        textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                  Visibility(
-                      visible: showSignInButton,
-                      maintainState: true,
-                      maintainAnimation: true,
-                      maintainSize: true,
-                      child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10)),
-                            onPressed: () {
-                              onSignInClick();
-                            },
-                            child: const Text("Sign in",
-                                style: TextStyle(
-                                    color: THEME_COLOR,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold)),
-                          ))),
-                  Visibility(
-                      visible: showSignInButton,
-                      maintainState: true,
-                      maintainAnimation: true,
-                      maintainSize: true,
-                      child: Column(children: [
-                        Row(children: [
-                          Checkbox(
-                            value: false,
-                            fillColor: MaterialStateProperty.resolveWith(
-                                (states) => Colors.white),
-                            onChanged: (bool? newValue) {},
-                          ),
-                          const Flexible(
-                              child: Text(
-                                  "I agree to Privacy Policy and Terms of Use.",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: TEXT_FONT_SIZE)))
-                        ]),
-                        Row(children: [
-                          Checkbox(
-                            value: false,
-                            fillColor: MaterialStateProperty.resolveWith(
-                                (states) => Colors.white),
-                            onChanged: (bool? newValue) {},
-                          ),
-                          const Flexible(
-                              child: Text(
-                                  "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: TEXT_FONT_SIZE)))
-                        ])
-                      ])),
-                ]))),
+                  Expanded(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [mottoLine1(), mottoLine2()]))
+                ],
+              ),
+              Expanded(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                    Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                          signInButton(showSignInButton, onSignInClick),
+                          userConsent(showSignInButton)
+                        ]))
+                  ])),
+            ]))),
   );
+}
+
+Widget mottoLine1() {
+  return Text(
+    "All you need is",
+    style: GoogleFonts.yesevaOne(
+        textStyle: const TextStyle(
+            color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+  );
+}
+
+Widget mottoLine2() {
+  return Text(
+    "one win a day",
+    style: GoogleFonts.yesevaOne(
+        textStyle: const TextStyle(
+            color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+  );
+}
+
+Widget signInButton(bool isVisible, void Function() onSignInClick) {
+  return Visibility(
+      visible: isVisible,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
+      child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
+            onPressed: () {
+              onSignInClick();
+            },
+            child: const Text("Sign in",
+                style: TextStyle(
+                    color: THEME_COLOR,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold)),
+          )));
+}
+
+Widget userConsent(bool isVisible) {
+  return Visibility(
+      visible: isVisible,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
+      child: Column(children: [
+        Row(children: [
+          Checkbox(
+            value: false,
+            fillColor:
+                MaterialStateProperty.resolveWith((states) => Colors.white),
+            onChanged: (bool? newValue) {},
+          ),
+          const Flexible(
+              child: Text("I agree to Privacy Policy and Terms of Use.",
+                  style:
+                      TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+        ]),
+        Row(children: [
+          Checkbox(
+            value: false,
+            fillColor:
+                MaterialStateProperty.resolveWith((states) => Colors.white),
+            onChanged: (bool? newValue) {},
+          ),
+          const Flexible(
+              child: Text(
+                  "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
+                  style:
+                      TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+        ])
+      ]));
 }
 
 Widget signInInProgress() {
