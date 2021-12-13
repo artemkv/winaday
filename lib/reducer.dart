@@ -3,7 +3,6 @@ import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'commands.dart';
-import 'dateutil.dart';
 
 class ModelAndCommand {
   final Model model;
@@ -92,6 +91,10 @@ ModelAndCommand reduce(Model model, Message message) {
     DateTime newDate = message.date.add(const Duration(days: 1));
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+  }
+  if (message is MoveToDay) {
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
   }
 
   return ModelAndCommand.justModel(model);

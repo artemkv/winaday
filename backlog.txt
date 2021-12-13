@@ -7,14 +7,19 @@
     - "Awesome achievement"
     - "Grind"
 - --Connect to db to actually load and save for real--
+- --Maybe show sign-in/sign-out error somehow, now are hidden--
+- --start writing win, should capitalize the first word--
+- --autofocus win editor--
+- --today needs to be somehow shown differently--
+- --clicking on a day in the calendar stripe should navigate to that day--
 
-- clicking on a day in the calendar stripe should navigate to that day
+
+- Do not allow edit win for any date in the future
+- need to be able to quickly navigate to today
 
 
-
+- cache responses on all levels
 - id token is only valid for 1 hour and does not renew
 
-- Maybe show sign-in/sign-out error somehow, now are hidden
-- Do not allow edit win for any date in the future
 
 - Add Privacy Policy and Terms of Use (https://stackoverflow.com/questions/43583411/how-to-create-a-hyperlink-in-flutter-widget)

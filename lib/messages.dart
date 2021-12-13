@@ -76,6 +76,13 @@ class MoveToPrevDay implements Message {
   MoveToPrevDay(this.date, this.today);
 }
 
+class MoveToDay implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  MoveToDay(this.date, this.today);
+}
+
 class EditWinRequested implements Message {
   final DateTime date;
   final DateTime today;

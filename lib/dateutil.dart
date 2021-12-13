@@ -19,6 +19,13 @@ String getDayString(DateTime date) {
   return '${monthNames[date.month - 1]} ${date.year}';
 }
 
+// weekday:
+// M T W T F S S
+// 1 2 3 4 5 6 7
+//
+// firstDayOfWeekIdx:
+// M T W T F S S
+// 1 2 3 4 5 6 0
 List<DateTime> getCurrentWeek(
     BuildContext context, DateTime date, DateTime today) {
   var firstDayOfWeekIdx = MaterialLocalizations.of(context).firstDayOfWeekIndex;
