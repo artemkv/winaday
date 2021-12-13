@@ -15,6 +15,7 @@
 - --Do not allow edit win for any date in the future--
 - --Bigger padding when editing a win, to make it easier to edit--
 - --Days in the future should be shown in grey, to indicate that you cannot edit them--
+- --Limit the length of win editor text--
 
 !! Features
 
@@ -22,6 +23,7 @@
 
 !! UX
 
+- Cannot remove the win text, empty text fails validation
 - Need to be able to quickly navigate to today
 
 !! Performance and doing less with more:

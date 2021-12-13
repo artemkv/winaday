@@ -594,6 +594,7 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
                       right: TEXT_PADDING * 2,
                       bottom: TEXT_PADDING),
                   child: TextField(
+                    maxLength: 1000,
                     controller: controller,
                     autofocus: true,
                     style: const TextStyle(fontSize: TEXT_FONT_SIZE),
