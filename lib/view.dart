@@ -572,7 +572,11 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
           ),
           Expanded(
               child: Padding(
-                  padding: const EdgeInsets.all(TEXT_PADDING),
+                  padding: const EdgeInsets.only(
+                      top: TEXT_PADDING,
+                      left: TEXT_PADDING * 2,
+                      right: TEXT_PADDING * 2,
+                      bottom: TEXT_PADDING),
                   child: TextField(
                     controller: controller,
                     autofocus: true,
@@ -634,7 +638,11 @@ Widget winEditorFailedToSave(
 Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
     void Function(Message) dispatch) {
   return Padding(
-      padding: const EdgeInsets.all(TEXT_PADDING),
+      padding: const EdgeInsets.only(
+          top: TEXT_PADDING,
+          left: TEXT_PADDING * 2,
+          right: TEXT_PADDING * 2,
+          bottom: TEXT_PADDING),
       child: Row(children: [
         const Padding(
             padding: EdgeInsets.only(right: TEXT_PADDING * 2),
