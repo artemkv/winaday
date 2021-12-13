@@ -367,13 +367,15 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
                       }
                     })))
       ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          dispatch(EditWinRequested(model.date, model.today, model.win));
-        },
-        child: const Icon(Icons.edit),
-        backgroundColor: denimBlue,
-      ));
+      floatingActionButton: (model.editable
+          ? FloatingActionButton(
+              onPressed: () {
+                dispatch(EditWinRequested(model.date, model.today, model.win));
+              },
+              child: const Icon(Icons.edit),
+              backgroundColor: denimBlue,
+            )
+          : null));
 }
 
 Widget calendarStripe(BuildContext context, DateTime date, DateTime today,

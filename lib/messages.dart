@@ -43,8 +43,9 @@ class DailyWinViewLoaded implements Message {
   final DateTime date;
   final DateTime today;
   final WinData win;
+  final bool editable;
 
-  DailyWinViewLoaded(this.date, this.today, this.win);
+  DailyWinViewLoaded(this.date, this.today, this.win, this.editable);
 }
 
 class DailyWinViewLoadingFailed implements Message {

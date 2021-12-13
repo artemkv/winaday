@@ -12,9 +12,8 @@
 - --autofocus win editor--
 - --today needs to be somehow shown differently--
 - --clicking on a day in the calendar stripe should navigate to that day--
+- --Do not allow edit win for any date in the future--
 
-
-- Do not allow edit win for any date in the future
 - need to be able to quickly navigate to today
 
 

@@ -54,8 +54,9 @@ class DailyWinModel extends Model {
   final DateTime date;
   final DateTime today;
   final WinData win;
+  final bool editable;
 
-  DailyWinModel(this.date, this.today, this.win);
+  DailyWinModel(this.date, this.today, this.win, this.editable);
 }
 
 class WinEditorModel extends Model {

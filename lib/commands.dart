@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'messages.dart';
+import 'dateutil.dart';
 
 // This is the only place where side-effects are allowed!
 
@@ -85,10 +86,11 @@ class LoadDailyWin implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
+    bool editable = date.isSameDate(today) || date.isBefore(today);
 
     getWin(toCompact(date)).then((json) {
       var winData = WinData.fromJson(json);
-      dispatch(DailyWinViewLoaded(date, today, winData));
+      dispatch(DailyWinViewLoaded(date, today, winData, editable));
     }).catchError((err) {
       dispatch(DailyWinViewLoadingFailed(
           date, today, err?.message ?? "Unknown error"));

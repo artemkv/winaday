@@ -45,8 +45,8 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is DailyWinViewLoaded) {
-    return ModelAndCommand.justModel(
-        DailyWinModel(message.date, message.today, message.win));
+    return ModelAndCommand.justModel(DailyWinModel(
+        message.date, message.today, message.win, message.editable));
   }
   if (message is DailyWinViewLoadingFailed) {
     return ModelAndCommand.justModel(
