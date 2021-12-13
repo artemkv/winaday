@@ -3,6 +3,7 @@ import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'commands.dart';
+import 'dateutil.dart';
 
 class ModelAndCommand {
   final Model model;
@@ -31,8 +32,8 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(SignInInProgressModel(), SignIn());
   }
   if (message is UserSignedIn) {
-    return ModelAndCommand(
-        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+    return ModelAndCommand(DailyWinLoadingModel(message.today, message.today),
+        LoadDailyWin(message.today));
   }
   if (message is SignInFailed) {
     return ModelAndCommand.justModel(UserFailedToSignInModel(message.reason));
@@ -45,15 +46,16 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is DailyWinViewLoaded) {
-    return ModelAndCommand.justModel(DailyWinModel(message.date, message.win));
+    return ModelAndCommand.justModel(
+        DailyWinModel(message.date, message.today, message.win));
   }
   if (message is DailyWinViewLoadingFailed) {
     return ModelAndCommand.justModel(
-        DailyWinFailedToLoadModel(message.date, message.reason));
+        DailyWinFailedToLoadModel(message.date, message.today, message.reason));
   }
   if (message is DailyWinViewReloadRequested) {
-    return ModelAndCommand(
-        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
   }
   if (message is EditWinRequested) {
     var winToEdit = WinData(
@@ -61,19 +63,20 @@ ModelAndCommand reduce(Model model, Message message) {
         message.win.overallResult == OverallDayResult.noWinYet
             ? OverallDayResult.gotMyWin
             : message.win.overallResult);
-    return ModelAndCommand.justModel(WinEditorModel(message.date, winToEdit));
+    return ModelAndCommand.justModel(
+        WinEditorModel(message.date, message.today, winToEdit));
   }
   if (message is CancelEditingWinRequested) {
-    return ModelAndCommand(
-        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
   }
   if (message is WinSaveRequested) {
     return ModelAndCommand(
         WinEditorSavingModel(message.date), SaveWin(message.date, message.win));
   }
   if (message is WinSaved) {
-    return ModelAndCommand(
-        DailyWinLoadingModel(message.date), LoadDailyWin(message.date));
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
   }
   if (message is SavingWinFailed) {
     return ModelAndCommand.justModel(
@@ -83,12 +86,12 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is MoveToPrevDay) {
     DateTime newDate = message.date.subtract(const Duration(days: 1));
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
   if (message is MoveToNextDay) {
     DateTime newDate = message.date.add(const Duration(days: 1));
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
 
   return ModelAndCommand.justModel(model);

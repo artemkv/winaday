@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/domain.dart';
@@ -13,7 +14,8 @@ const TEXT_PADDING = 12.0;
 const TEXT_FONT_SIZE = 16.0;
 const THEME_COLOR = brownsOrange;
 
-Widget home(Model model, void Function(Message) dispatch) {
+Widget home(
+    BuildContext context, Model model, void Function(Message) dispatch) {
   if (model is ApplicationNotInitializedModel) {
     return applicationNotInitialized(dispatch);
   }
@@ -35,13 +37,13 @@ Widget home(Model model, void Function(Message) dispatch) {
   }
 
   if (model is DailyWinLoadingModel) {
-    return dailyWinLoading(model, dispatch);
+    return dailyWinLoading(context, model, dispatch);
   }
   if (model is DailyWinFailedToLoadModel) {
-    return dailyWinFailedToLoad(model, dispatch);
+    return dailyWinFailedToLoad(context, model, dispatch);
   }
   if (model is DailyWinModel) {
-    return dailyWin(model, dispatch);
+    return dailyWin(context, model, dispatch);
   }
   if (model is WinEditorModel) {
     return winEditor(model, dispatch);
@@ -226,8 +228,8 @@ Widget signOutInProgress() {
           )));
 }
 
-Widget dailyWinLoading(
-    DailyWinLoadingModel model, void Function(Message) dispatch) {
+Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
+    void Function(Message) dispatch) {
   return Scaffold(
       appBar: AppBar(
         title: const Text('One win a day'),
@@ -236,12 +238,12 @@ Widget dailyWinLoading(
       ),
       body: Center(
           child: Column(children: [
-        calendarStripe(model.date, dispatch),
+        calendarStripe(context, model.date, model.today, dispatch),
         Expanded(child: spinner())
       ])));
 }
 
-Widget dailyWinFailedToLoad(
+Widget dailyWinFailedToLoad(BuildContext context,
     DailyWinFailedToLoadModel model, void Function(Message) dispatch) {
   return Scaffold(
       appBar: AppBar(
@@ -251,7 +253,7 @@ Widget dailyWinFailedToLoad(
       ),
       body: Center(
           child: Column(children: [
-        calendarStripe(model.date, dispatch),
+        calendarStripe(context, model.date, model.today, dispatch),
         // TODO: maybe think about nicer way to show errors
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
@@ -261,16 +263,20 @@ Widget dailyWinFailedToLoad(
         Expanded(
             child: GestureDetector(
                 onTap: () {
-                  dispatch(DailyWinViewReloadRequested(model.date));
+                  dispatch(
+                      DailyWinViewReloadRequested(model.date, model.today));
                 },
-                child: const Center(
+                child: Center(
                     child: Text("Click to reload",
-                        style: TextStyle(
-                            fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                fontSize: TEXT_FONT_SIZE,
+                                color: Colors.grey))))))
       ])));
 }
 
-Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
+Widget dailyWin(BuildContext context, DailyWinModel model,
+    void Function(Message) dispatch) {
   const yesterday = 1;
   const today = 2;
   const tomorrow = 3;
@@ -284,15 +290,15 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
         actions: contextMenu(dispatch),
       ),
       body: Column(children: [
-        calendarStripe(model.date, dispatch),
+        calendarStripe(context, model.date, model.today, dispatch),
         Expanded(
             child: Center(
                 child: PageView.builder(
                     onPageChanged: (page) {
                       if (page == yesterday) {
-                        dispatch(MoveToPrevDay(model.date));
+                        dispatch(MoveToPrevDay(model.date, model.today));
                       } else if (page == tomorrow) {
-                        dispatch(MoveToNextDay(model.date));
+                        dispatch(MoveToNextDay(model.date, model.today));
                       }
                     },
                     scrollDirection: Axis.horizontal,
@@ -300,21 +306,22 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                     itemBuilder: (context, index) {
                       if (index == today) {
                         if (model.win.text == "") {
-                          return const Padding(
-                              padding: EdgeInsets.all(TEXT_PADDING),
+                          return Padding(
+                              padding: const EdgeInsets.all(TEXT_PADDING),
                               child: Center(
                                   child: Text("No win recorded",
-                                      style: TextStyle(
-                                          fontSize: TEXT_FONT_SIZE,
-                                          color: Colors.grey))));
+                                      style: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                              fontSize: TEXT_FONT_SIZE,
+                                              color: Colors.grey)))));
                         }
                         return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Center(
                                   child: Padding(
-                                      padding:
-                                          const EdgeInsets.all(TEXT_PADDING),
+                                      padding: const EdgeInsets.only(
+                                          top: 16.0, bottom: 12.0),
                                       child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -326,9 +333,10 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                                                     overallDayResultText(
                                                       model.win.overallResult,
                                                     ),
-                                                    style: const TextStyle(
-                                                        fontSize:
-                                                            TEXT_FONT_SIZE))),
+                                                    style: GoogleFonts.openSans(
+                                                        textStyle: const TextStyle(
+                                                            fontSize:
+                                                                TEXT_FONT_SIZE)))),
                                             Text(
                                                 overallDayResultEmoji(
                                                     model.win.overallResult),
@@ -346,8 +354,10 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
                                       padding: const EdgeInsets.all(
                                           TEXT_PADDING * 1.6),
                                       child: Text(model.win.text,
-                                          style: const TextStyle(
-                                              fontSize: TEXT_FONT_SIZE * 1.4))))
+                                          style: GoogleFonts.openSans(
+                                              textStyle: const TextStyle(
+                                                  fontSize:
+                                                      TEXT_FONT_SIZE * 1.4)))))
                             ]);
                       } else {
                         return const Padding(
@@ -359,60 +369,124 @@ Widget dailyWin(DailyWinModel model, void Function(Message) dispatch) {
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          dispatch(EditWinRequested(model.date, model.win));
+          dispatch(EditWinRequested(model.date, model.today, model.win));
         },
         child: const Icon(Icons.edit),
         backgroundColor: denimBlue,
       ));
 }
 
-Widget calendarStripe(DateTime date, void Function(Message) dispatch) {
+Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
+    void Function(Message) dispatch) {
+  var week = getCurrentWeek(context, date, today);
+
   return Container(
       decoration: const BoxDecoration(color: THEME_COLOR),
       child: Material(
           type: MaterialType.transparency,
           child: Column(children: [
             Padding(
-                padding: const EdgeInsets.only(
-                    top: TEXT_PADDING / 2, bottom: TEXT_PADDING),
+                padding: const EdgeInsets.only(bottom: 4.0),
                 child: Row(children: [
                   IconButton(
                       icon: const Icon(Icons.arrow_left),
                       color: Colors.white,
                       tooltip: 'Prev',
                       onPressed: () {
-                        dispatch(MoveToPrevDay(date));
+                        dispatch(MoveToPrevDay(date, today));
                       }),
                   Expanded(
                       child: Center(
                           child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(4.0),
                               child: Column(children: [
                                 Padding(
                                     padding: const EdgeInsets.all(4.0),
-                                    child: Text(date.year.toString(),
-                                        style: GoogleFonts.yesevaOne(
-                                            textStyle: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16.0)))),
-                                Padding(
-                                    padding: const EdgeInsets.all(4.0),
                                     child: Text(getDayString(date),
-                                        style: GoogleFonts.yesevaOne(
+                                        style: GoogleFonts.openSans(
                                             textStyle: const TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 24.0))))
+                                                fontSize: 16.0))))
                               ])))),
                   IconButton(
                     icon: const Icon(Icons.arrow_right),
                     color: Colors.white,
                     tooltip: 'Next',
                     onPressed: () {
-                      dispatch(MoveToNextDay(date));
+                      dispatch(MoveToNextDay(date, today));
                     },
                   )
-                ]))
+                ])),
+            Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // TODO: not localized
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[0]),
+                      week[0].day.toString(),
+                      week[0].isSameDate(date),
+                      week[0].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[1]),
+                      week[1].day.toString(),
+                      week[1].isSameDate(date),
+                      week[1].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[2]),
+                      week[2].day.toString(),
+                      week[2].isSameDate(date),
+                      week[2].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[3]),
+                      week[3].day.toString(),
+                      week[3].isSameDate(date),
+                      week[3].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[4]),
+                      week[4].day.toString(),
+                      week[4].isSameDate(date),
+                      week[4].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[5]),
+                      week[5].day.toString(),
+                      week[5].isSameDate(date),
+                      week[5].isSameDate(today)),
+                  day(
+                      DateFormat(DateFormat.ABBR_WEEKDAY).format(week[6]),
+                      week[6].day.toString(),
+                      week[6].isSameDate(date),
+                      week[6].isSameDate(today)),
+                ]),
           ])));
+}
+
+Widget day(
+    String abbreviation, String numericValue, bool isSelected, bool isToday) {
+  return Padding(
+      padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(abbreviation,
+            style: GoogleFonts.openSans(
+                textStyle:
+                    const TextStyle(color: Colors.white, fontSize: 16.0))),
+        Container(
+            alignment: Alignment.center,
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.all(4.0),
+            decoration: BoxDecoration(
+                color: isSelected ? Colors.white : THEME_COLOR,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2.0)),
+            child: Text(numericValue,
+                style: GoogleFonts.openSans(
+                    textStyle: TextStyle(
+                        fontWeight:
+                            (isToday ? FontWeight.w900 : FontWeight.normal),
+                        color: (isSelected ? THEME_COLOR : Colors.white),
+                        fontSize: (isToday ? 20.0 : 16.0)))))
+      ]));
 }
 
 List<Widget> contextMenu(void Function(Message) dispatch) {
@@ -455,7 +529,7 @@ Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
     ),
     body: WillPopScope(
         onWillPop: () async {
-          dispatch(CancelEditingWinRequested(model.date));
+          dispatch(CancelEditingWinRequested(model.date, model.today));
           return false;
         },
         child: Column(children: [
@@ -541,7 +615,7 @@ Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
           onChanged: (int? newValue) {
             if (newValue != null) {
               var updatedWin = WinData(controller.text, newValue);
-              dispatch(EditWinRequested(model.date, updatedWin));
+              dispatch(EditWinRequested(model.date, model.today, updatedWin));
             }
           },
           items: <int>[

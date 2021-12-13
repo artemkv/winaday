@@ -37,29 +37,33 @@ class SignOutInProgressModel extends Model {}
 
 class DailyWinLoadingModel extends Model {
   final DateTime date;
+  final DateTime today;
 
-  DailyWinLoadingModel(this.date);
+  DailyWinLoadingModel(this.date, this.today);
 }
 
 class DailyWinFailedToLoadModel extends Model {
   final DateTime date;
+  final DateTime today;
   final String reason;
 
-  DailyWinFailedToLoadModel(this.date, this.reason);
+  DailyWinFailedToLoadModel(this.date, this.today, this.reason);
 }
 
 class DailyWinModel extends Model {
   final DateTime date;
+  final DateTime today;
   final WinData win;
 
-  DailyWinModel(this.date, this.win);
+  DailyWinModel(this.date, this.today, this.win);
 }
 
 class WinEditorModel extends Model {
   final DateTime date;
+  final DateTime today;
   final WinData win;
 
-  WinEditorModel(this.date, this.win);
+  WinEditorModel(this.date, this.today, this.win);
 }
 
 class WinEditorSavingModel extends Model {

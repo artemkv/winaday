@@ -27,6 +27,8 @@ class None implements Command {
 class InitializeApp implements Command {
   @override
   void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
     Firebase.initializeApp()
         .then((app) => Future<FirebaseApp>.delayed(
               const Duration(seconds: 2),
@@ -36,7 +38,7 @@ class InitializeApp implements Command {
       GoogleSignInFacade.subscribeToIdTokenChanges(
         (idToken) {
           setIdToken(idToken);
-          dispatch(UserSignedIn(DateTime.now(), idToken));
+          dispatch(UserSignedIn(today, idToken));
         },
         () {
           cleanIdToken();
@@ -82,12 +84,14 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
     getWin(toCompact(date)).then((json) {
       var winData = WinData.fromJson(json);
-      dispatch(DailyWinViewLoaded(date, winData));
+      dispatch(DailyWinViewLoaded(date, today, winData));
     }).catchError((err) {
-      dispatch(
-          DailyWinViewLoadingFailed(date, err?.message ?? "Unknown error"));
+      dispatch(DailyWinViewLoadingFailed(
+          date, today, err?.message ?? "Unknown error"));
     });
   }
 }
@@ -100,8 +104,10 @@ class SaveWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
     postWin(toCompact(date), win).then((_) {
-      dispatch(WinSaved(date));
+      dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err?.message ?? "Unknown error"));
     });

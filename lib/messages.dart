@@ -23,10 +23,10 @@ class UserConsentUpdated implements Message {
 class SignInRequested implements Message {}
 
 class UserSignedIn implements Message {
-  final DateTime date;
+  final DateTime today;
   final String tokenId;
 
-  UserSignedIn(this.date, this.tokenId);
+  UserSignedIn(this.today, this.tokenId);
 }
 
 class SignInFailed implements Message {
@@ -41,47 +41,54 @@ class UserSignedOut implements Message {}
 
 class DailyWinViewLoaded implements Message {
   final DateTime date;
+  final DateTime today;
   final WinData win;
 
-  DailyWinViewLoaded(this.date, this.win);
+  DailyWinViewLoaded(this.date, this.today, this.win);
 }
 
 class DailyWinViewLoadingFailed implements Message {
   final DateTime date;
+  final DateTime today;
   final String reason;
 
-  DailyWinViewLoadingFailed(this.date, this.reason);
+  DailyWinViewLoadingFailed(this.date, this.today, this.reason);
 }
 
 class DailyWinViewReloadRequested implements Message {
   final DateTime date;
+  final DateTime today;
 
-  DailyWinViewReloadRequested(this.date);
+  DailyWinViewReloadRequested(this.date, this.today);
 }
 
 class MoveToNextDay implements Message {
   final DateTime date;
+  final DateTime today;
 
-  MoveToNextDay(this.date);
+  MoveToNextDay(this.date, this.today);
 }
 
 class MoveToPrevDay implements Message {
   final DateTime date;
+  final DateTime today;
 
-  MoveToPrevDay(this.date);
+  MoveToPrevDay(this.date, this.today);
 }
 
 class EditWinRequested implements Message {
   final DateTime date;
+  final DateTime today;
   final WinData win;
 
-  EditWinRequested(this.date, this.win);
+  EditWinRequested(this.date, this.today, this.win);
 }
 
 class CancelEditingWinRequested implements Message {
   final DateTime date;
+  final DateTime today;
 
-  CancelEditingWinRequested(this.date);
+  CancelEditingWinRequested(this.date, this.today);
 }
 
 class WinSaveRequested implements Message {
@@ -93,8 +100,9 @@ class WinSaveRequested implements Message {
 
 class WinSaved implements Message {
   final DateTime date;
+  final DateTime today;
 
-  WinSaved(this.date);
+  WinSaved(this.date, this.today);
 }
 
 class SavingWinFailed implements Message {
