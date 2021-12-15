@@ -14,6 +14,10 @@ class WinData {
 
   WinData(this.text, this.overallResult);
 
+  WinData.empty()
+      : text = "",
+        overallResult = OverallDayResult.noWinYet;
+
   WinData.fromJson(Map<String, dynamic> json)
       : text = json['text'],
         overallResult = json['overall'];

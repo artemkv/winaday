@@ -1,12 +1,18 @@
+import 'dart:ffi';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:winaday/domain.dart';
 import 'package:intl/intl.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:quiver/collection.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'messages.dart';
 import 'dateutil.dart';
 
 // This is the only place where side-effects are allowed!
+
+LruMap cache = LruMap(maximumSize: 100);
 
 abstract class Command {
   void execute(void Function(Message) dispatch);
@@ -88,8 +94,25 @@ class LoadDailyWin implements Command {
     var today = DateTime.now();
     bool editable = date.isSameDate(today) || date.isBefore(today);
 
-    getWin(toCompact(date)).then((json) {
+    if (!editable) {
+      Future<void>.delayed(Duration.zero, () {
+        dispatch(DailyWinViewLoaded(date, today, WinData.empty(), editable));
+      });
+      return;
+    }
+
+    var dateKey = toCompact(date);
+
+    if (cache.containsKey(dateKey)) {
+      Future<void>.delayed(Duration.zero, () {
+        dispatch(DailyWinViewLoaded(date, today, cache[dateKey], editable));
+      });
+      return;
+    }
+
+    getWin(dateKey).then((json) {
       var winData = WinData.fromJson(json);
+      cache[dateKey] = winData;
       dispatch(DailyWinViewLoaded(date, today, winData, editable));
     }).catchError((err) {
       dispatch(DailyWinViewLoadingFailed(
@@ -108,7 +131,10 @@ class SaveWin implements Command {
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
 
-    postWin(toCompact(date), win).then((_) {
+    var dateKey = toCompact(date);
+
+    postWin(dateKey, win).then((_) {
+      cache[dateKey] = win;
       dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err?.message ?? "Unknown error"));

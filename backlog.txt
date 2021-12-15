@@ -5,7 +5,6 @@
     - "Got my win"
     - "Could not get my win"
     - "Awesome achievement"
-    - "Grind"
 - --Connect to db to actually load and save for real--
 - --Maybe show sign-in/sign-out error somehow, now are hidden--
 - --start writing win, should capitalize the first word--
@@ -16,6 +15,10 @@
 - --Bigger padding when editing a win, to make it easier to edit--
 - --Days in the future should be shown in grey, to indicate that you cannot edit them--
 - --Limit the length of win editor text--
+- --Cannot remove the win text, empty text fails validation--
+- --Cache API responses--
+- --Avoid loading the win immediately after saving, go directly to the daily win--
+- --Do not request data for dates in the future, to avoid useless calls--
 
 !! Features
 
@@ -23,14 +26,11 @@
 
 !! UX
 
-- Cannot remove the win text, empty text fails validation
+- Maybe arrows should move to prev/next week, not day
 - Need to be able to quickly navigate to today
 
 !! Performance and doing less with more:
 
-- Cache responses on all levels
-- Do not request data for dates in the future, to avoid useless calls
-- Consider avoiding loading the win immediately after saving, go directly to the daily win
 - Rate limiter on backend
 
 !! Infrastructure
