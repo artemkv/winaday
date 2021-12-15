@@ -32,7 +32,7 @@ class InitializeApp implements Command {
 
     Firebase.initializeApp()
         .then((app) => Future<FirebaseApp>.delayed(
-              const Duration(seconds: 2),
+              const Duration(milliseconds: 500),
               () => app,
             ))
         .then((_) {
