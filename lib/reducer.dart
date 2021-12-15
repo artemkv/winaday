@@ -92,6 +92,16 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
+  if (message is MoveToPrevWeek) {
+    DateTime newDate = message.date.subtract(const Duration(days: 7));
+    return ModelAndCommand(
+        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+  }
+  if (message is MoveToNextWeek) {
+    DateTime newDate = message.date.add(const Duration(days: 7));
+    return ModelAndCommand(
+        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+  }
   if (message is MoveToDay) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
         LoadDailyWin(message.date));

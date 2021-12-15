@@ -19,6 +19,7 @@
 - --Cache API responses--
 - --Avoid loading the win immediately after saving, go directly to the daily win--
 - --Do not request data for dates in the future, to avoid useless calls--
+- --Arrows should move to prev/next week, not day--
 
 !! Features
 
@@ -26,7 +27,6 @@
 
 !! UX
 
-- Maybe arrows should move to prev/next week, not day
 - Need to be able to quickly navigate to today
 
 !! Performance and doing less with more:

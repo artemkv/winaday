@@ -77,6 +77,20 @@ class MoveToPrevDay implements Message {
   MoveToPrevDay(this.date, this.today);
 }
 
+class MoveToNextWeek implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  MoveToNextWeek(this.date, this.today);
+}
+
+class MoveToPrevWeek implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  MoveToPrevWeek(this.date, this.today);
+}
+
 class MoveToDay implements Message {
   final DateTime date;
   final DateTime today;

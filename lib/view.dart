@@ -395,7 +395,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                       color: Colors.white,
                       tooltip: 'Prev',
                       onPressed: () {
-                        dispatch(MoveToPrevDay(date, today));
+                        dispatch(MoveToPrevWeek(date, today));
                       }),
                   Expanded(
                       child: Center(
@@ -415,7 +415,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                     color: Colors.white,
                     tooltip: 'Next',
                     onPressed: () {
-                      dispatch(MoveToNextDay(date, today));
+                      dispatch(MoveToNextWeek(date, today));
                     },
                   )
                 ])),
