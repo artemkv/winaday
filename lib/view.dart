@@ -399,17 +399,17 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                       }),
                   Expanded(
                       child: Center(
-                          child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Column(children: [
-                                Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text(getDayString(date),
-                                        style: GoogleFonts.openSans(
-                                            textStyle: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16.0))))
-                              ])))),
+                          child: GestureDetector(
+                              onTap: () {
+                                dispatch(MoveToDay(today, today));
+                              },
+                              child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(getDayString(date),
+                                      style: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0))))))),
                   IconButton(
                     icon: const Icon(Icons.arrow_right),
                     color: Colors.white,
