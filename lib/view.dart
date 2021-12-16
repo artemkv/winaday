@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:winaday/domain.dart';
 import 'model.dart';
 import 'messages.dart';
@@ -186,9 +187,32 @@ Widget userConsent(
               accepted == true, model.personalDataProcessingAccepted));
         },
       ),
-      const Flexible(
-          child: Text("I agree to Privacy Policy and Terms of Use.",
-              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+      Flexible(
+        child: Wrap(children: [
+          const Text("I agree to ",
+              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+          InkWell(
+              onTap: () =>
+                  launch('https://winaday-web.artemkv.net/privacy-policy.html'),
+              child: const Text("Privacy Policy",
+                  style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                      fontSize: TEXT_FONT_SIZE))),
+          const Text(" and ",
+              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+          InkWell(
+              onTap: () =>
+                  launch('https://winaday-web.artemkv.net/terms-of-use.html'),
+              child: const Text("Terms of Use",
+                  style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                      fontSize: TEXT_FONT_SIZE))),
+          const Text(".",
+              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+        ]),
+      )
     ]),
     Row(children: [
       Checkbox(
@@ -200,10 +224,22 @@ Widget userConsent(
               model.privacyPolicyAccepted, accepted == true));
         },
       ),
-      const Flexible(
-          child: Text(
-              "I agree to processing of my personal data for providing me app functions. See more in Privacy Policy.",
-              style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)))
+      Flexible(
+          child: Wrap(children: [
+        const Text(
+            "I agree to processing of my personal data for providing me app functions. See more in ",
+            style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+        InkWell(
+            onTap: () =>
+                launch('https://winaday-web.artemkv.net/privacy-policy.html'),
+            child: const Text("Privacy Policy",
+                style: TextStyle(
+                    color: Colors.white,
+                    decoration: TextDecoration.underline,
+                    fontSize: TEXT_FONT_SIZE))),
+        const Text(".",
+            style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+      ]))
     ])
   ]);
 }

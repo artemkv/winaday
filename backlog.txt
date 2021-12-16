@@ -21,16 +21,16 @@
 - --Do not request data for dates in the future, to avoid useless calls--
 - --Arrows should move to prev/next week, not day--
 - --Clicking on the month navigates to today--
+- --Added links to Privacy Policy and Terms of Use--
 
 !! Features
 
-- Add Privacy Policy and Terms of Use (https://stackoverflow.com/questions/43583411/how-to-create-a-hyperlink-in-flutter-widget)
-
 !! UX
 
-!! Performance and doing less with more:
+- When could not log in, allow go back to the welcome screen from error screen
+- Until has win, show countdown?
 
-- Rate limiter on backend
+!! Performance and doing less with more:
 
 !! Infrastructure
 
