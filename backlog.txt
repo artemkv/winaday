@@ -22,12 +22,12 @@
 - --Arrows should move to prev/next week, not day--
 - --Clicking on the month navigates to today--
 - --Added links to Privacy Policy and Terms of Use--
+- --When could not log in, allow go back to the welcome screen from error screen--
 
 !! Features
 
 !! UX
 
-- When could not log in, allow go back to the welcome screen from error screen
 - Until has win, show countdown?
 
 !! Performance and doing less with more:

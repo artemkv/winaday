@@ -26,6 +26,9 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand.justModel(
         ApplicationFailedToInitializeModel(message.reason));
   }
+  if (message is ReInitializationRequested) {
+    return ModelAndCommand(ApplicationNotInitializedModel(), InitializeApp());
+  }
 
   if (message is SignInRequested) {
     return ModelAndCommand(SignInInProgressModel(), SignIn());

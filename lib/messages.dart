@@ -4,6 +4,8 @@ import 'domain.dart';
 
 abstract class Message {}
 
+class ReInitializationRequested implements Message {}
+
 class AppInitializedNotSignedIn implements Message {}
 
 class AppInitializationFailed implements Message {

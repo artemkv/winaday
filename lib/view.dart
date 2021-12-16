@@ -21,7 +21,7 @@ Widget home(
     return applicationNotInitialized(dispatch);
   }
   if (model is ApplicationFailedToInitializeModel) {
-    return applicationFailedToInitialize(model);
+    return applicationFailedToInitialize(model, dispatch);
   }
 
   if (model is UserNotSignedInModel) {
@@ -31,7 +31,7 @@ Widget home(
     return signInInProgress();
   }
   if (model is UserFailedToSignInModel) {
-    return userFailedToSignIn(model);
+    return userFailedToSignIn(model, dispatch);
   }
   if (model is SignOutInProgressModel) {
     return signOutInProgress();
@@ -87,9 +87,41 @@ Widget applicationNotInitialized(void Function(Message) dispatch) {
   );
 }
 
-Widget applicationFailedToInitialize(ApplicationFailedToInitializeModel model) {
-  // TODO: nicer view for rendering this error
-  return Text("Failed to initialize: " + model.reason);
+Widget applicationFailedToInitialize(
+    ApplicationFailedToInitializeModel model, void Function(Message) dispatch) {
+  return Material(
+      type: MaterialType.transparency,
+      child: Container(
+          decoration: const BoxDecoration(color: THEME_COLOR),
+          child: Column(children: [
+            const Padding(
+                padding: EdgeInsets.only(top: 64, left: 12, right: 12),
+                child: Text("Failed to start the application",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold))),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text("Failed to initialize: " + model.reason,
+                    style: const TextStyle(color: Colors.white, fontSize: 16))),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10)),
+                  onPressed: () {
+                    dispatch(ReInitializationRequested());
+                  },
+                  child: const Text("Try again",
+                      style: TextStyle(
+                          color: THEME_COLOR,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold)),
+                ))
+          ])));
 }
 
 Widget userNotSignedIn(
@@ -129,9 +161,41 @@ Widget userNotSignedIn(
   );
 }
 
-Widget userFailedToSignIn(UserFailedToSignInModel model) {
-  // TODO: nicer view for rendering this error
-  return Text("Failed to sign in: " + model.reason);
+Widget userFailedToSignIn(
+    UserFailedToSignInModel model, void Function(Message) dispatch) {
+  return Material(
+      type: MaterialType.transparency,
+      child: Container(
+          decoration: const BoxDecoration(color: THEME_COLOR),
+          child: Column(children: [
+            const Padding(
+                padding: EdgeInsets.only(top: 64, left: 12, right: 12),
+                child: Text("Sign in failed or cancelled",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold))),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text("Failed to sign in: " + model.reason,
+                    style: const TextStyle(color: Colors.white, fontSize: 16))),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10)),
+                  onPressed: () {
+                    dispatch(AppInitializedNotSignedIn());
+                  },
+                  child: const Text("Try again",
+                      style: TextStyle(
+                          color: THEME_COLOR,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold)),
+                ))
+          ])));
 }
 
 Widget mottoLine1() {
