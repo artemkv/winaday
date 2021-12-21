@@ -1,23 +1,13 @@
 import 'package:winaday/services/rest_api.dart' as rest;
 
-String idToken = "";
 String session = "";
-
-void setIdToken(String value) {
-  idToken = value;
-}
-
-void cleanIdToken() {
-  idToken = "";
-  session = "";
-}
-
-bool hasIdToken() {
-  return idToken != "";
-}
 
 bool hasSession() {
   return session != "";
+}
+
+void killSession() {
+  session = "";
 }
 
 Future<void> signIn(String idToken) async {
@@ -29,12 +19,11 @@ Future<void> signIn(String idToken) async {
   }
 }
 
-Future<dynamic> callApi(Future<dynamic> Function() f) async {
-  if (!hasIdToken()) {
-    throw "Id token not found";
-  }
+Future<dynamic> callApi(
+    Future<dynamic> Function() f, Future<String> Function() getIdToken) async {
   if (!hasSession()) {
     // print(">> No session, first need to sign in");
+    var idToken = await getIdToken();
     await signIn(idToken);
     return f();
   }
@@ -44,6 +33,7 @@ Future<dynamic> callApi(Future<dynamic> Function() f) async {
   } on rest.ApiException catch (e) {
     if (e.statusCode == 401) {
       // print(">> Oops, expired, will sign in again and retry");
+      var idToken = await getIdToken();
       await signIn(idToken);
       return f();
     }
@@ -51,10 +41,11 @@ Future<dynamic> callApi(Future<dynamic> Function() f) async {
   }
 }
 
-Future<dynamic> getWin(String date) {
-  return callApi(() => rest.getWin(date, session));
+Future<dynamic> getWin(String date, Future<String> Function() getIdToken) {
+  return callApi(() => rest.getWin(date, session), getIdToken);
 }
 
-Future<dynamic> postWin(String date, Object data) {
-  return callApi(() => rest.postWin(date, data, session));
+Future<dynamic> postWin(
+    String date, Object data, Future<String> Function() getIdToken) {
+  return callApi(() => rest.postWin(date, data, session), getIdToken);
 }

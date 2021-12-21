@@ -23,11 +23,13 @@
 - --Clicking on the month navigates to today--
 - --Added links to Privacy Policy and Terms of Use--
 - --When could not log in, allow go back to the welcome screen from error screen--
+- --token_id is only valid for 1 hour and does not renew, forcing to reload the app, need to refresh token--
 
 !! Features
 
 !! UX
 
+- On different devices and versions of Android the calendar stripe does not fit the screen
 - Until has win, show countdown?
 
 !! Performance and doing less with more:
@@ -35,7 +37,6 @@
 !! Infrastructure
 
 - caching should be re-set on re-sign in. Now it is re-used across accounts
-- token_id is only valid for 1 hour and does not renew, forcing to reload the app, need to refresh token
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:
 I/flutter (15668): Error: google_fonts was unable to load font YesevaOne-Regular because the following exception occured:

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:winaday/domain.dart';
 import 'package:intl/intl.dart';
@@ -43,16 +41,15 @@ class InitializeApp implements Command {
             ))
         .then((_) {
       GoogleSignInFacade.subscribeToIdTokenChanges(
-        (idToken) {
-          setIdToken(idToken);
-          dispatch(UserSignedIn(today, idToken));
+        (_) {
+          dispatch(UserSignedIn(today));
         },
         () {
-          cleanIdToken();
+          killSession();
           dispatch(UserSignedOut());
         },
         (err) {
-          cleanIdToken();
+          killSession();
           dispatch(SignInFailed(err.toString()));
         },
       );
@@ -66,7 +63,7 @@ class SignIn implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     GoogleSignInFacade.signInWithGoogle().catchError((err) {
-      cleanIdToken();
+      killSession();
       dispatch(SignInFailed(err.toString()));
     });
   }
@@ -75,7 +72,7 @@ class SignIn implements Command {
 class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
-    cleanIdToken();
+    killSession();
     GoogleSignInFacade.signOut().then((_) {
       dispatch(UserSignedOut());
     }).catchError((err) {
@@ -110,7 +107,7 @@ class LoadDailyWin implements Command {
       return;
     }
 
-    getWin(dateKey).then((json) {
+    getWin(dateKey, GoogleSignInFacade.getIdToken).then((json) {
       var winData = WinData.fromJson(json);
       cache[dateKey] = winData;
       dispatch(DailyWinViewLoaded(date, today, winData, editable));
@@ -133,7 +130,7 @@ class SaveWin implements Command {
 
     var dateKey = toCompact(date);
 
-    postWin(dateKey, win).then((_) {
+    postWin(dateKey, win, GoogleSignInFacade.getIdToken).then((_) {
       cache[dateKey] = win;
       dispatch(WinSaved(date, today));
     }).catchError((err) {

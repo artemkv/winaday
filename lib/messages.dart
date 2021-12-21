@@ -26,9 +26,8 @@ class SignInRequested implements Message {}
 
 class UserSignedIn implements Message {
   final DateTime today;
-  final String tokenId;
 
-  UserSignedIn(this.today, this.tokenId);
+  UserSignedIn(this.today);
 }
 
 class SignInFailed implements Message {
