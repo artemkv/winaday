@@ -72,6 +72,7 @@ class SignIn implements Command {
 class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
+    cache.clear();
     killSession();
     GoogleSignInFacade.signOut().then((_) {
       dispatch(UserSignedOut());
