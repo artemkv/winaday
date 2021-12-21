@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "1097881828275-i9ilmqtv2mlvnbmk9sf1p8blv9e84k79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.artemkv.winaday",
+            "certificate_hash": "d8a25275dbe4f649e61e90977877eb3f6947302b"
+          }
+        },
+        {
           "client_id": "1097881828275-n8cn44g1hslffltb07tqg69l93pi7jgq.apps.googleusercontent.com",
           "client_type": 3
         }

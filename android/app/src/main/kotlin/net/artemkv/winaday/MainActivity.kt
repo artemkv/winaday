@@ -1,4 +1,4 @@
-package com.example.winaday
+package net.artemkv.winaday
 
 import io.flutter.embedding.android.FlutterActivity
 

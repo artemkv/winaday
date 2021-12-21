@@ -34,4 +34,11 @@
 
 !! Infrastructure
 
+- caching should be re-set on re-sign in. Now it is re-used across accounts
 - token_id is only valid for 1 hour and does not renew, forcing to reload the app, need to refresh token
+- "A splash screen was provided to Flutter, but this is deprecated."
+- Look into font loading:
+I/flutter (15668): Error: google_fonts was unable to load font YesevaOne-Regular because the following exception occured:
+I/flutter (15668): Exception: Failed to load font with url: https://fonts.gstatic.com/s/a/326eec1af27e3634bbf470c04d8127d985571a07b5b79696eb6424489e27e106.ttf
+
+D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.winaday
