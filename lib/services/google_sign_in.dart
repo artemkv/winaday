@@ -34,7 +34,7 @@ abstract class GoogleSignInFacade {
         user.getIdToken().then((idToken) {
           onSignIn(idToken);
         }).catchError((err) {
-          onSignInFailed(err);
+          onSignInFailed(err.toString());
         });
       }
     });
