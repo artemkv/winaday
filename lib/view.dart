@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -529,6 +531,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[0], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[0]),
                           week[0].day.toString(),
                           week[0].isSameDate(date),
@@ -540,6 +543,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[1], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[1]),
                           week[1].day.toString(),
                           week[1].isSameDate(date),
@@ -551,6 +555,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[2], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[2]),
                           week[2].day.toString(),
                           week[2].isSameDate(date),
@@ -562,6 +567,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[3], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[3]),
                           week[3].day.toString(),
                           week[3].isSameDate(date),
@@ -573,6 +579,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[4], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[4]),
                           week[4].day.toString(),
                           week[4].isSameDate(date),
@@ -584,6 +591,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[5], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[5]),
                           week[5].day.toString(),
                           week[5].isSameDate(date),
@@ -595,6 +603,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                         dispatch(MoveToDay(week[6], today));
                       },
                       child: day(
+                          context,
                           DateFormat(DateFormat.ABBR_WEEKDAY).format(week[6]),
                           week[6].day.toString(),
                           week[6].isSameDate(date),
@@ -605,19 +614,23 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
           ])));
 }
 
-Widget day(String abbreviation, String numericValue, bool isSelected,
-    bool isToday, bool editable) {
+Widget day(BuildContext context, String abbreviation, String numericValue,
+    bool isSelected, bool isToday, bool editable) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  double circleRadius = min(screenWidth * 0.105, 40);
+  double fontSize = min(screenWidth * 0.04, 16.0);
+  double biggerFontSize = min(screenWidth * 0.055, 20.0);
+
   return Padding(
       padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Text(abbreviation,
             style: GoogleFonts.openSans(
-                textStyle:
-                    const TextStyle(color: Colors.white, fontSize: 16.0))),
+                textStyle: TextStyle(color: Colors.white, fontSize: fontSize))),
         Container(
             alignment: Alignment.center,
-            width: 40,
-            height: 40,
+            width: circleRadius,
+            height: circleRadius,
             margin: const EdgeInsets.all(4.0),
             decoration: BoxDecoration(
                 color: isSelected ? Colors.white : THEME_COLOR,
@@ -631,7 +644,7 @@ Widget day(String abbreviation, String numericValue, bool isSelected,
                         fontWeight:
                             (isToday ? FontWeight.w900 : FontWeight.normal),
                         color: (isSelected ? THEME_COLOR : Colors.white),
-                        fontSize: (isToday ? 20.0 : 16.0)))))
+                        fontSize: (isToday ? biggerFontSize : fontSize)))))
       ]));
 }
 
