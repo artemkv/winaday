@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:winaday/domain.dart';
+import 'custom_components.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'domain.dart';
@@ -49,7 +50,7 @@ Widget home(
     return dailyWin(context, model, dispatch);
   }
   if (model is WinEditorModel) {
-    return winEditor(model, dispatch);
+    return WinEditor(model: model, dispatch: dispatch);
   }
   if (model is WinEditorSavingModel) {
     return winEditorSaving(model);
@@ -665,61 +666,6 @@ List<Widget> contextMenu(void Function(Message) dispatch) {
       },
     )
   ];
-}
-
-Widget winEditor(WinEditorModel model, void Function(Message) dispatch) {
-  TextEditingController controller = TextEditingController()
-    ..text = model.win.text;
-
-  return Scaffold(
-    appBar: AppBar(
-      leading: const BackButton(),
-      title: const Text('Edit win'),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.check),
-          tooltip: 'Save',
-          onPressed: () {
-            var updatedWin = WinData(controller.text, model.win.overallResult);
-            dispatch(WinSaveRequested(model.date, updatedWin));
-          },
-        )
-      ],
-    ),
-    body: WillPopScope(
-        onWillPop: () async {
-          dispatch(CancelEditingWinRequested(model.date, model.today));
-          return false;
-        },
-        child: Column(children: [
-          dayOverallResult(controller, model, dispatch),
-          const Divider(
-            height: 12,
-            thickness: 1,
-            indent: 12,
-            endIndent: 12,
-          ),
-          Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: TEXT_PADDING,
-                      left: TEXT_PADDING * 2,
-                      right: TEXT_PADDING * 2,
-                      bottom: TEXT_PADDING),
-                  child: TextField(
-                    maxLength: 1000,
-                    controller: controller,
-                    autofocus: true,
-                    style: const TextStyle(fontSize: TEXT_FONT_SIZE),
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Write down you win here'),
-                  )))
-        ])),
-  );
 }
 
 Widget winEditorSaving(WinEditorSavingModel model) {
