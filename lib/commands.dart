@@ -144,3 +144,21 @@ String toCompact(DateTime date) {
   final DateFormat formatter = DateFormat('yyyyMMdd');
   return formatter.format(date);
 }
+
+class LoadPriorities implements Command {
+  final DateTime date;
+
+  LoadPriorities(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
+      var priorityList = PriorityListData.fromJson(json);
+      dispatch(PrioritiesLoaded(date, today, priorityList));
+    }).catchError((err) {
+      dispatch(PrioritiesLoadingFailed(
+          date, today, err?.message ?? "Unknown error"));
+    });
+  }
+}

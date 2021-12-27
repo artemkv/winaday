@@ -31,6 +31,9 @@
 
 !! UX
 
+- Double-check that all gesture detectors are wrapping containers and not inner elements
+- See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
+- The editor shows previous text very quickly before being updated with the new one
 - Until has win, show countdown?
 
 !! Performance and doing less with more:

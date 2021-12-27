@@ -24,3 +24,28 @@ class WinData {
 
   Map<String, dynamic> toJson() => {'text': text, 'overall': overallResult};
 }
+
+class PriorityListData {
+  final List<PriorityData> items;
+
+  PriorityListData(this.items);
+
+  PriorityListData.empty() : items = List.empty();
+
+  PriorityListData.fromJson(Map<String, dynamic> json)
+      : items = (json['items'] as List)
+            .map((x) => PriorityData.fromJson(x))
+            .toList();
+}
+
+class PriorityData {
+  final String text;
+
+  PriorityData(this.text);
+
+  PriorityData.empty() : text = "";
+
+  PriorityData.fromJson(Map<String, dynamic> json) : text = json['text'];
+
+  Map<String, dynamic> toJson() => {'text': text};
+}

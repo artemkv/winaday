@@ -80,3 +80,36 @@ class WinEditorFailedToSaveModel extends Model {
 
   WinEditorFailedToSaveModel(this.date, this.win, this.reason);
 }
+
+class PrioritiesLoadingModel extends Model {
+  final DateTime date;
+  final DateTime today;
+
+  PrioritiesLoadingModel(this.date, this.today);
+}
+
+class PrioritiesFailedToLoadModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  PrioritiesFailedToLoadModel(this.date, this.today, this.reason);
+}
+
+class PrioritiesModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+
+  PrioritiesModel(this.date, this.today, this.priorityList);
+}
+
+class PriorityEditorModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final int priorityIdx;
+
+  PriorityEditorModel(
+      this.date, this.today, this.priorityList, this.priorityIdx);
+}

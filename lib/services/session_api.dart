@@ -49,3 +49,7 @@ Future<dynamic> postWin(
     String date, Object data, Future<String> Function() getIdToken) {
   return callApi(() => rest.postWin(date, data, session), getIdToken);
 }
+
+Future<dynamic> getPriorities(Future<String> Function() getIdToken) {
+  return callApi(() => rest.getPriorities(session), getIdToken);
+}

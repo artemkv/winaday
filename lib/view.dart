@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:winaday/domain.dart';
 import 'custom_components.dart';
 import 'model.dart';
@@ -58,6 +59,20 @@ Widget home(
   if (model is WinEditorFailedToSaveModel) {
     return winEditorFailedToSave(model, dispatch);
   }
+
+  if (model is PrioritiesLoadingModel) {
+    return prioritiesLoading(model, dispatch);
+  }
+  if (model is PrioritiesFailedToLoadModel) {
+    return prioritiesFailedToLoad(context, model, dispatch);
+  }
+  if (model is PrioritiesModel) {
+    return priorities(model, dispatch);
+  }
+  if (model is PriorityEditorModel) {
+    return PriorityEditor(model: model, dispatch: dispatch);
+  }
+
   return unknownModel(model);
 }
 
@@ -334,11 +349,8 @@ Widget signOutInProgress() {
 Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
     void Function(Message) dispatch) {
   return Scaffold(
-      appBar: AppBar(
-        title: const Text('One win a day'),
-        elevation: 0.0,
-        actions: contextMenu(dispatch),
-      ),
+      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
         calendarStripe(context, model.date, model.today, dispatch),
@@ -349,11 +361,8 @@ Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
 Widget dailyWinFailedToLoad(BuildContext context,
     DailyWinFailedToLoadModel model, void Function(Message) dispatch) {
   return Scaffold(
-      appBar: AppBar(
-        title: const Text('One win a day'),
-        elevation: 0.0,
-        actions: contextMenu(dispatch),
-      ),
+      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
         calendarStripe(context, model.date, model.today, dispatch),
@@ -387,11 +396,8 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
   final PageController controller = PageController(initialPage: today);
 
   return Scaffold(
-      appBar: AppBar(
-        title: const Text('One win a day'),
-        elevation: 0.0,
-        actions: contextMenu(dispatch),
-      ),
+      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      drawer: drawer(context, model.date, model.today, dispatch),
       body: Column(children: [
         calendarStripe(context, model.date, model.today, dispatch),
         Expanded(
@@ -479,6 +485,82 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
               backgroundColor: denimBlue,
             )
           : null));
+}
+
+Widget drawer(BuildContext context, DateTime date, DateTime today,
+    void Function(Message) dispatch) {
+  return Drawer(
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        DrawerHeader(
+          decoration: const BoxDecoration(
+            color: denimBlue,
+          ),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: Text("One Win a Day",
+                        style: TextStyle(
+                          fontSize: TEXT_FONT_SIZE,
+                          color: Colors.white,
+                        ))),
+                Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: Text("Track you wins every day",
+                        style: TextStyle(
+                          fontSize: TEXT_FONT_SIZE * 0.8,
+                          color: Colors.white,
+                        )))
+              ]),
+        ),
+        ListTile(
+          title: Row(children: const [
+            Padding(
+                padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                child: Icon(Icons.stars)),
+            Text('Your Priorities')
+          ]),
+          onTap: () {
+            Navigator.pop(context);
+            dispatch(EditPrioritiesRequested(date, today));
+          },
+        ),
+        const Divider(
+          height: 12,
+          thickness: 1,
+          indent: 0,
+          endIndent: 0,
+        ),
+        /* TODO: consider adding credits page
+        ListTile(
+              title: Row(children: const [
+                Padding(
+                    padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                    child: Icon(Icons.info_outline)),
+                Text('Credits')
+              ]),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),*/
+        ListTile(
+          title: Row(children: const [
+            Padding(
+                padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                child: Icon(Icons.logout)),
+            Text('Sign out')
+          ]),
+          onTap: () {
+            dispatch(SignOutRequested());
+          },
+        ),
+      ],
+    ),
+  );
 }
 
 Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
@@ -649,25 +731,6 @@ Widget day(BuildContext context, String abbreviation, String numericValue,
       ]));
 }
 
-List<Widget> contextMenu(void Function(Message) dispatch) {
-  return <Widget>[
-    PopupMenuButton(
-      itemBuilder: (context) => [
-        const PopupMenuItem<int>(
-          value: 0,
-          child: Text("Sign out"),
-        ),
-      ],
-      onSelected: (val) {
-        if (val == 0) {
-          // this is if you add more items
-          dispatch(SignOutRequested());
-        }
-      },
-    )
-  ];
-}
-
 Widget winEditorSaving(WinEditorSavingModel model) {
   return Scaffold(
     appBar: AppBar(
@@ -781,4 +844,125 @@ String overallDayResultEmoji(int index) {
       return "🤩";
   }
   throw "Unknown value of overall result: $index";
+}
+
+Widget prioritiesLoading(
+    PrioritiesLoadingModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Priorities'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(DoneEditingPriorities(model.date, model.today));
+          return false;
+        },
+        child: Center(child: Column(children: [Expanded(child: spinner())]))),
+  );
+}
+
+Widget prioritiesFailedToLoad(BuildContext context,
+    PrioritiesFailedToLoadModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Priorities'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(DoneEditingPriorities(model.date, model.today));
+          return false;
+        },
+        child: Center(
+            child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.all(TEXT_PADDING),
+              child: Text("Failed to contact the server: " + model.reason,
+                  style: const TextStyle(
+                      fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+          Expanded(
+              child: GestureDetector(
+                  onTap: () {
+                    dispatch(
+                        PrioritiesReloadRequested(model.date, model.today));
+                  },
+                  child: Center(
+                      child: Text("Click to reload",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  color: Colors.grey))))))
+        ]))),
+  );
+}
+
+Widget priorities(PrioritiesModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Priorities'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(DoneEditingPriorities(model.date, model.today));
+          return false;
+        },
+        child: Center(
+            child: GridView.count(
+                crossAxisCount: 3,
+                padding: const EdgeInsets.all(16.0),
+                mainAxisSpacing: 12.0,
+                crossAxisSpacing: 12.0,
+                children: List.generate(
+                    model.priorityList.items.length + 1,
+                    (i) => i < model.priorityList.items.length
+                        ? priorityBox(model, i, dispatch)
+                        : priorityBoxPlaceholder(model, dispatch))))),
+  );
+}
+
+Widget priorityBox(
+    PrioritiesModel model, int priorityIdx, void Function(Message) dispatch) {
+  return GestureDetector(
+      onTap: () {
+        dispatch(EditExistingPriorityRequested(
+            model.date, model.today, model.priorityList, priorityIdx));
+      },
+      child: Container(
+          child: Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    model.priorityList.items[priorityIdx].text,
+                    style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(
+                            color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+                  ))),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: Colors.blue,
+          )));
+}
+
+Widget priorityBoxPlaceholder(
+    PrioritiesModel model, void Function(Message) dispatch) {
+  return GestureDetector(
+      onTap: () {
+        dispatch(EditNewPriorityRequested(
+            model.date, model.today, model.priorityList));
+      },
+      child: DottedBorder(
+          color: Colors.grey,
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(4.0),
+          dashPattern: const [4, 3],
+          strokeWidth: 1,
+          child: const Center(
+              child: Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Icon(
+                    Icons.add_circle_outline,
+                    color: Colors.grey,
+                  )))));
 }

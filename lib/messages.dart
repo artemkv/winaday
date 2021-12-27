@@ -135,3 +135,76 @@ class SavingWinFailed implements Message {
 
   SavingWinFailed(this.date, this.win, this.reason);
 }
+
+class EditPrioritiesRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  EditPrioritiesRequested(this.date, this.today);
+}
+
+class PrioritiesLoaded implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+
+  PrioritiesLoaded(this.date, this.today, this.priorityList);
+}
+
+class DoneEditingPriorities implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  DoneEditingPriorities(this.date, this.today);
+}
+
+class PrioritiesLoadingFailed implements Message {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  PrioritiesLoadingFailed(this.date, this.today, this.reason);
+}
+
+class PrioritiesReloadRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  PrioritiesReloadRequested(this.date, this.today);
+}
+
+class EditExistingPriorityRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final int priorityIdx;
+
+  EditExistingPriorityRequested(
+      this.date, this.today, this.priorityList, this.priorityIdx);
+}
+
+class EditNewPriorityRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+
+  EditNewPriorityRequested(this.date, this.today, this.priorityList);
+}
+
+class CancelEditingPriorityRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  CancelEditingPriorityRequested(this.date, this.today);
+}
+
+class PrioritySaveRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final int priorityIdx;
+  final PriorityData priority;
+
+  PrioritySaveRequested(this.date, this.today, this.priorityList,
+      this.priorityIdx, this.priority);
+}
