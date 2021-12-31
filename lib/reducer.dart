@@ -110,7 +110,7 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadDailyWin(message.date));
   }
 
-  if (message is EditPrioritiesRequested) {
+  if (message is NavigateToPrioritiesRequested) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
         LoadPriorities(message.date));
   }
@@ -122,36 +122,94 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
         LoadPriorities(message.date));
   }
-  if (message is DoneEditingPriorities) {
+  if (message is ExitPrioritiesRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
         LoadDailyWin(message.date));
   }
   if (message is PrioritiesLoaded) {
+    return ModelAndCommand.justModel(PrioritiesModel(
+        message.date,
+        message.today,
+        message.priorityList,
+        canAddMorePriorities(message.priorityList)));
+  }
+  if (message is EditPrioritiesRequested) {
     return ModelAndCommand.justModel(
-        PrioritiesModel(message.date, message.today, message.priorityList));
+        EditPrioritiesModel(message.date, message.today, message.priorityList));
+  }
+  if (message is PrioritiesReorderRequested) {
+    var reordered = message.priorityList.items.map((e) {
+      if (e.id == message.priority.id) {
+        return message.exchangeWith;
+      } else if (e.id == message.exchangeWith.id) {
+        return message.priority;
+      } else {
+        return e;
+      }
+    });
+
+    return ModelAndCommand.justModel(EditPrioritiesModel(
+        message.date, message.today, PriorityListData(List.from(reordered))));
+  }
+  if (message is DeletePriorityRequested) {
+    var updatedList = message.priorityList.items.map((e) {
+      if (e.id == message.priority.id) {
+        return PriorityData(message.priority.id, message.priority.text,
+            message.priority.color, true);
+      } else {
+        return e;
+      }
+    });
+
+    return ModelAndCommand.justModel(EditPrioritiesModel(
+        message.date, message.today, PriorityListData(List.from(updatedList))));
+  }
+  if (message is SaveChangesInPrioritiesRequested) {
+    return ModelAndCommand(PrioritiesSavingModel(message.date),
+        SavePriorities(message.date, message.priorityList));
   }
 
   if (message is EditExistingPriorityRequested) {
-    return ModelAndCommand.justModel(PriorityEditorModel(message.date,
-        message.today, message.priorityList, message.priorityIdx));
+    return ModelAndCommand.justModel(PriorityEditorModel(
+        message.date, message.today, message.priorityList, message.priority));
   }
   if (message is EditNewPriorityRequested) {
-    var newPriority = PriorityData.empty();
-    var priorityList = PriorityListData(
-        List.from(message.priorityList.items)..add(newPriority));
-
-    return ModelAndCommand.justModel(PriorityEditorModel(message.date,
-        message.today, priorityList, priorityList.items.length - 1));
+    return ModelAndCommand(
+        CreatingNewPriorityModel(message.date, message.today),
+        CreateNewPriority(message.date, message.today, message.priorityList));
+  }
+  if (message is NewPriorityCreated) {
+    return ModelAndCommand.justModel(PriorityEditorModel(
+        message.date, message.today, message.priorityList, message.priority));
   }
   if (message is CancelEditingPriorityRequested) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
         LoadPriorities(message.date));
   }
   if (message is PrioritySaveRequested) {
-    // TODO: save and re-load priorities
-    return ModelAndCommand.justModel(
-        PrioritiesModel(message.date, message.today, message.priorityList));
+    var updatedList = message.priorityList.items.map((e) {
+      if (e.id == message.priority.id) {
+        return message.priority;
+      } else {
+        return e;
+      }
+    });
+
+    return ModelAndCommand(PrioritiesSavingModel(message.date),
+        SavePriorities(message.date, PriorityListData(List.from(updatedList))));
+  }
+  if (message is SavingPrioritiesFailed) {
+    return ModelAndCommand.justModel(PriorityEditorFailedToSaveModel(
+        message.date, message.priorityList, message.reason));
   }
 
   return ModelAndCommand.justModel(model);
+}
+
+bool canAddMorePriorities(PriorityListData priorityList) {
+  return priorityList.items
+          .where((element) => !element.deleted)
+          .toList()
+          .length <
+      9;
 }

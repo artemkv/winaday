@@ -36,16 +36,25 @@ class PriorityListData {
       : items = (json['items'] as List)
             .map((x) => PriorityData.fromJson(x))
             .toList();
+
+  Map<String, dynamic> toJson() =>
+      {'items': items.map((i) => i.toJson()).toList()};
 }
 
 class PriorityData {
+  final String id;
   final String text;
+  final int color;
+  final bool deleted;
 
-  PriorityData(this.text);
+  PriorityData(this.id, this.text, this.color, this.deleted);
 
-  PriorityData.empty() : text = "";
+  PriorityData.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        text = json['text'],
+        color = json['color'],
+        deleted = json['deleted'];
 
-  PriorityData.fromJson(Map<String, dynamic> json) : text = json['text'];
-
-  Map<String, dynamic> toJson() => {'text': text};
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'text': text, 'color': color, 'deleted': deleted};
 }

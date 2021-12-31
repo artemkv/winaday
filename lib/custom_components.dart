@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 
 import 'domain.dart';
@@ -104,8 +106,7 @@ class _PriorityEditorState extends State<PriorityEditor> {
   @override
   void initState() {
     super.initState();
-    _controller.text =
-        widget.model.priorityList.items[widget.model.priorityIdx].text;
+    _controller.text = widget.model.priority.text;
   }
 
   @override
@@ -125,13 +126,13 @@ class _PriorityEditorState extends State<PriorityEditor> {
             icon: const Icon(Icons.check),
             tooltip: 'Save',
             onPressed: () {
-              PriorityData priority = PriorityData(_controller.text);
+              PriorityData priority = PriorityData(
+                  widget.model.priority.id,
+                  _controller.text,
+                  widget.model.priority.color,
+                  widget.model.priority.deleted);
               widget.dispatch(PrioritySaveRequested(
-                  widget.model.date,
-                  widget.model.today,
-                  widget.model.priorityList,
-                  widget.model.priorityIdx,
-                  priority));
+                  widget.model.date, widget.model.priorityList, priority));
             },
           )
         ],
@@ -143,6 +144,14 @@ class _PriorityEditorState extends State<PriorityEditor> {
             return false;
           },
           child: Column(children: [
+            priorityBoxColorPicker(_controller, widget.model, widget.dispatch),
+            const Divider(
+              // TODO: single-source
+              height: 12,
+              thickness: 1,
+              indent: 12,
+              endIndent: 12,
+            ),
             Expanded(
                 child: Padding(
                     padding: const EdgeInsets.only(
@@ -164,5 +173,41 @@ class _PriorityEditorState extends State<PriorityEditor> {
                     )))
           ])),
     );
+  }
+}
+
+class DraggablePriorityGrid extends StatefulWidget {
+  final EditPrioritiesModel model;
+  final void Function(Message) dispatch;
+
+  const DraggablePriorityGrid(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<DraggablePriorityGrid> createState() => _DraggablePriorityGridState();
+}
+
+class _DraggablePriorityGridState extends State<DraggablePriorityGrid> {
+  PriorityData? _exchangeWith;
+
+  void onWillAccept(PriorityData? priority) {
+    setState(() {
+      _exchangeWith = priority;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+        crossAxisCount: 3,
+        padding: const EdgeInsets.all(16.0),
+        mainAxisSpacing: 12.0,
+        crossAxisSpacing: 12.0,
+        children: widget.model.priorityList.items
+            .where((element) => !element.deleted)
+            .map((e) => draggablePriorityBox(
+                widget.model, e, _exchangeWith, widget.dispatch, onWillAccept))
+            .toList());
   }
 }

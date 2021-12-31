@@ -69,8 +69,20 @@ Widget home(
   if (model is PrioritiesModel) {
     return priorities(model, dispatch);
   }
+  if (model is EditPrioritiesModel) {
+    return editPriorities(model, dispatch);
+  }
+  if (model is CreatingNewPriorityModel) {
+    return creatingNewPriority(model, dispatch);
+  }
   if (model is PriorityEditorModel) {
     return PriorityEditor(model: model, dispatch: dispatch);
+  }
+  if (model is PrioritiesSavingModel) {
+    return prioritiesSaving(model);
+  }
+  if (model is PriorityEditorFailedToSaveModel) {
+    return priorityEditorFailedToSave(model, dispatch);
   }
 
   return unknownModel(model);
@@ -525,7 +537,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           ]),
           onTap: () {
             Navigator.pop(context);
-            dispatch(EditPrioritiesRequested(date, today));
+            dispatch(NavigateToPrioritiesRequested(date, today));
           },
         ),
         const Divider(
@@ -774,6 +786,34 @@ Widget winEditorFailedToSave(
   );
 }
 
+Widget priorityEditorFailedToSave(
+    PriorityEditorFailedToSaveModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Failed to save'),
+    ),
+    body: Center(
+        child: Column(children: [
+      // TODO: maybe think about nicer way to show errors
+      Padding(
+          padding: const EdgeInsets.all(TEXT_PADDING),
+          child: Text("Failed to contact the server: " + model.reason,
+              style: const TextStyle(
+                  fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+      Expanded(
+          child: GestureDetector(
+              onTap: () {
+                dispatch(SaveChangesInPrioritiesRequested(
+                    model.date, model.priorityList));
+              },
+              child: const Center(
+                  child: Text("Click to re-try",
+                      style: TextStyle(
+                          fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
+    ])),
+  );
+}
+
 Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
     void Function(Message) dispatch) {
   return Padding(
@@ -855,7 +895,7 @@ Widget prioritiesLoading(
     ),
     body: WillPopScope(
         onWillPop: () async {
-          dispatch(DoneEditingPriorities(model.date, model.today));
+          dispatch(ExitPrioritiesRequested(model.date, model.today));
           return false;
         },
         child: Center(child: Column(children: [Expanded(child: spinner())]))),
@@ -871,7 +911,7 @@ Widget prioritiesFailedToLoad(BuildContext context,
     ),
     body: WillPopScope(
         onWillPop: () async {
-          dispatch(DoneEditingPriorities(model.date, model.today));
+          dispatch(ExitPrioritiesRequested(model.date, model.today));
           return false;
         },
         child: Center(
@@ -898,6 +938,46 @@ Widget prioritiesFailedToLoad(BuildContext context,
 }
 
 Widget priorities(PrioritiesModel model, void Function(Message) dispatch) {
+  List<Widget> placeholder = model.canAddMore
+      ? [priorityBoxPlaceholder(model, dispatch)]
+      : List.empty();
+
+  List<Widget> boxes = List.from(model.priorityList.items
+      .where((element) => !element.deleted)
+      .map((e) => priorityBoxTappable(model, e, dispatch)))
+    ..addAll(placeholder);
+
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Your Priorities'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            tooltip: 'Edit',
+            onPressed: () {
+              dispatch(EditPrioritiesRequested(
+                  model.date, model.today, model.priorityList));
+            },
+          )
+        ],
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            dispatch(ExitPrioritiesRequested(model.date, model.today));
+            return false;
+          },
+          child: Center(
+              child: GridView.count(
+                  crossAxisCount: 3,
+                  padding: const EdgeInsets.all(16.0),
+                  mainAxisSpacing: 12.0,
+                  crossAxisSpacing: 12.0,
+                  children: boxes))));
+}
+
+Widget creatingNewPriority(
+    CreatingNewPriorityModel model, void Function(Message) dispatch) {
   return Scaffold(
     appBar: AppBar(
       leading: const BackButton(),
@@ -905,44 +985,38 @@ Widget priorities(PrioritiesModel model, void Function(Message) dispatch) {
     ),
     body: WillPopScope(
         onWillPop: () async {
-          dispatch(DoneEditingPriorities(model.date, model.today));
+          dispatch(ExitPrioritiesRequested(model.date, model.today));
           return false;
         },
-        child: Center(
-            child: GridView.count(
-                crossAxisCount: 3,
-                padding: const EdgeInsets.all(16.0),
-                mainAxisSpacing: 12.0,
-                crossAxisSpacing: 12.0,
-                children: List.generate(
-                    model.priorityList.items.length + 1,
-                    (i) => i < model.priorityList.items.length
-                        ? priorityBox(model, i, dispatch)
-                        : priorityBoxPlaceholder(model, dispatch))))),
+        child: Center(child: Column(children: [Expanded(child: spinner())]))),
   );
 }
 
-Widget priorityBox(
-    PrioritiesModel model, int priorityIdx, void Function(Message) dispatch) {
+Widget priorityBoxTappable(PrioritiesModel model, PriorityData priority,
+    void Function(Message) dispatch) {
   return GestureDetector(
       onTap: () {
         dispatch(EditExistingPriorityRequested(
-            model.date, model.today, model.priorityList, priorityIdx));
+            model.date, model.today, model.priorityList, priority));
       },
-      child: Container(
-          child: Center(
-              child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    model.priorityList.items[priorityIdx].text,
-                    style: GoogleFonts.openSans(
-                        textStyle: const TextStyle(
-                            color: Colors.white, fontSize: TEXT_FONT_SIZE)),
-                  ))),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: Colors.blue,
-          )));
+      child: priorityBox(priority));
+}
+
+Widget priorityBox(PriorityData priority) {
+  return Container(
+      child: Center(
+          child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                priority.text,
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+              ))),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: getPriorityBoxColor(priority.color),
+      ));
 }
 
 Widget priorityBoxPlaceholder(
@@ -965,4 +1039,180 @@ Widget priorityBoxPlaceholder(
                     Icons.add_circle_outline,
                     color: Colors.grey,
                   )))));
+}
+
+Widget editPriorities(
+    EditPrioritiesModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Priorities'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.check),
+          tooltip: 'Save',
+          onPressed: () {
+            dispatch(SaveChangesInPrioritiesRequested(
+                model.date, model.priorityList));
+          },
+        )
+      ],
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitPrioritiesRequested(model.date, model.today));
+          return false;
+        },
+        child: Stack(children: [
+          Center(
+              child: DraggablePriorityGrid(model: model, dispatch: dispatch)),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: trashbin(model, dispatch))
+        ])),
+  );
+}
+
+Widget draggablePriorityBox(
+    EditPrioritiesModel model,
+    PriorityData priority,
+    PriorityData? exchangeWith,
+    void Function(Message) dispatch,
+    void Function(PriorityData?) onWillAccept) {
+  return Draggable<PriorityData>(
+      data: priority,
+      dragAnchorStrategy: childDragAnchorStrategy,
+      feedback: Container(
+          height: 130,
+          width: 130,
+          child: Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    priority.text,
+                    style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white,
+                            fontSize: TEXT_FONT_SIZE)),
+                  ))),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: priorityColors[priority.color],
+          )), // TODO: make sure colors do not go out of range
+      childWhenDragging: exchangeWith != null
+          ? priorityBox(exchangeWith)
+          : priorityBox(priority),
+      child: DragTarget<PriorityData>(
+        builder: (context, candidateItems, rejectedItems) {
+          return Container(
+              child: Center(
+                  child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        priority.text,
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                color: Colors.white, fontSize: TEXT_FONT_SIZE)),
+                      ))),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.0),
+                color: candidateItems.isNotEmpty
+                    ? Colors.white
+                    : getPriorityBoxColor(priority.color),
+              ));
+        },
+        onWillAccept: (_) {
+          onWillAccept(priority);
+          return true;
+        },
+        onLeave: (data) {
+          onWillAccept(null);
+        },
+        onAccept: (exchangeWith) {
+          dispatch(PrioritiesReorderRequested(model.date, model.today,
+              model.priorityList, priority, exchangeWith));
+        },
+      ));
+}
+
+Widget trashbin(EditPrioritiesModel model, void Function(Message) dispatch) {
+  return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: DragTarget<PriorityData>(
+          builder: (context, candidateItems, rejectedItems) {
+        return Container(
+            height: 140,
+            width: 140,
+            child: const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Colors.grey,
+                    ))),
+            decoration: BoxDecoration(
+                color: candidateItems.isNotEmpty
+                    ? Colors.grey.shade200
+                    : Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color:
+                        candidateItems.isNotEmpty ? Colors.grey : Colors.grey,
+                    width: 2.0)));
+      }, onAccept: (priority) {
+        dispatch(DeletePriorityRequested(
+            model.date, model.today, model.priorityList, priority));
+      }));
+}
+
+Color getPriorityBoxColor(int color) {
+  return priorityColors[color % priorityColors.length];
+}
+
+Widget priorityBoxColorPicker(TextEditingController controller,
+    PriorityEditorModel model, void Function(Message) dispatch) {
+  return Padding(
+      padding: const EdgeInsets.only(
+          // TODO: single-source
+          top: TEXT_PADDING,
+          left: TEXT_PADDING * 2,
+          right: TEXT_PADDING * 2,
+          bottom: TEXT_PADDING),
+      child: Row(children: [
+        const Padding(
+            padding: EdgeInsets.only(right: TEXT_PADDING * 2),
+            child: Text("Pick a color:",
+                style: TextStyle(fontSize: TEXT_FONT_SIZE))),
+        DropdownButton<int>(
+          value: model.priority.color,
+          onChanged: (int? newValue) {
+            if (newValue != null) {
+              var updatedPriority = PriorityData(model.priority.id,
+                  controller.text, newValue, model.priority.deleted);
+              dispatch(EditExistingPriorityRequested(model.date, model.today,
+                  model.priorityList, updatedPriority));
+            }
+          },
+          items: List.generate(priorityColors.length, (index) => index)
+              .map<DropdownMenuItem<int>>((int value) {
+            return DropdownMenuItem<int>(
+              value: value,
+              child: Container(
+                  width: 48,
+                  height: 24,
+                  decoration: BoxDecoration(color: getPriorityBoxColor(value))),
+            );
+          }).toList(),
+        )
+      ]));
+}
+
+Widget prioritiesSaving(PrioritiesSavingModel model) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Saving'),
+    ),
+    body: Center(child: spinner()),
+  );
 }

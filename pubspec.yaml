@@ -48,6 +48,7 @@ dependencies:
   quiver: ^2.1.5
   url_launcher: ^6.0.17
   dotted_border: ^2.0.0+2
+  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

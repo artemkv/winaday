@@ -29,6 +29,28 @@
 
 !! Features
 
+- Priorities
+    - --Load priorities screen--
+    - --Failed to load priorities screen--
+    - --Edit priorities mode: re-order, delete, confirm, cancel--
+    - --Edit priority: confirm saves, back cancels--
+    - --Add new priority: confirm saves, back cancels--
+    - --Max 9 priorities--
+    - --Allow selecting colors--
+    - --Use unique ids for priorities--
+    - --Actually save priorities--
+    - Limit box sizes for bigger screens?
+
+- Use priorities
+    - If configured, allow selecting on save of win
+    - Only propose when no priorities are assigned, otherwise simply close the editor?
+    - Allow changing when in win editor
+    - Show in daily view, using colors or tags?
+    - Allow editing directly from day view
+    - Mark/unmark
+    - Save as a part of win
+    - Old wins should still work
+
 !! UX
 
 - Double-check that all gesture detectors are wrapping containers and not inner elements
@@ -40,6 +62,7 @@
 
 !! Infrastructure
 
+- Use @immutable where makes sense
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:
 I/flutter (15668): Error: google_fonts was unable to load font YesevaOne-Regular because the following exception occured:

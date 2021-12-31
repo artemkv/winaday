@@ -103,3 +103,7 @@ Future<dynamic> postWin(String date, Object data, String session) async {
 Future<dynamic> getPriorities(String session) async {
   return await getJson('/priorities', session);
 }
+
+Future<dynamic> postPriorities(Object data, String session) async {
+  return await postJson('/priorities', data, session: session);
+}

@@ -5,10 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:quiver/collection.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
+import 'package:uuid/uuid.dart';
 import 'messages.dart';
 import 'dateutil.dart';
 
 // This is the only place where side-effects are allowed!
+
+var uuid = Uuid();
 
 LruMap cache = LruMap(maximumSize: 100);
 
@@ -159,6 +162,44 @@ class LoadPriorities implements Command {
     }).catchError((err) {
       dispatch(PrioritiesLoadingFailed(
           date, today, err?.message ?? "Unknown error"));
+    });
+  }
+}
+
+class CreateNewPriority implements Command {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+
+  CreateNewPriority(this.date, this.today, this.priorityList);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var newPriority = PriorityData(uuid.v4(), "", 0, false);
+    var newPriorityList =
+        PriorityListData(List.from(priorityList.items)..add(newPriority));
+
+    Future<void>.delayed(Duration.zero, () {
+      dispatch(NewPriorityCreated(date, today, newPriorityList, newPriority));
+    });
+  }
+}
+
+class SavePriorities implements Command {
+  final DateTime date;
+  final PriorityListData priorities;
+
+  SavePriorities(this.date, this.priorities);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    postPriorities(priorities, GoogleSignInFacade.getIdToken).then((_) {
+      dispatch(NavigateToPrioritiesRequested(date, today));
+    }).catchError((err) {
+      dispatch(SavingPrioritiesFailed(
+          date, priorities, err?.message ?? "Unknown error"));
     });
   }
 }

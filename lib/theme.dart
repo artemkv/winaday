@@ -38,3 +38,24 @@ const MaterialColor denimBlue = MaterialColor(
   },
 );
 const int _denimBluePrimaryValue = 0xFF1F75FE;
+
+List<Color> priorityColors = const [
+  Color.fromRGBO(255, 67, 164, 1),
+  Color.fromRGBO(255, 117, 56, 1),
+  Color.fromRGBO(186, 85, 211, 1),
+  Color.fromRGBO(0, 168, 107, 1),
+  Color.fromRGBO(72, 209, 204, 1),
+  Color.fromRGBO(106, 90, 205, 1),
+  Color.fromRGBO(159, 129, 112, 1),
+  Color.fromRGBO(255, 211, 0, 1),
+  Color.fromRGBO(12, 175, 255, 1),
+  Color.fromRGBO(224, 17, 95, 1),
+  Color.fromRGBO(254, 80, 0, 1),
+  Color.fromRGBO(148, 0, 211, 1),
+  Color.fromRGBO(52, 178, 51, 1),
+  Color.fromRGBO(0, 128, 128, 1),
+  Color.fromRGBO(110, 45, 145, 1),
+  Color.fromRGBO(158, 91, 64, 1),
+  Color.fromRGBO(255, 198, 0, 1),
+  Color.fromRGBO(52, 87, 213, 1),
+];

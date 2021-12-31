@@ -100,16 +100,45 @@ class PrioritiesModel extends Model {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
+  final bool canAddMore;
 
-  PrioritiesModel(this.date, this.today, this.priorityList);
+  PrioritiesModel(this.date, this.today, this.priorityList, this.canAddMore);
+}
+
+class EditPrioritiesModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+
+  EditPrioritiesModel(this.date, this.today, this.priorityList);
+}
+
+class CreatingNewPriorityModel extends Model {
+  final DateTime date;
+  final DateTime today;
+
+  CreatingNewPriorityModel(this.date, this.today);
 }
 
 class PriorityEditorModel extends Model {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
-  final int priorityIdx;
+  final PriorityData priority;
 
-  PriorityEditorModel(
-      this.date, this.today, this.priorityList, this.priorityIdx);
+  PriorityEditorModel(this.date, this.today, this.priorityList, this.priority);
+}
+
+class PrioritiesSavingModel extends Model {
+  final DateTime date;
+
+  PrioritiesSavingModel(this.date);
+}
+
+class PriorityEditorFailedToSaveModel extends Model {
+  final DateTime date;
+  final PriorityListData priorityList;
+  final String reason;
+
+  PriorityEditorFailedToSaveModel(this.date, this.priorityList, this.reason);
 }
