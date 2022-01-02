@@ -44,9 +44,10 @@ class _WinEditorState extends State<WinEditor> {
             icon: const Icon(Icons.check),
             tooltip: 'Save',
             onPressed: () {
-              var updatedWin =
-                  WinData(_controller.text, widget.model.win.overallResult);
-              widget.dispatch(WinSaveRequested(widget.model.date, updatedWin));
+              var updatedWin = WinData(_controller.text,
+                  widget.model.win.overallResult, widget.model.win.priorities);
+              widget
+                  .dispatch(WinChangesConfirmed(widget.model.date, updatedWin));
             },
           )
         ],

@@ -6,7 +6,7 @@ import 'dart:convert';
 // Real device:
 // http://192.168.0.16:8700
 //const BASE_URL = 'https://winaday.artemkv.net:8700';
-const BASE_URL = 'http://192.168.8.101:8700';
+const BASE_URL = 'http://192.168.0.16:8700';
 
 class ApiException implements Exception {
   int statusCode;

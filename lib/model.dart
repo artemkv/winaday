@@ -142,3 +142,12 @@ class PriorityEditorFailedToSaveModel extends Model {
 
   PriorityEditorFailedToSaveModel(this.date, this.priorityList, this.reason);
 }
+
+class EditWinPrioritiesModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final WinData win;
+
+  EditWinPrioritiesModel(this.date, this.today, this.priorityList, this.win);
+}

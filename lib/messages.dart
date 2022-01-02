@@ -114,6 +114,13 @@ class CancelEditingWinRequested implements Message {
   CancelEditingWinRequested(this.date, this.today);
 }
 
+class WinChangesConfirmed implements Message {
+  final DateTime date;
+  final WinData win;
+
+  WinChangesConfirmed(this.date, this.win);
+}
+
 class WinSaveRequested implements Message {
   final DateTime date;
   final WinData win;
@@ -257,4 +264,24 @@ class SavingPrioritiesFailed implements Message {
   final String reason;
 
   SavingPrioritiesFailed(this.date, this.priorityList, this.reason);
+}
+
+class LinkWinToPriorities implements Message {
+  final DateTime date;
+  final DateTime today;
+  final WinData win;
+  final PriorityListData priorityList;
+
+  LinkWinToPriorities(this.date, this.today, this.win, this.priorityList);
+}
+
+class ToggleWinPriority implements Message {
+  final DateTime date;
+  final DateTime today;
+  final WinData win;
+  final PriorityListData priorityList;
+  final PriorityData priority;
+
+  ToggleWinPriority(
+      this.date, this.today, this.win, this.priorityList, this.priority);
 }

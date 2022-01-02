@@ -116,8 +116,7 @@ class LoadDailyWin implements Command {
       cache[dateKey] = winData;
       dispatch(DailyWinViewLoaded(date, today, winData, editable));
     }).catchError((err) {
-      dispatch(DailyWinViewLoadingFailed(
-          date, today, err?.message ?? "Unknown error"));
+      dispatch(DailyWinViewLoadingFailed(date, today, err.toString()));
     });
   }
 }
@@ -138,7 +137,7 @@ class SaveWin implements Command {
       cache[dateKey] = win;
       dispatch(WinSaved(date, today));
     }).catchError((err) {
-      dispatch(SavingWinFailed(date, win, err?.message ?? "Unknown error"));
+      dispatch(SavingWinFailed(date, win, err.toString()));
     });
   }
 }
@@ -160,8 +159,28 @@ class LoadPriorities implements Command {
       var priorityList = PriorityListData.fromJson(json);
       dispatch(PrioritiesLoaded(date, today, priorityList));
     }).catchError((err) {
-      dispatch(PrioritiesLoadingFailed(
-          date, today, err?.message ?? "Unknown error"));
+      dispatch(PrioritiesLoadingFailed(date, today, err.toString()));
+    });
+  }
+}
+
+class LoadPrioritiesForLinking implements Command {
+  final DateTime date;
+  final WinData win;
+
+  LoadPrioritiesForLinking(this.date, this.win);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
+      var priorityList = PriorityListData.fromJson(json);
+      // TODO: check only if some priorities defined and win is not yet linked
+      dispatch(LinkWinToPriorities(date, today, win, priorityList));
+    }).catchError((err) {
+      // TODO: so now we in case loading priorities failed, we just skip them and go to saving win directly
+      dispatch(SavingWinFailed(date, win, err.toString()));
     });
   }
 }
@@ -198,8 +217,7 @@ class SavePriorities implements Command {
     postPriorities(priorities, GoogleSignInFacade.getIdToken).then((_) {
       dispatch(NavigateToPrioritiesRequested(date, today));
     }).catchError((err) {
-      dispatch(SavingPrioritiesFailed(
-          date, priorities, err?.message ?? "Unknown error"));
+      dispatch(SavingPrioritiesFailed(date, priorities, err.toString()));
     });
   }
 }

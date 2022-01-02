@@ -64,13 +64,18 @@ ModelAndCommand reduce(Model model, Message message) {
         message.win.text,
         message.win.overallResult == OverallDayResult.noWinYet
             ? OverallDayResult.gotMyWin
-            : message.win.overallResult);
+            : message.win.overallResult,
+        message.win.priorities);
     return ModelAndCommand.justModel(
         WinEditorModel(message.date, message.today, winToEdit));
   }
   if (message is CancelEditingWinRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
         LoadDailyWin(message.date));
+  }
+  if (message is WinChangesConfirmed) {
+    return ModelAndCommand(WinEditorSavingModel(message.date),
+        LoadPrioritiesForLinking(message.date, message.win));
   }
   if (message is WinSaveRequested) {
     return ModelAndCommand(
@@ -201,6 +206,32 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is SavingPrioritiesFailed) {
     return ModelAndCommand.justModel(PriorityEditorFailedToSaveModel(
         message.date, message.priorityList, message.reason));
+  }
+
+  if (message is LinkWinToPriorities) {
+    return ModelAndCommand.justModel(EditWinPrioritiesModel(
+        message.date, message.today, message.priorityList, message.win));
+  }
+  if (message is ToggleWinPriority) {
+    Map<String, PriorityData> udpatedPriorities;
+    if (message.win.priorities.containsKey(message.priority.id)) {
+      udpatedPriorities = {
+        for (var item in message.win.priorities.values
+            .where((x) => x.id != message.priority.id))
+          item.id: item
+      };
+    } else {
+      udpatedPriorities = {
+        for (var item in message.win.priorities.values) item.id: item
+      };
+      udpatedPriorities[message.priority.id] = message.priority;
+    }
+
+    var updatedWin =
+        WinData(message.win.text, message.win.overallResult, udpatedPriorities);
+
+    return ModelAndCommand.justModel(EditWinPrioritiesModel(
+        message.date, message.today, message.priorityList, updatedWin));
   }
 
   return ModelAndCommand.justModel(model);

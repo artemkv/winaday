@@ -85,6 +85,10 @@ Widget home(
     return priorityEditorFailedToSave(model, dispatch);
   }
 
+  if (model is EditWinPrioritiesModel) {
+    return editWinPriorities(model, dispatch);
+  }
+
   return unknownModel(model);
 }
 
@@ -831,7 +835,9 @@ Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
           value: model.win.overallResult,
           onChanged: (int? newValue) {
             if (newValue != null) {
-              var updatedWin = WinData(controller.text, newValue);
+              // TODO: Maybe move this to the reducer and simply dispatch update message (same with update priority)
+              var updatedWin =
+                  WinData(controller.text, newValue, model.win.priorities);
               dispatch(EditWinRequested(model.date, model.today, updatedWin));
             }
           },
@@ -944,7 +950,7 @@ Widget priorities(PrioritiesModel model, void Function(Message) dispatch) {
 
   List<Widget> boxes = List.from(model.priorityList.items
       .where((element) => !element.deleted)
-      .map((e) => priorityBoxTappable(model, e, dispatch)))
+      .map((e) => priorityBoxEditable(model, e, dispatch)))
     ..addAll(placeholder);
 
   return Scaffold(
@@ -992,7 +998,7 @@ Widget creatingNewPriority(
   );
 }
 
-Widget priorityBoxTappable(PrioritiesModel model, PriorityData priority,
+Widget priorityBoxEditable(PrioritiesModel model, PriorityData priority,
     void Function(Message) dispatch) {
   return GestureDetector(
       onTap: () {
@@ -1215,4 +1221,62 @@ Widget prioritiesSaving(PrioritiesSavingModel model) {
     ),
     body: Center(child: spinner()),
   );
+}
+
+Widget editWinPriorities(
+    EditWinPrioritiesModel model, void Function(Message) dispatch) {
+  List<Widget> boxes = List.from(model.priorityList.items
+      .where((element) => !element.deleted)
+      .map((e) => priorityBoxSelectable(model, e, dispatch)));
+
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Link to your priorities'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.check),
+          tooltip: 'Save',
+          onPressed: () {
+            dispatch(WinSaveRequested(model.date, model.win));
+          },
+        )
+      ],
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(CancelEditingWinRequested(model.date, model.today));
+          return false;
+        },
+        child: Center(
+            child: GridView.count(
+                crossAxisCount: 3,
+                padding: const EdgeInsets.all(16.0),
+                mainAxisSpacing: 12.0,
+                crossAxisSpacing: 12.0,
+                children: boxes))),
+  );
+}
+
+Widget priorityBoxSelectable(EditWinPrioritiesModel model,
+    PriorityData priority, void Function(Message) dispatch) {
+  bool isSelected = model.win.priorities.containsKey(priority.id);
+  return GestureDetector(
+      onTap: () {
+        dispatch(ToggleWinPriority(
+            model.date, model.today, model.win, model.priorityList, priority));
+      },
+      child: Stack(children: [
+        priorityBox(priority),
+        (isSelected
+            ? Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                        child: const Icon(Icons.check_circle_outline),
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.white))))
+            : Container())
+      ]));
 }

@@ -11,18 +11,29 @@ class OverallDayResult {
 class WinData {
   final String text;
   final int overallResult;
+  final Map<String, PriorityData> priorities;
 
-  WinData(this.text, this.overallResult);
+  WinData(this.text, this.overallResult, this.priorities);
 
   WinData.empty()
       : text = "",
-        overallResult = OverallDayResult.noWinYet;
+        overallResult = OverallDayResult.noWinYet,
+        priorities = {};
 
   WinData.fromJson(Map<String, dynamic> json)
       : text = json['text'],
-        overallResult = json['overall'];
+        overallResult = json['overall'],
+        priorities = {
+          for (var item in (json['priorities'] ?? [])
+              .map((x) => PriorityData.fromJson(x)))
+            item.id: item
+        };
 
-  Map<String, dynamic> toJson() => {'text': text, 'overall': overallResult};
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'overall': overallResult,
+        'priorities': priorities.values.map((i) => i.toJson()).toList()
+      };
 }
 
 class PriorityListData {
