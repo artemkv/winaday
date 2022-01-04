@@ -66,8 +66,8 @@ ModelAndCommand reduce(Model model, Message message) {
             ? OverallDayResult.gotMyWin
             : message.win.overallResult,
         message.win.priorities);
-    return ModelAndCommand.justModel(
-        WinEditorModel(message.date, message.today, winToEdit));
+    return ModelAndCommand.justModel(WinEditorModel(
+        message.date, message.today, message.priorityList, winToEdit));
   }
   if (message is CancelEditingWinRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
@@ -75,8 +75,8 @@ ModelAndCommand reduce(Model model, Message message) {
   }
   if (message is WinChangesConfirmed) {
     if (message.win.priorities.isEmpty) {
-      return ModelAndCommand(WinEditorSavingModel(message.date),
-          LoadPrioritiesForLinking(message.date, message.win));
+      return ModelAndCommand.justModel(EditWinPrioritiesModel(
+          message.date, message.today, message.priorityList, message.win));
     } else {
       return ModelAndCommand(WinEditorSavingModel(message.date),
           SaveWin(message.date, message.win));

@@ -511,7 +511,8 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
       floatingActionButton: (model.editable
           ? FloatingActionButton(
               onPressed: () {
-                dispatch(EditWinRequested(model.date, model.today, model.win));
+                dispatch(EditWinRequested(
+                    model.date, model.today, model.priorityList, model.win));
               },
               child: const Icon(Icons.edit),
               backgroundColor: denimBlue,
@@ -908,7 +909,8 @@ Widget dayOverallResult(TextEditingController controller, WinEditorModel model,
               // TODO: Maybe move this to the reducer and simply dispatch update message (same with update priority)
               var updatedWin =
                   WinData(controller.text, newValue, model.win.priorities);
-              dispatch(EditWinRequested(model.date, model.today, updatedWin));
+              dispatch(EditWinRequested(
+                  model.date, model.today, model.priorityList, updatedWin));
             }
           },
           items: <int>[

@@ -170,27 +170,6 @@ class LoadPriorities implements Command {
   }
 }
 
-class LoadPrioritiesForLinking implements Command {
-  final DateTime date;
-  final WinData win;
-
-  LoadPrioritiesForLinking(this.date, this.win);
-
-  @override
-  void execute(void Function(Message) dispatch) {
-    var today = DateTime.now();
-
-    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
-      var priorityList = PriorityListData.fromJson(json);
-      // TODO: check only if some priorities defined and win is not yet linked
-      dispatch(LinkWinToPriorities(date, today, win, priorityList));
-    }).catchError((err) {
-      // TODO: so now we in case loading priorities failed, we just skip them and go to saving win directly
-      dispatch(SavingWinFailed(date, win, err.toString()));
-    });
-  }
-}
-
 class CreateNewPriority implements Command {
   final DateTime date;
   final DateTime today;

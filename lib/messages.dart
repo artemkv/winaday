@@ -104,9 +104,10 @@ class MoveToDay implements Message {
 class EditWinRequested implements Message {
   final DateTime date;
   final DateTime today;
+  final PriorityListData priorityList;
   final WinData win;
 
-  EditWinRequested(this.date, this.today, this.win);
+  EditWinRequested(this.date, this.today, this.priorityList, this.win);
 }
 
 class CancelEditingWinRequested implements Message {
@@ -118,9 +119,11 @@ class CancelEditingWinRequested implements Message {
 
 class WinChangesConfirmed implements Message {
   final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
   final WinData win;
 
-  WinChangesConfirmed(this.date, this.win);
+  WinChangesConfirmed(this.date, this.today, this.priorityList, this.win);
 }
 
 class WinSaveRequested implements Message {

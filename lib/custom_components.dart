@@ -46,8 +46,8 @@ class _WinEditorState extends State<WinEditor> {
             onPressed: () {
               var updatedWin = WinData(_controller.text,
                   widget.model.win.overallResult, widget.model.win.priorities);
-              widget
-                  .dispatch(WinChangesConfirmed(widget.model.date, updatedWin));
+              widget.dispatch(WinChangesConfirmed(widget.model.date,
+                  widget.model.today, widget.model.priorityList, updatedWin));
             },
           )
         ],

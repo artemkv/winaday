@@ -64,9 +64,10 @@ class DailyWinModel extends Model {
 class WinEditorModel extends Model {
   final DateTime date;
   final DateTime today;
+  final PriorityListData priorityList;
   final WinData win;
 
-  WinEditorModel(this.date, this.today, this.win);
+  WinEditorModel(this.date, this.today, this.priorityList, this.win);
 }
 
 class WinEditorSavingModel extends Model {
