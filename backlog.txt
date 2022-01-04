@@ -39,19 +39,30 @@
     - --Allow selecting colors--
     - --Use unique ids for priorities--
     - --Actually save priorities--
+    - --Clicking back from editing priorities reloads priorities but does not leave the screen--
     - Limit box sizes for bigger screens?
 
 - Use priorities
-    - If configured, allow selecting on save of win
-    - Only propose when no priorities are assigned, otherwise simply close the editor?
-    - Allow changing when in win editor
-    - Show in daily view, using colors or tags?
-    - Allow editing directly from day view
-    - Mark/unmark
-    - Save as a part of win
-    - Old wins should still work
+    - --Allow selecting on save of win--
+    - --Only propose assigning priorities after editing win when no priorities are assigned yet, otherwise directly save the win--
+    - --Allow changing when in win editor - rejected--
+    - --Show in daily view, using colors or tags--
+    - --Allow editing directly from day view--
+    - --Mark/unmark--
+    - --Old wins should still work--
+    - --Showing priority in dailyWin view makes text center-aligned--
+    - --Long priority does not fit in daily view screen--
+    - Save as a part of win (not saved now, issue with caching)
+    - Cache loaded priorities
+    - Deleted priorities should still show in the daily view, if linked
+    - However, when editing priorities of a win, all deleted priorities should unlink automatically
 
 !! UX
+
+- Daily win view is now overflowing in landscape or when there is too many lines
+- When changed day overall result, but no win text, does not show overall result in daily win view
+
+- Show the days that have wins marked with dots
 
 - Double-check that all gesture detectors are wrapping containers and not inner elements
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets

@@ -48,8 +48,8 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is DailyWinViewLoaded) {
-    return ModelAndCommand.justModel(DailyWinModel(
-        message.date, message.today, message.win, message.editable));
+    return ModelAndCommand.justModel(DailyWinModel(message.date, message.today,
+        message.priorityList, message.win, message.editable));
   }
   if (message is DailyWinViewLoadingFailed) {
     return ModelAndCommand.justModel(
@@ -74,8 +74,13 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadDailyWin(message.date));
   }
   if (message is WinChangesConfirmed) {
-    return ModelAndCommand(WinEditorSavingModel(message.date),
-        LoadPrioritiesForLinking(message.date, message.win));
+    if (message.win.priorities.isEmpty) {
+      return ModelAndCommand(WinEditorSavingModel(message.date),
+          LoadPrioritiesForLinking(message.date, message.win));
+    } else {
+      return ModelAndCommand(WinEditorSavingModel(message.date),
+          SaveWin(message.date, message.win));
+    }
   }
   if (message is WinSaveRequested) {
     return ModelAndCommand(
@@ -172,6 +177,10 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is SaveChangesInPrioritiesRequested) {
     return ModelAndCommand(PrioritiesSavingModel(message.date),
         SavePriorities(message.date, message.priorityList));
+  }
+  if (message is CancelEditingPrioritiesRequested) {
+    return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
+        LoadPriorities(message.date));
   }
 
   if (message is EditExistingPriorityRequested) {

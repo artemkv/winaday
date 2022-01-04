@@ -95,26 +95,32 @@ class LoadDailyWin implements Command {
     var today = DateTime.now();
     bool editable = date.isSameDate(today) || date.isBefore(today);
 
-    if (!editable) {
-      Future<void>.delayed(Duration.zero, () {
-        dispatch(DailyWinViewLoaded(date, today, WinData.empty(), editable));
+    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
+      var priorityList = PriorityListData.fromJson(json);
+      return priorityList;
+    }).then((priorityList) {
+      if (!editable) {
+        return Future<void>.delayed(Duration.zero, () {
+          dispatch(DailyWinViewLoaded(
+              date, today, priorityList, WinData.empty(), editable));
+        });
+      }
+
+      var dateKey = toCompact(date);
+
+      if (cache.containsKey(dateKey)) {
+        return Future<void>.delayed(Duration.zero, () {
+          dispatch(DailyWinViewLoaded(
+              date, today, priorityList, cache[dateKey], editable));
+        });
+      }
+
+      return getWin(dateKey, GoogleSignInFacade.getIdToken).then((json) {
+        var winData = WinData.fromJson(json);
+        cache[dateKey] = winData;
+        dispatch(
+            DailyWinViewLoaded(date, today, priorityList, winData, editable));
       });
-      return;
-    }
-
-    var dateKey = toCompact(date);
-
-    if (cache.containsKey(dateKey)) {
-      Future<void>.delayed(Duration.zero, () {
-        dispatch(DailyWinViewLoaded(date, today, cache[dateKey], editable));
-      });
-      return;
-    }
-
-    getWin(dateKey, GoogleSignInFacade.getIdToken).then((json) {
-      var winData = WinData.fromJson(json);
-      cache[dateKey] = winData;
-      dispatch(DailyWinViewLoaded(date, today, winData, editable));
     }).catchError((err) {
       dispatch(DailyWinViewLoadingFailed(date, today, err.toString()));
     });

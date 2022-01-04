@@ -475,14 +475,30 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
                                 endIndent: 64,
                               ),
                               Expanded(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(
-                                          TEXT_PADDING * 1.6),
-                                      child: Text(model.win.text,
-                                          style: GoogleFonts.openSans(
-                                              textStyle: const TextStyle(
-                                                  fontSize:
-                                                      TEXT_FONT_SIZE * 1.4)))))
+                                  child: SingleChildScrollView(
+                                      child: Column(children: [
+                                Row(children: [
+                                  Expanded(
+                                      child: Padding(
+                                          padding: const EdgeInsets.all(
+                                              TEXT_PADDING * 1.6),
+                                          child: Text(model.win.text,
+                                              style: GoogleFonts.openSans(
+                                                  textStyle: const TextStyle(
+                                                      fontSize: TEXT_FONT_SIZE *
+                                                          1.4)))))
+                                ]),
+                                Row(children: [
+                                  Expanded(
+                                      child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: TEXT_PADDING * 1.6,
+                                              right: TEXT_PADDING * 1.6,
+                                              bottom: TEXT_PADDING * 1.6),
+                                          child: dailyWinPriorityMap(
+                                              model, dispatch)))
+                                ])
+                              ])))
                             ]);
                       } else {
                         return const Padding(
@@ -501,6 +517,60 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
               backgroundColor: denimBlue,
             )
           : null));
+}
+
+Widget dailyWinPriorityMap(
+    DailyWinModel model, void Function(Message) dispatch) {
+  var rows = model.priorityList.items
+      .where((x) => model.win.priorities.containsKey(x.id))
+      .map((x) => Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(children: [
+            Container(
+                height: 32.0,
+                width: 32.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.0),
+                    color: getPriorityBoxColor(x.color))),
+            Flexible(
+                child: Wrap(children: [
+              Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Text(x.text,
+                      style: GoogleFonts.openSans(
+                          textStyle:
+                              const TextStyle(fontSize: TEXT_FONT_SIZE))))
+            ]))
+          ])))
+      .toList();
+
+  if (model.priorityList.items.isNotEmpty) {
+    bool editMode = false;
+    if (rows.isNotEmpty) {
+      editMode = true;
+    }
+
+    rows.add(Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: GestureDetector(
+            onTap: () {
+              dispatch(LinkWinToPriorities(
+                  model.date, model.today, model.win, model.priorityList));
+            },
+            child: Row(children: [
+              editMode ? const Icon(Icons.edit) : const Icon(Icons.link),
+              Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Text(editMode ? "modify" : "link to your priorities",
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(
+                              color: denimBlue,
+                              decoration: TextDecoration.underline,
+                              fontSize: TEXT_FONT_SIZE)))),
+            ]))));
+  }
+
+  return Column(children: rows);
 }
 
 Widget drawer(BuildContext context, DateTime date, DateTime today,
@@ -1066,7 +1136,7 @@ Widget editPriorities(
     ),
     body: WillPopScope(
         onWillPop: () async {
-          dispatch(ExitPrioritiesRequested(model.date, model.today));
+          dispatch(CancelEditingPrioritiesRequested(model.date, model.today));
           return false;
         },
         child: Stack(children: [

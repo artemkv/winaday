@@ -43,10 +43,12 @@ class UserSignedOut implements Message {}
 class DailyWinViewLoaded implements Message {
   final DateTime date;
   final DateTime today;
+  final PriorityListData priorityList;
   final WinData win;
   final bool editable;
 
-  DailyWinViewLoaded(this.date, this.today, this.win, this.editable);
+  DailyWinViewLoaded(
+      this.date, this.today, this.priorityList, this.win, this.editable);
 }
 
 class DailyWinViewLoadingFailed implements Message {
@@ -241,6 +243,13 @@ class DeletePriorityRequested implements Message {
 
   DeletePriorityRequested(
       this.date, this.today, this.priorityList, this.priority);
+}
+
+class CancelEditingPrioritiesRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  CancelEditingPrioritiesRequested(this.date, this.today);
 }
 
 class CancelEditingPriorityRequested implements Message {

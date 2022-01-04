@@ -53,10 +53,12 @@ class DailyWinFailedToLoadModel extends Model {
 class DailyWinModel extends Model {
   final DateTime date;
   final DateTime today;
+  final PriorityListData priorityList;
   final WinData win;
   final bool editable;
 
-  DailyWinModel(this.date, this.today, this.win, this.editable);
+  DailyWinModel(
+      this.date, this.today, this.priorityList, this.win, this.editable);
 }
 
 class WinEditorModel extends Model {
