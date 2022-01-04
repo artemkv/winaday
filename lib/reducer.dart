@@ -222,18 +222,12 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, message.priorityList, message.win));
   }
   if (message is ToggleWinPriority) {
-    Map<String, PriorityData> udpatedPriorities;
-    if (message.win.priorities.containsKey(message.priority.id)) {
-      udpatedPriorities = {
-        for (var item in message.win.priorities.values
-            .where((x) => x.id != message.priority.id))
-          item.id: item
-      };
+    Set<String> udpatedPriorities;
+    if (message.win.priorities.contains(message.priority.id)) {
+      udpatedPriorities =
+          message.win.priorities.where((x) => x != message.priority.id).toSet();
     } else {
-      udpatedPriorities = {
-        for (var item in message.win.priorities.values) item.id: item
-      };
-      udpatedPriorities[message.priority.id] = message.priority;
+      udpatedPriorities = message.win.priorities.union({message.priority.id});
     }
 
     var updatedWin =

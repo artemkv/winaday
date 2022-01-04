@@ -523,7 +523,7 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
 Widget dailyWinPriorityMap(
     DailyWinModel model, void Function(Message) dispatch) {
   var rows = model.priorityList.items
-      .where((x) => model.win.priorities.containsKey(x.id))
+      .where((x) => model.win.priorities.contains(x.id))
       .map((x) => Padding(
           padding: const EdgeInsets.all(4.0),
           child: Row(children: [
@@ -1332,7 +1332,7 @@ Widget editWinPriorities(
 
 Widget priorityBoxSelectable(EditWinPrioritiesModel model,
     PriorityData priority, void Function(Message) dispatch) {
-  bool isSelected = model.win.priorities.containsKey(priority.id);
+  bool isSelected = model.win.priorities.contains(priority.id);
   return GestureDetector(
       onTap: () {
         dispatch(ToggleWinPriority(
