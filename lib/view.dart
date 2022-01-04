@@ -382,7 +382,6 @@ Widget dailyWinFailedToLoad(BuildContext context,
       body: Center(
           child: Column(children: [
         calendarStripe(context, model.date, model.today, dispatch),
-        // TODO: maybe think about nicer way to show errors
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
             child: Text("Failed to contact the server: " + model.reason,
@@ -695,7 +694,6 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // TODO: not localized
                   GestureDetector(
                       onTap: () {
                         dispatch(MoveToDay(week[0], today));
@@ -842,7 +840,6 @@ Widget winEditorFailedToSave(
     ),
     body: Center(
         child: Column(children: [
-      // TODO: maybe think about nicer way to show errors
       Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
           child: Text("Failed to contact the server: " + model.reason,
@@ -869,7 +866,6 @@ Widget priorityEditorFailedToSave(
     ),
     body: Center(
         child: Column(children: [
-      // TODO: maybe think about nicer way to show errors
       Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
           child: Text("Failed to contact the server: " + model.reason,
@@ -1177,7 +1173,7 @@ Widget draggablePriorityBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.0),
             color: priorityColors[priority.color],
-          )), // TODO: make sure colors do not go out of range
+          )),
       childWhenDragging: exchangeWith != null
           ? priorityBox(exchangeWith)
           : priorityBox(priority),
