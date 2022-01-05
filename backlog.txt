@@ -53,7 +53,7 @@
     - --Showing priority in dailyWin view makes text center-aligned--
     - --Long priority does not fit in daily view screen--
     - --Save as a part of win (not saved now, issue with caching)--
-    - Cache loaded priorities
+    - --Cache loaded priorities--
     - Deleted priorities should still show in the daily view, if linked
     - However, when editing priorities of a win, all deleted priorities should unlink automatically
 

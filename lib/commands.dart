@@ -11,9 +11,10 @@ import 'dateutil.dart';
 
 // This is the only place where side-effects are allowed!
 
-var uuid = Uuid();
+var uuid = const Uuid();
 
 LruMap cache = LruMap(maximumSize: 100);
+PriorityListData? cachedPriorities;
 
 abstract class Command {
   void execute(void Function(Message) dispatch);
@@ -76,6 +77,7 @@ class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     cache.clear();
+    cachedPriorities = null;
     killSession();
     GoogleSignInFacade.signOut().then((_) {
       dispatch(UserSignedOut());
@@ -95,10 +97,7 @@ class LoadDailyWin implements Command {
     var today = DateTime.now();
     bool editable = date.isSameDate(today) || date.isBefore(today);
 
-    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
-      var priorityList = PriorityListData.fromJson(json);
-      return priorityList;
-    }).then((priorityList) {
+    loadPriorities().then((priorityList) {
       if (!editable) {
         return Future<void>.delayed(Duration.zero, () {
           dispatch(DailyWinViewLoaded(
@@ -161,8 +160,7 @@ class LoadPriorities implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
-    getPriorities(GoogleSignInFacade.getIdToken).then((json) {
-      var priorityList = PriorityListData.fromJson(json);
+    loadPriorities().then((priorityList) {
       dispatch(PrioritiesLoaded(date, today, priorityList));
     }).catchError((err) {
       dispatch(PrioritiesLoadingFailed(date, today, err.toString()));
@@ -200,9 +198,24 @@ class SavePriorities implements Command {
     var today = DateTime.now();
 
     postPriorities(priorities, GoogleSignInFacade.getIdToken).then((_) {
+      cachedPriorities = priorities;
       dispatch(NavigateToPrioritiesRequested(date, today));
     }).catchError((err) {
       dispatch(SavingPrioritiesFailed(date, priorities, err.toString()));
     });
   }
+}
+
+Future<PriorityListData> loadPriorities() async {
+  if (cachedPriorities != null) {
+    return Future<PriorityListData>.delayed(Duration.zero, () {
+      return cachedPriorities!;
+    });
+  }
+
+  return getPriorities(GoogleSignInFacade.getIdToken).then((json) {
+    var priorityList = PriorityListData.fromJson(json);
+    cachedPriorities = priorityList;
+    return priorityList;
+  });
 }
