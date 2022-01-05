@@ -18,14 +18,14 @@ class WinData {
   WinData.empty()
       : text = "",
         overallResult = OverallDayResult.noWinYet,
-        priorities = {};
+        priorities = <String>{};
 
   WinData.fromJson(Map<String, dynamic> json)
       : text = json['text'],
         overallResult = json['overall'],
         priorities = json['priorities'] != null
             ? json['priorities'].cast<String>().toSet()
-            : {};
+            : <String>{};
 
   Map<String, dynamic> toJson() => {
         'text': text,

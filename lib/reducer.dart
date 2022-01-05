@@ -222,13 +222,8 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, message.priorityList, message.win));
   }
   if (message is ToggleWinPriority) {
-    Set<String> udpatedPriorities;
-    if (message.win.priorities.contains(message.priority.id)) {
-      udpatedPriorities =
-          message.win.priorities.where((x) => x != message.priority.id).toSet();
-    } else {
-      udpatedPriorities = message.win.priorities.union({message.priority.id});
-    }
+    Set<String> udpatedPriorities = getUpdatedWinPriorities(
+        message.win, message.priority, message.priorityList);
 
     var updatedWin =
         WinData(message.win.text, message.win.overallResult, udpatedPriorities);
@@ -246,4 +241,23 @@ bool canAddMorePriorities(PriorityListData priorityList) {
           .toList()
           .length <
       9;
+}
+
+Set<String> getUpdatedWinPriorities(
+    WinData win, PriorityData toggledPriority, PriorityListData priorityList) {
+  Set<String> activePriorities =
+      priorityList.items.where((x) => !x.deleted).map((x) => x.id).toSet();
+
+  Set<String> udpatedPriorities;
+  if (win.priorities.contains(toggledPriority.id)) {
+    udpatedPriorities = win.priorities
+        .where((x) => activePriorities.contains(x) && x != toggledPriority.id)
+        .toSet();
+  } else {
+    udpatedPriorities = win.priorities
+        .where((x) => activePriorities.contains(x))
+        .toSet()
+        .union({toggledPriority.id});
+  }
+  return udpatedPriorities;
 }

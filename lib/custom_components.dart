@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 
 import 'domain.dart';
@@ -44,6 +42,7 @@ class _WinEditorState extends State<WinEditor> {
             icon: const Icon(Icons.check),
             tooltip: 'Save',
             onPressed: () {
+              // TODO: consider passing updated values to the message and then constructing new win in the reducer
               var updatedWin = WinData(_controller.text,
                   widget.model.win.overallResult, widget.model.win.priorities);
               widget.dispatch(WinChangesConfirmed(widget.model.date,
