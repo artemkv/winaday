@@ -74,7 +74,11 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadDailyWin(message.date));
   }
   if (message is WinChangesConfirmed) {
-    if (message.win.priorities.isEmpty) {
+    if (message.win.priorities.isEmpty &&
+        message.priorityList.items
+            .where((x) => !x.deleted)
+            .isNotEmpty) // consider adding activeItems property on PriorityListData object
+    {
       return ModelAndCommand.justModel(EditWinPrioritiesModel(
           message.date, message.today, message.priorityList, message.win));
     } else {

@@ -45,6 +45,7 @@
 - Use priorities
     - --Allow selecting on save of win--
     - --Only propose assigning priorities after editing win when no priorities are assigned yet, otherwise directly save the win--
+    - --Only propose assigning priorities after editing win when there are active priorities to assign to--
     - --Allow changing when in win editor - rejected--
     - --Show in daily view, using colors or tags--
     - --Allow editing directly from day view--
