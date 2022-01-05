@@ -544,7 +544,8 @@ Widget dailyWinPriorityMap(
           ])))
       .toList();
 
-  if (model.priorityList.items.isNotEmpty) {
+  // TODO: consider adding activeItems property on PriorityListData object
+  if (model.priorityList.items.where((x) => !x.deleted).isNotEmpty) {
     bool editMode = false;
     if (rows.isNotEmpty) {
       editMode = true;

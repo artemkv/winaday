@@ -56,7 +56,7 @@
     - --Cache loaded priorities--
     - --Deleted priorities should still show in the daily view, if linked--
     - --However, when editing priorities of a win, all deleted priorities should unlink automatically--
-    - Only show "link to priorities/edit" link if there are active priorities
+    - --Only show "link to priorities/edit" link if there are active priorities--
 
 !! UX
 
