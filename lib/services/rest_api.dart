@@ -83,7 +83,7 @@ Future<dynamic> postJson(String endpoint, Object data,
     headers['x-session'] = session;
   }
 
-  print("JSON to POST: " + jsonEncode(data));
+  // print("JSON to POST: " + jsonEncode(data));
 
   try {
     var response =

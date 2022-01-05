@@ -189,19 +189,19 @@ class CreateNewPriority implements Command {
 
 class SavePriorities implements Command {
   final DateTime date;
-  final PriorityListData priorities;
+  final PriorityListData priorityList;
 
-  SavePriorities(this.date, this.priorities);
+  SavePriorities(this.date, this.priorityList);
 
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
 
-    postPriorities(priorities, GoogleSignInFacade.getIdToken).then((_) {
-      cachedPriorities = priorities;
+    postPriorities(priorityList, GoogleSignInFacade.getIdToken).then((_) {
+      cachedPriorities = priorityList;
       dispatch(NavigateToPrioritiesRequested(date, today));
     }).catchError((err) {
-      dispatch(SavingPrioritiesFailed(date, priorities, err.toString()));
+      dispatch(SavingPrioritiesFailed(date, priorityList, err.toString()));
     });
   }
 }
