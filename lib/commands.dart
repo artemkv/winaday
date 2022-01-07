@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:winaday/domain.dart';
-import 'package:intl/intl.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:quiver/collection.dart';
 import 'services/google_sign_in.dart';
@@ -147,11 +146,6 @@ class SaveWin implements Command {
   }
 }
 
-String toCompact(DateTime date) {
-  final DateFormat formatter = DateFormat('yyyyMMdd');
-  return formatter.format(date);
-}
-
 class LoadPriorities implements Command {
   final DateTime date;
 
@@ -218,4 +212,25 @@ Future<PriorityListData> loadPriorities() async {
     cachedPriorities = priorityList;
     return priorityList;
   });
+}
+
+class LoadWeekWins implements Command {
+  final DateTime date;
+
+  LoadWeekWins(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    loadPriorities().then((priorityList) {
+      return getWeekWins(toCompact(date), GoogleSignInFacade.getIdToken)
+          .then((json) {
+        var winList = WinListData.fromJson(json);
+        dispatch(WeekWinsLoaded(date, today, priorityList, winList.items));
+      });
+    }).catchError((err) {
+      dispatch(WeekWinsLoadingFailed(date, today, err.toString()));
+    });
+  }
 }

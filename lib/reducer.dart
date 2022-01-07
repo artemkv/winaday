@@ -1,4 +1,5 @@
 import 'package:winaday/domain.dart';
+import 'package:winaday/view.dart';
 
 import 'model.dart';
 import 'messages.dart';
@@ -236,6 +237,27 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, message.priorityList, updatedWin));
   }
 
+  if (message is NavigateToWinListRequested) {
+    return ModelAndCommand(WinListLoadingModel(message.date, message.today),
+        LoadWeekWins(message.date));
+  }
+  if (message is BackToDailyWinViewRequested) {
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
+  }
+  if (message is WeekWinsLoaded) {
+    return ModelAndCommand.justModel(WinListModel(message.date, message.today,
+        message.priorityList, toWinListItems(message.wins)));
+  }
+  if (message is WeekWinsLoadingFailed) {
+    return ModelAndCommand.justModel(
+        WinListFailedToLoadModel(message.date, message.today, message.reason));
+  }
+  if (message is WeekWinsReloadRequested) {
+    return ModelAndCommand(WinListLoadingModel(message.date, message.today),
+        LoadWeekWins(message.date));
+  }
+
   return ModelAndCommand.justModel(model);
 }
 
@@ -264,4 +286,8 @@ Set<String> getUpdatedWinPriorities(
         .union({toggledPriority.id});
   }
   return udpatedPriorities;
+}
+
+List<WinListItem> toWinListItems(List<WinOnDayData> wins) {
+  return wins.map((x) => WinListItem(x.date, x.win)).toList();
 }

@@ -154,3 +154,34 @@ class EditWinPrioritiesModel extends Model {
 
   EditWinPrioritiesModel(this.date, this.today, this.priorityList, this.win);
 }
+
+class WinListLoadingModel extends Model {
+  final DateTime date;
+  final DateTime today;
+
+  WinListLoadingModel(this.date, this.today);
+}
+
+class WinListModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final List<WinListItem> wins;
+
+  WinListModel(this.date, this.today, this.priorityList, this.wins);
+}
+
+class WinListItem {
+  final DateTime date;
+  final WinData win;
+
+  WinListItem(this.date, this.win);
+}
+
+class WinListFailedToLoadModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  WinListFailedToLoadModel(this.date, this.today, this.reason);
+}

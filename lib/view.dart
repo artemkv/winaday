@@ -89,6 +89,16 @@ Widget home(
     return editWinPriorities(model, dispatch);
   }
 
+  if (model is WinListLoadingModel) {
+    return winListLoading(model, dispatch);
+  }
+  if (model is WinListModel) {
+    return winList(model, dispatch);
+  }
+  if (model is WinListFailedToLoadModel) {
+    return winListFailedToLoad(model, dispatch);
+  }
+
   return unknownModel(model);
 }
 
@@ -673,7 +683,10 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                       child: Center(
                           child: GestureDetector(
                               onTap: () {
-                                dispatch(MoveToDay(today, today));
+                                dispatch(
+                                    NavigateToWinListRequested(date, today));
+                                // TODO: moving to today should still be possible
+                                // dispatch(MoveToDay(today, today));
                               },
                               child: Padding(
                                   padding: const EdgeInsets.all(4.0),
@@ -1348,4 +1361,131 @@ Widget priorityBoxSelectable(EditWinPrioritiesModel model,
                             shape: BoxShape.circle, color: Colors.white))))
             : Container())
       ]));
+}
+
+Widget winListLoading(
+    WinListLoadingModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('One win a day'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(BackToDailyWinViewRequested(model.date, model.today));
+          return false;
+        },
+        child: Center(child: Column(children: [Expanded(child: spinner())]))),
+  );
+}
+
+Widget winListFailedToLoad(
+    WinListFailedToLoadModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('One win a day'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(BackToDailyWinViewRequested(model.date, model.today));
+          return false;
+        },
+        child: Center(
+            child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.all(TEXT_PADDING),
+              child: Text("Failed to contact the server: " + model.reason,
+                  style: const TextStyle(
+                      fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+          Expanded(
+              child: GestureDetector(
+                  onTap: () {
+                    dispatch(WeekWinsReloadRequested(model.date, model.today));
+                  },
+                  child: Center(
+                      child: Text("Click to reload",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  color: Colors.grey))))))
+        ]))),
+  );
+}
+
+Widget winList(WinListModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('One win a day'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(BackToDailyWinViewRequested(model.date, model.today));
+          return false;
+        },
+        child: ListView.separated(
+          reverse: true,
+          itemCount: model.wins.length,
+          separatorBuilder: (BuildContext context, int index) => const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 72,
+            endIndent: 24,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            int reverseIndex = model.wins.length - index - 1;
+            return ListTile(
+              title: winListItem(
+                  model.priorityList,
+                  model.wins[reverseIndex].date,
+                  model.wins[reverseIndex].win,
+                  dispatch),
+            );
+          },
+        )),
+  );
+}
+
+Widget winListItem(PriorityListData priorityList, DateTime date, WinData win,
+    void Function(Message) dispatch) {
+  List<Widget> summary = [Text(overallDayResultEmoji(win.overallResult))];
+  summary.addAll(getPriorityColorBoxes(priorityList, win));
+
+  return Column(children: [
+    Row(children: [
+      Padding(
+          padding: const EdgeInsets.all(TEXT_PADDING),
+          child: Text(date.day.toString().padLeft(2, '0'),
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold)))),
+      Expanded(
+          child: Padding(
+        padding: const EdgeInsets.all(TEXT_PADDING),
+        child: Flexible(
+            child: Wrap(children: [
+          Text(win.text,
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(fontSize: TEXT_FONT_SIZE))),
+          Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Row(children: summary)),
+        ])),
+      )),
+    ])
+  ]);
+}
+
+Iterable<Widget> getPriorityColorBoxes(
+    PriorityListData priorityList, WinData win) {
+  return priorityList.items.where((x) => win.priorities.contains(x.id)).map(
+      (x) => Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Container(
+              height: 20.0,
+              width: 20.0,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2.0),
+                  color: getPriorityBoxColor(x.color)))));
 }

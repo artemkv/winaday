@@ -1,5 +1,7 @@
 // These should be all immutable containers, no logic
 
+import 'package:winaday/dateutil.dart';
+
 class OverallDayResult {
   static const noWinYet = 0;
   static const gotMyWin = 1;
@@ -66,4 +68,28 @@ class PriorityData {
 
   Map<String, dynamic> toJson() =>
       {'id': id, 'text': text, 'color': color, 'deleted': deleted};
+}
+
+class WinListData {
+  final List<WinOnDayData> items;
+
+  WinListData(this.items);
+
+  WinListData.empty() : items = List.empty();
+
+  WinListData.fromJson(Map<String, dynamic> json)
+      : items = (json['items'] as List)
+            .map((x) => WinOnDayData.fromJson(x))
+            .toList();
+}
+
+class WinOnDayData {
+  final DateTime date;
+  final WinData win;
+
+  WinOnDayData(this.date, this.win);
+
+  WinOnDayData.fromJson(Map<String, dynamic> json)
+      : date = fromCompact(json['date']),
+        win = WinData.fromJson(json['win']);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 const monthNames = <String>[
   "January",
@@ -53,4 +54,17 @@ extension DateOnlyCompare on DateTime {
   bool isSameDate(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
+}
+
+String toCompact(DateTime date) {
+  final DateFormat format = DateFormat('yyyyMMdd');
+  return format.format(date);
+}
+
+DateTime fromCompact(String date) {
+  // Apparently, without any separators, format parses the whole value as a year
+  String preFormatted =
+      "${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}";
+  final DateFormat format = DateFormat('yyyy-MM-dd');
+  return format.parse(preFormatted);
 }

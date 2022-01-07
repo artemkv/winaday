@@ -297,3 +297,41 @@ class ToggleWinPriority implements Message {
   ToggleWinPriority(
       this.date, this.today, this.win, this.priorityList, this.priority);
 }
+
+class NavigateToWinListRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  NavigateToWinListRequested(this.date, this.today);
+}
+
+class BackToDailyWinViewRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  BackToDailyWinViewRequested(this.date, this.today);
+}
+
+class WeekWinsLoaded implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final List<WinOnDayData> wins;
+
+  WeekWinsLoaded(this.date, this.today, this.priorityList, this.wins);
+}
+
+class WeekWinsLoadingFailed implements Message {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  WeekWinsLoadingFailed(this.date, this.today, this.reason);
+}
+
+class WeekWinsReloadRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  WeekWinsReloadRequested(this.date, this.today);
+}

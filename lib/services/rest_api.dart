@@ -5,7 +5,8 @@ import 'dart:convert';
 // http://10.0.2.2:8700
 // Real device:
 // http://192.168.0.16:8700
-const BASE_URL = 'https://winaday.artemkv.net:8700';
+// const BASE_URL = 'https://winaday.artemkv.net:8700';
+const BASE_URL = 'http://192.168.0.16:8700';
 
 class ApiException implements Exception {
   int statusCode;
@@ -54,6 +55,9 @@ void handleErrors(http.Response response) {
 }
 
 dynamic getData(http.Response response) {
+// TODO: remove
+  print("RECEIVED: " + response.body);
+
   ApiResponseData dataResponse =
       ApiResponseData.fromJson(jsonDecode(response.body));
   return dataResponse.data;
@@ -112,4 +116,8 @@ Future<dynamic> getPriorities(String session) async {
 
 Future<dynamic> postPriorities(Object data, String session) async {
   return await postJson('/priorities', data, session: session);
+}
+
+Future<dynamic> getWeekWins(String date, String session) async {
+  return await getJson('/wins/week/$date', session);
 }

@@ -1,3 +1,5 @@
+v1.0
+
 - --Error screens v1--
 - --UI state for no win registered--
 - --Allow registering the day overall quality--
@@ -26,8 +28,9 @@
 - --token_id is only valid for 1 hour and does not renew, forcing to reload the app, need to refresh token--
 - --caching should be re-set on sign out. Now it is re-used across accounts--
 - --On different devices and versions of Android the calendar stripe does not fit the screen--
+- --Daily win view is now overflowing in landscape or when there is too many lines--
 
-!! Features
+v1.1 Priorities
 
 - Priorities
     - --Load priorities screen--
@@ -60,13 +63,17 @@
     - --Only show "link to priorities/edit" link if there are active priorities--
     - Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
 
+
+TODO:
+
+!! Features
+
+
 !! UX
 
-- Daily win view is now overflowing in landscape or when there is too many lines
+- Click to reload should work on the whole area, not only the text
 - When changed day overall result, but no win text, does not show overall result in daily win view
-
 - Show the days that have wins marked with dots
-
 - Double-check that all gesture detectors are wrapping containers and not inner elements
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
 - The editor shows previous text very quickly before being updated with the new one
@@ -77,6 +84,7 @@
 !! Infrastructure
 
 - Use @immutable where makes sense
+- Use LayoutBuilder when need to measure the screen size
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:
 I/flutter (15668): Error: google_fonts was unable to load font YesevaOne-Regular because the following exception occured:
