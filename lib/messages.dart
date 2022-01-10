@@ -312,26 +312,50 @@ class BackToDailyWinViewRequested implements Message {
   BackToDailyWinViewRequested(this.date, this.today);
 }
 
-class WeekWinsLoaded implements Message {
+class WinListFirstPageLoaded implements Message {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
+  final DateTime from;
+  final DateTime to;
   final List<WinOnDayData> wins;
 
-  WeekWinsLoaded(this.date, this.today, this.priorityList, this.wins);
+  WinListFirstPageLoaded(
+      this.date, this.today, this.priorityList, this.from, this.to, this.wins);
 }
 
-class WeekWinsLoadingFailed implements Message {
+class WinListFirstPageLoadingFailed implements Message {
   final DateTime date;
   final DateTime today;
   final String reason;
+  final DateTime from;
+  final DateTime to;
 
-  WeekWinsLoadingFailed(this.date, this.today, this.reason);
+  WinListFirstPageLoadingFailed(
+      this.date, this.today, this.from, this.to, this.reason);
 }
 
-class WeekWinsReloadRequested implements Message {
+class WinListFirstPageReloadRequested implements Message {
   final DateTime date;
   final DateTime today;
+  final DateTime from;
+  final DateTime to;
 
-  WeekWinsReloadRequested(this.date, this.today);
+  WinListFirstPageReloadRequested(this.date, this.today, this.from, this.to);
+}
+
+class LoadWinListNextPageRequested implements Message {}
+
+class WinListNextPageLoaded implements Message {
+  final List<WinOnDayData> wins;
+  final DateTime from;
+  final DateTime to;
+
+  WinListNextPageLoaded(this.from, this.to, this.wins);
+}
+
+class WinListNextPageLoadingFailed implements Message {
+  final String reason;
+
+  WinListNextPageLoadingFailed(this.reason);
 }

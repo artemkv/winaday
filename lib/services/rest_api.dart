@@ -118,6 +118,6 @@ Future<dynamic> postPriorities(Object data, String session) async {
   return await postJson('/priorities', data, session: session);
 }
 
-Future<dynamic> getWeekWins(String date, String session) async {
-  return await getJson('/wins/week/$date', session);
+Future<dynamic> getWins(String from, String to, String session) async {
+  return await getJson('/wins/$from/$to', session);
 }

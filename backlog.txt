@@ -68,6 +68,17 @@ TODO:
 
 !! Features
 
+- ListView
+    - --request using from-to for flexibility and control--
+    - --get the dates logic right--
+    - navigate to day when clicked on list item
+    - when loading list view, should probably always start from today, not the currently selected day
+    - --when loading a week returns nothing, it's completely unclear what happened, probably need to create empty items for missing days--
+    - --one week is very short, the load more trigger stays in the middle of the screen, so probably I need to load at least two weeks in advance--
+    - consider making list item a widget, not a function, for performance reasons
+    - cache the results
+    - check how errors are handled
+
 
 !! UX
 

@@ -59,6 +59,7 @@ Future<dynamic> postPriorities(
   return callApi(() => rest.postPriorities(data, session), getIdToken);
 }
 
-Future<dynamic> getWeekWins(String date, Future<String> Function() getIdToken) {
-  return callApi(() => rest.getWeekWins(date, session), getIdToken);
+Future<dynamic> getWins(
+    String from, String to, Future<String> Function() getIdToken) {
+  return callApi(() => rest.getWins(from, to, session), getIdToken);
 }

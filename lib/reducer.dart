@@ -1,3 +1,4 @@
+import 'package:winaday/dateutil.dart';
 import 'package:winaday/domain.dart';
 import 'package:winaday/view.dart';
 
@@ -238,24 +239,56 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is NavigateToWinListRequested) {
-    return ModelAndCommand(WinListLoadingModel(message.date, message.today),
-        LoadWeekWins(message.date));
+    return ModelAndCommand(
+        WinListLoadingModel(message.date, message.today),
+        LoadWinListFirstPage(message.date,
+            message.date.subtract(const Duration(days: 13)), message.date));
   }
   if (message is BackToDailyWinViewRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
         LoadDailyWin(message.date));
   }
-  if (message is WeekWinsLoaded) {
-    return ModelAndCommand.justModel(WinListModel(message.date, message.today,
-        message.priorityList, toWinListItems(message.wins)));
+  if (message is WinListFirstPageLoaded) {
+    return ModelAndCommand.justModel(WinListModel(
+        message.date,
+        message.today,
+        message.priorityList,
+        message.from,
+        toWinListItems(message.from, message.to, message.wins)));
   }
-  if (message is WeekWinsLoadingFailed) {
-    return ModelAndCommand.justModel(
-        WinListFailedToLoadModel(message.date, message.today, message.reason));
+  if (message is WinListFirstPageLoadingFailed) {
+    return ModelAndCommand.justModel(WinListFailedToLoadModel(
+        message.date, message.today, message.from, message.to, message.reason));
   }
-  if (message is WeekWinsReloadRequested) {
+  if (message is WinListFirstPageReloadRequested) {
+    // TODO: not tested
     return ModelAndCommand(WinListLoadingModel(message.date, message.today),
-        LoadWeekWins(message.date));
+        LoadWinListFirstPage(message.date, message.from, message.to));
+  }
+  if (message is LoadWinListNextPageRequested) {
+    if (model is WinListModel) {
+      var updatedItems = <WinListItem>[WinListItemLoadingMore()];
+      updatedItems.addAll(model.items.getRange(
+          1, model.items.length)); // old items except the load more trigger
+      return ModelAndCommand(
+          WinListModel(model.date, model.today, model.priorityList, model.date,
+              updatedItems),
+          LoadWinListNextPage(
+              model.date,
+              model.from.subtract(const Duration(days: 7)),
+              model.from.subtract(const Duration(days: 1))));
+    }
+  }
+  if (message is WinListNextPageLoaded) {
+    if (model is WinListModel) {
+      var updatedItems =
+          List.of(toWinListItems(message.from, message.to, message.wins));
+      updatedItems.addAll(model.items.getRange(
+          1, model.items.length)); // old items except the load more trigger
+
+      return ModelAndCommand.justModel(WinListModel(model.date, model.today,
+          model.priorityList, message.from, updatedItems));
+    }
   }
 
   return ModelAndCommand.justModel(model);
@@ -288,6 +321,48 @@ Set<String> getUpdatedWinPriorities(
   return udpatedPriorities;
 }
 
-List<WinListItem> toWinListItems(List<WinOnDayData> wins) {
-  return wins.map((x) => WinListItem(x.date, x.win)).toList();
+List<WinListItem> toWinListItems(
+    DateTime from, final DateTime to, List<WinOnDayData> wins) {
+  var winsByDate = {for (var x in wins) toCompact(x.date): x.win};
+
+  List<WinListItem> winListItems = [];
+  winListItems.add(WinListItemLoadMoreTrigger());
+
+  var day = from;
+  var prevDay = day;
+  while (day.isBefore(to) || day.isSameDate(to)) {
+    if (prevDay.year != day.year) {
+      winListItems.add(WinListItemYearSeparator(day.year));
+    }
+    if (prevDay.month != day.month) {
+      winListItems.add(WinListItemMonthSeparator(day.month));
+    }
+
+    if (winsByDate.containsKey(toCompact(day))) {
+      winListItems.add(WinListItemWin(day, winsByDate[toCompact(day)]!));
+    } else {
+      winListItems.add(WinListItemNoWin(day));
+    }
+    prevDay = day;
+    day = day.add(const Duration(days: 1));
+  }
+
+/*
+  for (var i = 0; i < wins.length; i++) {
+    var winOnDay = wins[i];
+    if (i > 0) {
+      var winOnPrevDay = wins[i - 1];
+      if (winOnPrevDay.date.year != winOnDay.date.year) {
+        winListItems.add(WinListItemYearSeparator(winOnDay.date.year));
+      }
+      if (winOnPrevDay.date.month != winOnDay.date.month) {
+        winListItems.add(WinListItemMonthSeparator(winOnDay.date.month));
+      }
+    }
+
+    winListItems.add(WinListItemWin(winOnDay.date, winOnDay.win));
+    //winListItems.add(WinListItemNoWin(winOnDay.date));
+  }
+  */
+  return winListItems;
 }

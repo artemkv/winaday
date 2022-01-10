@@ -214,23 +214,47 @@ Future<PriorityListData> loadPriorities() async {
   });
 }
 
-class LoadWeekWins implements Command {
+class LoadWinListFirstPage implements Command {
   final DateTime date;
+  final DateTime from;
+  final DateTime to;
 
-  LoadWeekWins(this.date);
+  LoadWinListFirstPage(this.date, this.from, this.to);
 
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
 
     loadPriorities().then((priorityList) {
-      return getWeekWins(toCompact(date), GoogleSignInFacade.getIdToken)
+      return getWins(
+              toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
           .then((json) {
         var winList = WinListData.fromJson(json);
-        dispatch(WeekWinsLoaded(date, today, priorityList, winList.items));
+        dispatch(WinListFirstPageLoaded(
+            date, today, priorityList, from, to, winList.items));
       });
     }).catchError((err) {
-      dispatch(WeekWinsLoadingFailed(date, today, err.toString()));
+      dispatch(
+          WinListFirstPageLoadingFailed(date, today, from, to, err.toString()));
+    });
+  }
+}
+
+class LoadWinListNextPage implements Command {
+  final DateTime date;
+  final DateTime from;
+  final DateTime to;
+
+  LoadWinListNextPage(this.date, this.from, this.to);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    getWins(toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
+        .then((json) {
+      var winList = WinListData.fromJson(json);
+      dispatch(WinListNextPageLoaded(from, to, winList.items));
+    }).catchError((err) {
+      dispatch(WinListNextPageLoadingFailed(err.toString()));
     });
   }
 }

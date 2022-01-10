@@ -1,6 +1,8 @@
 // Should all be immutable classes and no logic!
 // No side effects allowed!
 
+import 'package:flutter/cupertino.dart';
+
 import 'domain.dart';
 
 abstract class Model {
@@ -166,22 +168,98 @@ class WinListModel extends Model {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
-  final List<WinListItem> wins;
+  final DateTime from;
+  final List<WinListItem> items;
 
-  WinListModel(this.date, this.today, this.priorityList, this.wins);
+  WinListModel(this.date, this.today, this.priorityList, this.from, this.items);
 }
 
-class WinListItem {
+class WinListItem {}
+
+class WinListItemWin extends WinListItem {
   final DateTime date;
   final WinData win;
 
-  WinListItem(this.date, this.win);
+  WinListItemWin(this.date, this.win);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemWin && date == other.date && win == other.win;
+  }
+
+  @override
+  int get hashCode => hashValues(date, win);
+}
+
+class WinListItemNoWin extends WinListItem {
+  final DateTime date;
+
+  WinListItemNoWin(this.date);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemNoWin && date == other.date;
+  }
+
+  @override
+  int get hashCode => date.hashCode;
+}
+
+class WinListItemMonthSeparator extends WinListItem {
+  final int month;
+
+  WinListItemMonthSeparator(this.month);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemMonthSeparator && month == other.month;
+  }
+
+  @override
+  int get hashCode => month.hashCode;
+}
+
+class WinListItemYearSeparator extends WinListItem {
+  final int year;
+
+  WinListItemYearSeparator(this.year);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemYearSeparator && year == other.year;
+  }
+
+  @override
+  int get hashCode => year.hashCode;
+}
+
+class WinListItemLoadMoreTrigger extends WinListItem {
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemLoadMoreTrigger;
+  }
+
+  @override
+  int get hashCode => 1;
+}
+
+class WinListItemLoadingMore extends WinListItem {
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemLoadingMore;
+  }
+
+  @override
+  int get hashCode => 1;
 }
 
 class WinListFailedToLoadModel extends Model {
   final DateTime date;
   final DateTime today;
   final String reason;
+  final DateTime from;
+  final DateTime to;
 
-  WinListFailedToLoadModel(this.date, this.today, this.reason);
+  WinListFailedToLoadModel(
+      this.date, this.today, this.from, this.to, this.reason);
 }

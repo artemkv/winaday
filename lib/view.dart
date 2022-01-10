@@ -1401,7 +1401,8 @@ Widget winListFailedToLoad(
           Expanded(
               child: GestureDetector(
                   onTap: () {
-                    dispatch(WeekWinsReloadRequested(model.date, model.today));
+                    dispatch(WinListFirstPageReloadRequested(
+                        model.date, model.today, model.from, model.to));
                   },
                   child: Center(
                       child: Text("Click to reload",
@@ -1426,25 +1427,106 @@ Widget winList(WinListModel model, void Function(Message) dispatch) {
         },
         child: ListView.separated(
           reverse: true,
-          itemCount: model.wins.length,
-          separatorBuilder: (BuildContext context, int index) => const Divider(
-            height: 12,
-            thickness: 1,
-            indent: 72,
-            endIndent: 24,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            int reverseIndex = model.wins.length - index - 1;
-            return ListTile(
-              title: winListItem(
-                  model.priorityList,
-                  model.wins[reverseIndex].date,
-                  model.wins[reverseIndex].win,
-                  dispatch),
+          itemCount: model.items.length,
+          separatorBuilder: (BuildContext context, int index) {
+            int reverseIndex = model.items.length - index - 1;
+            if (reverseIndex > 0) {
+              var prevItem = model.items[reverseIndex - 1];
+              if (prevItem is WinListItemYearSeparator) {
+                return Container();
+              }
+            }
+            return const Divider(
+              height: 12,
+              thickness: 1,
+              indent: 72,
+              endIndent: 24,
             );
+          },
+          itemBuilder: (BuildContext context, int index) {
+            int reverseIndex = model.items.length - index - 1;
+            var item = model.items[reverseIndex];
+            if (item is WinListItemLoadMoreTrigger) {
+              return ListTile(title: winListItemLoadMore(model, dispatch));
+            }
+            if (item is WinListItemLoadingMore) {
+              return winListItemLoadingMore();
+            }
+            if (item is WinListItemMonthSeparator) {
+              return ListTile(title: winListItemMonthSeparator(item.month));
+            }
+            if (item is WinListItemYearSeparator) {
+              return ListTile(title: winListItemYearSeparator(item.year));
+            }
+            if (item is WinListItemWin) {
+              return ListTile(
+                title: winListItem(
+                    model.priorityList, item.date, item.win, dispatch),
+              );
+            }
+            if (item is WinListItemNoWin) {
+              return ListTile(
+                title: noWinListItem(item.date, dispatch),
+              );
+            }
+            throw "Unknown type of WinListItem";
           },
         )),
   );
+}
+
+Widget winListItemYearSeparator(int year) {
+  return Row(children: [
+    Expanded(
+        child: Align(
+            alignment: Alignment.center,
+            child: Text(year.toString(),
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)))))
+  ]);
+}
+
+Widget winListItemMonthSeparator(int month) {
+  return Row(children: [
+    Expanded(
+        child: Align(
+            alignment: Alignment.center,
+            child: Text(monthNames[month - 1],
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold)))))
+  ]);
+}
+
+Widget winListItemLoadMore(
+    WinListModel model, void Function(Message) dispatch) {
+  return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        dispatch(LoadWinListNextPageRequested());
+      },
+      child: Row(children: [
+        Expanded(
+            child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text("...",
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)))))),
+      ]));
+}
+
+Widget winListItemLoadingMore() {
+  return Row(children: [
+    Expanded(
+        child: Align(
+            alignment: Alignment.center,
+            child:
+                Padding(padding: const EdgeInsets.all(12.0), child: spinner())))
+  ]);
 }
 
 Widget winListItem(PriorityListData priorityList, DateTime date, WinData win,
@@ -1452,28 +1534,47 @@ Widget winListItem(PriorityListData priorityList, DateTime date, WinData win,
   List<Widget> summary = [Text(overallDayResultEmoji(win.overallResult))];
   summary.addAll(getPriorityColorBoxes(priorityList, win));
 
-  return Column(children: [
-    Row(children: [
-      Padding(
-          padding: const EdgeInsets.all(TEXT_PADDING),
-          child: Text(date.day.toString().padLeft(2, '0'),
-              style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold)))),
-      Expanded(
-          child: Padding(
+  return Row(children: [
+    Padding(
         padding: const EdgeInsets.all(TEXT_PADDING),
-        child: Flexible(
-            child: Wrap(children: [
-          Text(win.text,
-              style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(fontSize: TEXT_FONT_SIZE))),
-          Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Row(children: summary)),
-        ])),
-      )),
-    ])
+        child: Text(date.day.toString().padLeft(2, '0'),
+            style: GoogleFonts.openSans(
+                textStyle: const TextStyle(
+                    fontSize: 24, fontWeight: FontWeight.bold)))),
+    Expanded(
+        child: Padding(
+            padding: const EdgeInsets.all(TEXT_PADDING),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Flex(direction: Axis.horizontal, children: [
+                    Flexible(
+                        child: Wrap(children: [
+                      Text(win.text,
+                          style: GoogleFonts.openSans(
+                              textStyle:
+                                  const TextStyle(fontSize: TEXT_FONT_SIZE)))
+                    ]))
+                  ])),
+              Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Flex(
+                      direction: Axis.horizontal,
+                      children: [Flexible(child: Wrap(children: summary))]))
+            ]))),
+  ]);
+}
+
+Widget noWinListItem(DateTime date, void Function(Message) dispatch) {
+  return Row(children: [
+    Padding(
+        padding: const EdgeInsets.all(TEXT_PADDING),
+        child: Text(date.day.toString().padLeft(2, '0'),
+            style: GoogleFonts.openSans(
+                textStyle: const TextStyle(
+                    fontSize: 24, fontWeight: FontWeight.bold)))),
+    Expanded(child: Container()),
   ]);
 }
 
@@ -1481,7 +1582,7 @@ Iterable<Widget> getPriorityColorBoxes(
     PriorityListData priorityList, WinData win) {
   return priorityList.items.where((x) => win.priorities.contains(x.id)).map(
       (x) => Padding(
-          padding: const EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
           child: Container(
               height: 20.0,
               width: 20.0,

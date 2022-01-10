@@ -3,6 +3,7 @@
 // This is required because Google didn't update their sign-in package to null safery.
 import 'package:test/test.dart';
 import 'package:winaday/domain.dart';
+import 'package:winaday/model.dart';
 import 'package:winaday/reducer.dart';
 
 void main() {
@@ -98,5 +99,96 @@ void main() {
         win, PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p002"});
+  });
+
+  test('Convert wins to win list items', () {
+    var dateJan1 = DateTime(2022, 1, 1);
+    var dateJan2 = DateTime(2022, 1, 2);
+    var dateJan3 = DateTime(2022, 1, 3);
+
+    var winJan1 = WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
+
+    List<WinOnDayData> wins = <WinOnDayData>[
+      WinOnDayData(dateJan1, winJan1),
+    ];
+
+    List<WinListItem> expected = <WinListItem>[
+      WinListItemLoadMoreTrigger(),
+      WinListItemWin(dateJan1, winJan1),
+      WinListItemNoWin(dateJan2),
+      WinListItemNoWin(dateJan3)
+    ];
+
+    var winListItems = toWinListItems(dateJan1, dateJan3, wins);
+
+    expect(expected, winListItems);
+  });
+
+  test('Convert no wins to win list items', () {
+    var dateJan1 = DateTime(2022, 1, 1);
+    var dateJan2 = DateTime(2022, 1, 2);
+    var dateJan3 = DateTime(2022, 1, 3);
+
+    List<WinOnDayData> wins = <WinOnDayData>[];
+
+    List<WinListItem> expected = <WinListItem>[
+      WinListItemLoadMoreTrigger(),
+      WinListItemNoWin(dateJan1),
+      WinListItemNoWin(dateJan2),
+      WinListItemNoWin(dateJan3)
+    ];
+
+    var winListItems = toWinListItems(dateJan1, dateJan3, wins);
+
+    expect(expected, winListItems);
+  });
+
+  test('Convert wins on month border to win list items', () {
+    var dateNov29 = DateTime(2021, 11, 29);
+    var dateNov30 = DateTime(2021, 11, 30);
+    var dateDec1 = DateTime(2021, 12, 1);
+
+    var winNov30 = WinData("Nov 30", OverallDayResult.gotMyWin, <String>{});
+
+    List<WinOnDayData> wins = <WinOnDayData>[
+      WinOnDayData(dateNov30, winNov30),
+    ];
+
+    List<WinListItem> expected = <WinListItem>[
+      WinListItemLoadMoreTrigger(),
+      WinListItemNoWin(dateNov29),
+      WinListItemWin(dateNov30, winNov30),
+      WinListItemMonthSeparator(12),
+      WinListItemNoWin(dateDec1)
+    ];
+
+    var winListItems = toWinListItems(dateNov29, dateDec1, wins);
+
+    expect(expected, winListItems);
+  });
+
+  test('Convert wins on month and year border to win list items', () {
+    var dateDec31 = DateTime(2021, 12, 31);
+    var dateJan1 = DateTime(2022, 1, 1);
+    var dateJan2 = DateTime(2022, 1, 2);
+
+    var winJan1 = WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
+
+    List<WinOnDayData> wins = <WinOnDayData>[
+      WinOnDayData(dateJan1, winJan1),
+    ];
+
+    List<WinListItem> expected = <WinListItem>[
+      WinListItemLoadMoreTrigger(),
+      WinListItemNoWin(dateDec31),
+      WinListItemYearSeparator(2022),
+      WinListItemMonthSeparator(1),
+      WinListItemWin(dateJan1, winJan1),
+      WinListItemNoWin(dateJan2)
+    ];
+
+    var winListItems = toWinListItems(dateDec31, dateJan2, wins);
+
+    expect(expected, winListItems);
   });
 }
