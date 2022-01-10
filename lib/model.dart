@@ -253,6 +253,20 @@ class WinListItemLoadingMore extends WinListItem {
   int get hashCode => 1;
 }
 
+class WinListItemRetryLoadMore extends WinListItem {
+  final String reason;
+
+  WinListItemRetryLoadMore(this.reason);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListItemLoadMoreTrigger;
+  }
+
+  @override
+  int get hashCode => 1;
+}
+
 class WinListFailedToLoadModel extends Model {
   final DateTime date;
   final DateTime today;

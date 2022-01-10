@@ -55,9 +55,6 @@ void handleErrors(http.Response response) {
 }
 
 dynamic getData(http.Response response) {
-// TODO: remove
-  print("RECEIVED: " + response.body);
-
   ApiResponseData dataResponse =
       ApiResponseData.fromJson(jsonDecode(response.body));
   return dataResponse.data;

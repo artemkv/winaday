@@ -1,6 +1,5 @@
 import 'package:winaday/dateutil.dart';
 import 'package:winaday/domain.dart';
-import 'package:winaday/view.dart';
 
 import 'model.dart';
 import 'messages.dart';
@@ -242,7 +241,7 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(
         WinListLoadingModel(message.date, message.today),
         LoadWinListFirstPage(message.date,
-            message.date.subtract(const Duration(days: 13)), message.date));
+            message.today.subtract(const Duration(days: 13)), message.today));
   }
   if (message is BackToDailyWinViewRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
@@ -261,7 +260,6 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, message.from, message.to, message.reason));
   }
   if (message is WinListFirstPageReloadRequested) {
-    // TODO: not tested
     return ModelAndCommand(WinListLoadingModel(message.date, message.today),
         LoadWinListFirstPage(message.date, message.from, message.to));
   }
@@ -271,7 +269,7 @@ ModelAndCommand reduce(Model model, Message message) {
       updatedItems.addAll(model.items.getRange(
           1, model.items.length)); // old items except the load more trigger
       return ModelAndCommand(
-          WinListModel(model.date, model.today, model.priorityList, model.date,
+          WinListModel(model.date, model.today, model.priorityList, model.from,
               updatedItems),
           LoadWinListNextPage(
               model.date,
@@ -288,6 +286,17 @@ ModelAndCommand reduce(Model model, Message message) {
 
       return ModelAndCommand.justModel(WinListModel(model.date, model.today,
           model.priorityList, message.from, updatedItems));
+    }
+  }
+  if (message is WinListNextPageLoadingFailed) {
+    if (model is WinListModel) {
+      var updatedItems = <WinListItem>[
+        WinListItemRetryLoadMore(message.reason)
+      ];
+      updatedItems.addAll(model.items.getRange(
+          1, model.items.length)); // old items except the loading spinner
+      return ModelAndCommand.justModel(WinListModel(model.date, model.today,
+          model.priorityList, model.from, updatedItems));
     }
   }
 

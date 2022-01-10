@@ -399,6 +399,7 @@ Widget dailyWinFailedToLoad(BuildContext context,
                     fontSize: TEXT_FONT_SIZE, color: Colors.red))),
         Expanded(
             child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () {
                   dispatch(
                       DailyWinViewReloadRequested(model.date, model.today));
@@ -682,6 +683,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                   Expanded(
                       child: Center(
                           child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
                               onTap: () {
                                 dispatch(
                                     NavigateToWinListRequested(date, today));
@@ -861,6 +863,7 @@ Widget winEditorFailedToSave(
                   fontSize: TEXT_FONT_SIZE, color: Colors.red))),
       Expanded(
           child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTap: () {
                 dispatch(WinSaveRequested(model.date, model.win));
               },
@@ -887,6 +890,7 @@ Widget priorityEditorFailedToSave(
                   fontSize: TEXT_FONT_SIZE, color: Colors.red))),
       Expanded(
           child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTap: () {
                 dispatch(SaveChangesInPrioritiesRequested(
                     model.date, model.priorityList));
@@ -1011,6 +1015,7 @@ Widget prioritiesFailedToLoad(BuildContext context,
                       fontSize: TEXT_FONT_SIZE, color: Colors.red))),
           Expanded(
               child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     dispatch(
                         PrioritiesReloadRequested(model.date, model.today));
@@ -1400,6 +1405,7 @@ Widget winListFailedToLoad(
                       fontSize: TEXT_FONT_SIZE, color: Colors.red))),
           Expanded(
               child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     dispatch(WinListFirstPageReloadRequested(
                         model.date, model.today, model.from, model.to));
@@ -1450,7 +1456,12 @@ Widget winList(WinListModel model, void Function(Message) dispatch) {
               return ListTile(title: winListItemLoadMore(model, dispatch));
             }
             if (item is WinListItemLoadingMore) {
-              return winListItemLoadingMore();
+              return ListTile(title: winListItemLoadingMore());
+            }
+            if (item is WinListItemRetryLoadMore) {
+              return ListTile(
+                  title:
+                      winListItemRetryLoadMore(model, item.reason, dispatch));
             }
             if (item is WinListItemMonthSeparator) {
               return ListTile(title: winListItemMonthSeparator(item.month));
@@ -1527,6 +1538,34 @@ Widget winListItemLoadingMore() {
             child:
                 Padding(padding: const EdgeInsets.all(12.0), child: spinner())))
   ]);
+}
+
+Widget winListItemRetryLoadMore(
+    WinListModel model, String reason, void Function(Message) dispatch) {
+  return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        dispatch(LoadWinListNextPageRequested());
+      },
+      child: Column(children: [
+        Padding(
+            padding: const EdgeInsets.all(TEXT_PADDING),
+            child: Text("Failed to contact the server: " + reason,
+                style: const TextStyle(
+                    fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+        Row(children: [
+          Expanded(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text("Click to re-try",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  color: Colors.grey)))))),
+        ])
+      ]));
 }
 
 Widget winListItem(PriorityListData priorityList, DateTime date, DateTime today,
