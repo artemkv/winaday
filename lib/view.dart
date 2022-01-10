@@ -1460,13 +1460,13 @@ Widget winList(WinListModel model, void Function(Message) dispatch) {
             }
             if (item is WinListItemWin) {
               return ListTile(
-                title: winListItem(
-                    model.priorityList, item.date, item.win, dispatch),
+                title: winListItem(model.priorityList, item.date, model.today,
+                    item.win, dispatch),
               );
             }
             if (item is WinListItemNoWin) {
               return ListTile(
-                title: noWinListItem(item.date, dispatch),
+                title: noWinListItem(item.date, model.today, dispatch),
               );
             }
             throw "Unknown type of WinListItem";
@@ -1529,53 +1529,65 @@ Widget winListItemLoadingMore() {
   ]);
 }
 
-Widget winListItem(PriorityListData priorityList, DateTime date, WinData win,
-    void Function(Message) dispatch) {
+Widget winListItem(PriorityListData priorityList, DateTime date, DateTime today,
+    WinData win, void Function(Message) dispatch) {
   List<Widget> summary = [Text(overallDayResultEmoji(win.overallResult))];
   summary.addAll(getPriorityColorBoxes(priorityList, win));
 
-  return Row(children: [
-    Padding(
-        padding: const EdgeInsets.all(TEXT_PADDING),
-        child: Text(date.day.toString().padLeft(2, '0'),
-            style: GoogleFonts.openSans(
-                textStyle: const TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.bold)))),
-    Expanded(
-        child: Padding(
+  return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        dispatch(MoveToDay(date, today));
+      },
+      child: Row(children: [
+        Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Flex(direction: Axis.horizontal, children: [
-                    Flexible(
-                        child: Wrap(children: [
-                      Text(win.text,
-                          style: GoogleFonts.openSans(
-                              textStyle:
-                                  const TextStyle(fontSize: TEXT_FONT_SIZE)))
-                    ]))
-                  ])),
-              Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Flex(
-                      direction: Axis.horizontal,
-                      children: [Flexible(child: Wrap(children: summary))]))
-            ]))),
-  ]);
+            child: Text(date.day.toString().padLeft(2, '0'),
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold)))),
+        Expanded(
+            child: Padding(
+                padding: const EdgeInsets.all(TEXT_PADDING),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Flex(direction: Axis.horizontal, children: [
+                            Flexible(
+                                child: Wrap(children: [
+                              Text(win.text,
+                                  style: GoogleFonts.openSans(
+                                      textStyle: const TextStyle(
+                                          fontSize: TEXT_FONT_SIZE)))
+                            ]))
+                          ])),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Flex(direction: Axis.horizontal, children: [
+                            Flexible(child: Wrap(children: summary))
+                          ]))
+                    ]))),
+      ]));
 }
 
-Widget noWinListItem(DateTime date, void Function(Message) dispatch) {
-  return Row(children: [
-    Padding(
-        padding: const EdgeInsets.all(TEXT_PADDING),
-        child: Text(date.day.toString().padLeft(2, '0'),
-            style: GoogleFonts.openSans(
-                textStyle: const TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.bold)))),
-    Expanded(child: Container()),
-  ]);
+Widget noWinListItem(
+    DateTime date, DateTime today, void Function(Message) dispatch) {
+  return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        dispatch(MoveToDay(date, today));
+      },
+      child: Row(children: [
+        Padding(
+            padding: const EdgeInsets.all(TEXT_PADDING),
+            child: Text(date.day.toString().padLeft(2, '0'),
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold)))),
+        Expanded(child: Container()),
+      ]));
 }
 
 Iterable<Widget> getPriorityColorBoxes(
