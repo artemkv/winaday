@@ -13,6 +13,7 @@ import 'dateutil.dart';
 var uuid = const Uuid();
 
 LruMap cache = LruMap(maximumSize: 100);
+LruMap listCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
 
 abstract class Command {
@@ -76,6 +77,7 @@ class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     cache.clear();
+    listCache.clear();
     cachedPriorities = null;
     killSession();
     GoogleSignInFacade.signOut().then((_) {
@@ -139,6 +141,7 @@ class SaveWin implements Command {
 
     postWin(dateKey, win, GoogleSignInFacade.getIdToken).then((_) {
       cache[dateKey] = win;
+      listCache.clear();
       dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err.toString()));
@@ -226,10 +229,20 @@ class LoadWinListFirstPage implements Command {
     var today = DateTime.now();
 
     loadPriorities().then((priorityList) {
+      var intervalKey = '${toCompact(from)}-${toCompact(to)}';
+
+      if (listCache.containsKey(intervalKey)) {
+        return Future<void>.delayed(Duration.zero, () {
+          dispatch(WinListFirstPageLoaded(
+              date, today, priorityList, from, to, listCache[intervalKey]));
+        });
+      }
+
       return getWins(
               toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
           .then((json) {
         var winList = WinListData.fromJson(json);
+        listCache[intervalKey] = winList.items;
         dispatch(WinListFirstPageLoaded(
             date, today, priorityList, from, to, winList.items));
       });
@@ -249,9 +262,19 @@ class LoadWinListNextPage implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
+    var intervalKey = '${toCompact(from)}-${toCompact(to)}';
+
+    if (listCache.containsKey(intervalKey)) {
+      Future<void>.delayed(Duration.zero, () {
+        dispatch(WinListNextPageLoaded(from, to, listCache[intervalKey]));
+      });
+      return;
+    }
+
     getWins(toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
         .then((json) {
       var winList = WinListData.fromJson(json);
+      listCache[intervalKey] = winList.items;
       dispatch(WinListNextPageLoaded(from, to, winList.items));
     }).catchError((err) {
       dispatch(WinListNextPageLoadingFailed(err.toString()));
