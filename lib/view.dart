@@ -100,7 +100,7 @@ Widget home(
   }
 
   if (model is CalendarViewModel) {
-    return calendarView(context, model, dispatch);
+    return CalendarView(model: model, dispatch: dispatch);
   }
 
   return unknownModel(model);
@@ -1649,46 +1649,6 @@ Iterable<Widget> getPriorityColorBoxes(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(2.0),
                   color: getPriorityBoxColor(x.color)))));
-}
-
-Widget calendarView(BuildContext context, CalendarViewModel model,
-    void Function(Message) dispatch) {
-  return Scaffold(
-      appBar: AppBar(
-        leading: const BackButton(),
-        title: const Text('One win a day'),
-      ),
-      body: WillPopScope(
-          onWillPop: () async {
-            dispatch(BackToDailyWinViewRequested(model.date, model.today));
-            return false;
-          },
-          child: ListView.separated(
-            reverse: true,
-            itemCount: model.items.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return Container();
-            },
-            itemBuilder: (BuildContext context, int index) {
-              int reverseIndex = model.items.length - index - 1;
-              var item = model.items[reverseIndex];
-              if (item is CalendarViewListItemNextPageTrigger) {
-                return ListTile(
-                  title: calendarListItemNextPageTrigger(dispatch),
-                );
-              }
-              if (item is CalendarViewListItemYearSeparator) {
-                return ListTile(
-                    title: calendarListItemYearSeparator(item.year));
-              }
-              if (item is CalendarViewListItemMonth) {
-                return ListTile(
-                  title: calendarMonth(context, model.today, item.month),
-                );
-              }
-              throw "Unknown type of WinListItem";
-            },
-          )));
 }
 
 Widget calendarListItemYearSeparator(int year) {

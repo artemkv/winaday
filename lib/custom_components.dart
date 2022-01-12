@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:winaday/view.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'domain.dart';
 import 'messages.dart';
@@ -209,5 +210,60 @@ class _DraggablePriorityGridState extends State<DraggablePriorityGrid> {
             .map((e) => draggablePriorityBox(
                 widget.model, e, _exchangeWith, widget.dispatch, onWillAccept))
             .toList());
+  }
+}
+
+class CalendarView extends StatefulWidget {
+  final CalendarViewModel model;
+  final void Function(Message) dispatch;
+
+  const CalendarView({Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<CalendarView> createState() => _CalendarViewState();
+}
+
+class _CalendarViewState extends State<CalendarView> {
+  final ItemScrollController _controller = ItemScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          leading: const BackButton(),
+          title: const Text('One win a day'),
+        ),
+        body: WillPopScope(
+            onWillPop: () async {
+              widget.dispatch(BackToDailyWinViewRequested(
+                  widget.model.date, widget.model.today));
+              return false;
+            },
+            child: ScrollablePositionedList.builder(
+              reverse: true,
+              itemScrollController: _controller,
+              itemCount: widget.model.items.length,
+              itemBuilder: (BuildContext context, int index) {
+                int reverseIndex = widget.model.items.length - index - 1;
+                var item = widget.model.items[reverseIndex];
+                if (item is CalendarViewListItemNextPageTrigger) {
+                  return ListTile(
+                    title: calendarListItemNextPageTrigger(widget.dispatch),
+                  );
+                }
+                if (item is CalendarViewListItemYearSeparator) {
+                  return ListTile(
+                      title: calendarListItemYearSeparator(item.year));
+                }
+                if (item is CalendarViewListItemMonth) {
+                  return ListTile(
+                    title:
+                        calendarMonth(context, widget.model.today, item.month),
+                  );
+                }
+                throw "Unknown type of WinListItem";
+              },
+            )));
   }
 }
