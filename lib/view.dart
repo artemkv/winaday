@@ -93,7 +93,7 @@ Widget home(
     return winListLoading(model, dispatch);
   }
   if (model is WinListModel) {
-    return winList(model, dispatch);
+    return WinList(model: model, dispatch: dispatch);
   }
   if (model is WinListFailedToLoadModel) {
     return winListFailedToLoad(model, dispatch);
@@ -379,7 +379,19 @@ Widget signOutInProgress() {
 Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
     void Function(Message) dispatch) {
   return Scaffold(
-      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      appBar: AppBar(
+        title: const Text('One win a day'),
+        elevation: 0.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            tooltip: 'List',
+            onPressed: () {
+              dispatch(NavigateToWinListRequested(model.date, model.today));
+            },
+          )
+        ],
+      ),
       drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
@@ -391,7 +403,19 @@ Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
 Widget dailyWinFailedToLoad(BuildContext context,
     DailyWinFailedToLoadModel model, void Function(Message) dispatch) {
   return Scaffold(
-      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      appBar: AppBar(
+        title: const Text('One win a day'),
+        elevation: 0.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            tooltip: 'List',
+            onPressed: () {
+              dispatch(NavigateToWinListRequested(model.date, model.today));
+            },
+          )
+        ],
+      ),
       drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
@@ -426,7 +450,19 @@ Widget dailyWin(BuildContext context, DailyWinModel model,
   final PageController controller = PageController(initialPage: today);
 
   return Scaffold(
-      appBar: AppBar(title: const Text('One win a day'), elevation: 0.0),
+      appBar: AppBar(
+        title: const Text('One win a day'),
+        elevation: 0.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            tooltip: 'List',
+            onPressed: () {
+              dispatch(NavigateToWinListRequested(model.date, model.today));
+            },
+          )
+        ],
+      ),
       drawer: drawer(context, model.date, model.today, dispatch),
       body: Column(children: [
         calendarStripe(context, model.date, model.today, dispatch),
@@ -690,9 +726,6 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                           child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               onTap: () {
-                                // TODO:
-                                /*dispatch(
-                                    NavigateToWinListRequested(date, today));*/
                                 dispatch(
                                     NavigateToCalendarRequested(date, today));
                                 // TODO: moving to today should still be possible
@@ -1426,72 +1459,6 @@ Widget winListFailedToLoad(
                                   fontSize: TEXT_FONT_SIZE,
                                   color: Colors.grey))))))
         ]))),
-  );
-}
-
-Widget winList(WinListModel model, void Function(Message) dispatch) {
-  return Scaffold(
-    appBar: AppBar(
-      leading: const BackButton(),
-      title: const Text('One win a day'),
-    ),
-    body: WillPopScope(
-        onWillPop: () async {
-          dispatch(BackToDailyWinViewRequested(model.date, model.today));
-          return false;
-        },
-        child: ListView.separated(
-          reverse: true,
-          itemCount: model.items.length,
-          separatorBuilder: (BuildContext context, int index) {
-            int reverseIndex = model.items.length - index - 1;
-            if (reverseIndex > 0) {
-              var prevItem = model.items[reverseIndex - 1];
-              if (prevItem is WinListItemYearSeparator) {
-                return Container();
-              }
-            }
-            return const Divider(
-              height: 12,
-              thickness: 1,
-              indent: 72,
-              endIndent: 24,
-            );
-          },
-          itemBuilder: (BuildContext context, int index) {
-            int reverseIndex = model.items.length - index - 1;
-            var item = model.items[reverseIndex];
-            if (item is WinListItemLoadMoreTrigger) {
-              return ListTile(title: winListItemLoadMore(model, dispatch));
-            }
-            if (item is WinListItemLoadingMore) {
-              return ListTile(title: winListItemLoadingMore());
-            }
-            if (item is WinListItemRetryLoadMore) {
-              return ListTile(
-                  title:
-                      winListItemRetryLoadMore(model, item.reason, dispatch));
-            }
-            if (item is WinListItemMonthSeparator) {
-              return ListTile(title: winListItemMonthSeparator(item.month));
-            }
-            if (item is WinListItemYearSeparator) {
-              return ListTile(title: winListItemYearSeparator(item.year));
-            }
-            if (item is WinListItemWin) {
-              return ListTile(
-                title: winListItem(model.priorityList, item.date, model.today,
-                    item.win, dispatch),
-              );
-            }
-            if (item is WinListItemNoWin) {
-              return ListTile(
-                title: noWinListItem(item.date, model.today, dispatch),
-              );
-            }
-            throw "Unknown type of WinListItem";
-          },
-        )),
   );
 }
 

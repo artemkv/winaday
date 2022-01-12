@@ -107,6 +107,7 @@ Calendar View
 
 !! Infrastructure
 
+- Use https://pub.dev/packages/visibility_detector to load next page for list instead of ...
 - Use @immutable where makes sense
 - Use LayoutBuilder when need to measure the screen size
 - "A splash screen was provided to Flutter, but this is deprecated."

@@ -213,6 +213,102 @@ class _DraggablePriorityGridState extends State<DraggablePriorityGrid> {
   }
 }
 
+class WinList extends StatefulWidget {
+  final WinListModel model;
+  final void Function(Message) dispatch;
+
+  const WinList({Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<WinList> createState() => _WinListState();
+}
+
+class _WinListState extends State<WinList> {
+  final ItemScrollController _controller = ItemScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('One win a day'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today_outlined),
+            tooltip: 'Calendar',
+            onPressed: () {
+              widget.dispatch(NavigateToCalendarRequested(
+                  widget.model.date, widget.model.today));
+            },
+          )
+        ],
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            widget.dispatch(BackToDailyWinViewRequested(
+                widget.model.date, widget.model.today));
+            return false;
+          },
+          child: ScrollablePositionedList.separated(
+            reverse: true,
+            itemScrollController: _controller,
+            itemCount: widget.model.items.length,
+            separatorBuilder: (BuildContext context, int index) {
+              int reverseIndex = widget.model.items.length - index - 1;
+              if (reverseIndex > 0) {
+                var prevItem = widget.model.items[reverseIndex - 1];
+                if (prevItem is WinListItemYearSeparator) {
+                  return Container();
+                }
+              }
+              return const Divider(
+                height: 12,
+                thickness: 1,
+                indent: 72,
+                endIndent: 24,
+              );
+            },
+            itemBuilder: (BuildContext context, int index) {
+              int reverseIndex = widget.model.items.length - index - 1;
+              var item = widget.model.items[reverseIndex];
+              if (item is WinListItemLoadMoreTrigger) {
+                return ListTile(
+                    title: winListItemLoadMore(widget.model, widget.dispatch));
+              }
+              if (item is WinListItemLoadingMore) {
+                return ListTile(title: winListItemLoadingMore());
+              }
+              if (item is WinListItemRetryLoadMore) {
+                return ListTile(
+                    title: winListItemRetryLoadMore(
+                        widget.model, item.reason, widget.dispatch));
+              }
+              if (item is WinListItemMonthSeparator) {
+                return ListTile(title: winListItemMonthSeparator(item.month));
+              }
+              if (item is WinListItemYearSeparator) {
+                return ListTile(title: winListItemYearSeparator(item.year));
+              }
+              if (item is WinListItemWin) {
+                return ListTile(
+                  title: winListItem(widget.model.priorityList, item.date,
+                      widget.model.today, item.win, widget.dispatch),
+                );
+              }
+              if (item is WinListItemNoWin) {
+                return ListTile(
+                  title: noWinListItem(
+                      item.date, widget.model.today, widget.dispatch),
+                );
+              }
+              throw "Unknown type of WinListItem";
+            },
+          )),
+    );
+  }
+}
+
 class CalendarView extends StatefulWidget {
   final CalendarViewModel model;
   final void Function(Message) dispatch;
@@ -233,6 +329,16 @@ class _CalendarViewState extends State<CalendarView> {
         appBar: AppBar(
           leading: const BackButton(),
           title: const Text('One win a day'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              tooltip: 'List',
+              onPressed: () {
+                widget.dispatch(NavigateToWinListRequested(
+                    widget.model.date, widget.model.today));
+              },
+            )
+          ],
         ),
         body: WillPopScope(
             onWillPop: () async {
