@@ -359,3 +359,12 @@ class WinListNextPageLoadingFailed implements Message {
 
   WinListNextPageLoadingFailed(this.reason);
 }
+
+class NavigateToCalendarRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  NavigateToCalendarRequested(this.date, this.today);
+}
+
+class CalendarViewNextPageRequested implements Message {}

@@ -27,8 +27,7 @@ String getDayString(DateTime date) {
 // firstDayOfWeekIdx:
 // M T W T F S S
 // 1 2 3 4 5 6 0
-List<DateTime> getCurrentWeek(
-    BuildContext context, DateTime date, DateTime today) {
+List<DateTime> getCurrentWeek(BuildContext context, DateTime date) {
   var firstDayOfWeekIdx = MaterialLocalizations.of(context).firstDayOfWeekIndex;
   if (firstDayOfWeekIdx > date.weekday) {
     firstDayOfWeekIdx -= 7;
@@ -54,6 +53,10 @@ extension DateOnlyCompare on DateTime {
   bool isSameDate(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
+
+  bool isSameMonth(DateTime other) {
+    return year == other.year && month == other.month;
+  }
 }
 
 String toCompact(DateTime date) {
@@ -67,4 +70,11 @@ DateTime fromCompact(String date) {
       "${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}";
   final DateFormat format = DateFormat('yyyy-MM-dd');
   return format.parse(preFormatted);
+}
+
+DateTime getPreviousMonth(DateTime date) {
+  if (date.month > 1) {
+    return DateTime(date.year, date.month - 1, 1);
+  }
+  return DateTime(date.year - 1, 12, 1);
 }

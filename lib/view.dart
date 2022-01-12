@@ -99,6 +99,10 @@ Widget home(
     return winListFailedToLoad(model, dispatch);
   }
 
+  if (model is CalendarViewModel) {
+    return calendarView(context, model, dispatch);
+  }
+
   return unknownModel(model);
 }
 
@@ -661,9 +665,10 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
   );
 }
 
+// ***
 Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
     void Function(Message) dispatch) {
-  var week = getCurrentWeek(context, date, today);
+  var week = getCurrentWeek(context, date);
 
   return Container(
       decoration: const BoxDecoration(color: THEME_COLOR),
@@ -685,8 +690,11 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                           child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               onTap: () {
+                                // TODO:
+                                /*dispatch(
+                                    NavigateToWinListRequested(date, today));*/
                                 dispatch(
-                                    NavigateToWinListRequested(date, today));
+                                    NavigateToCalendarRequested(date, today));
                                 // TODO: moving to today should still be possible
                                 // dispatch(MoveToDay(today, today));
                               },
@@ -798,6 +806,7 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
           ])));
 }
 
+// **
 Widget day(BuildContext context, String abbreviation, String numericValue,
     bool isSelected, bool isToday, bool editable) {
   double screenWidth = MediaQuery.of(context).size.width;
@@ -1640,4 +1649,170 @@ Iterable<Widget> getPriorityColorBoxes(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(2.0),
                   color: getPriorityBoxColor(x.color)))));
+}
+
+Widget calendarView(BuildContext context, CalendarViewModel model,
+    void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('One win a day'),
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            dispatch(BackToDailyWinViewRequested(model.date, model.today));
+            return false;
+          },
+          child: ListView.separated(
+            reverse: true,
+            itemCount: model.items.length,
+            separatorBuilder: (BuildContext context, int index) {
+              return Container();
+            },
+            itemBuilder: (BuildContext context, int index) {
+              int reverseIndex = model.items.length - index - 1;
+              var item = model.items[reverseIndex];
+              if (item is CalendarViewListItemNextPageTrigger) {
+                return ListTile(
+                  title: calendarListItemNextPageTrigger(dispatch),
+                );
+              }
+              if (item is CalendarViewListItemYearSeparator) {
+                return ListTile(
+                    title: calendarListItemYearSeparator(item.year));
+              }
+              if (item is CalendarViewListItemMonth) {
+                return ListTile(
+                  title: calendarMonth(context, model.today, item.month),
+                );
+              }
+              throw "Unknown type of WinListItem";
+            },
+          )));
+}
+
+Widget calendarListItemYearSeparator(int year) {
+  return Padding(
+      padding: const EdgeInsets.only(
+          top: TEXT_PADDING * 4,
+          right: TEXT_PADDING,
+          bottom: TEXT_PADDING,
+          left: TEXT_PADDING),
+      child: Row(children: [
+        Expanded(
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(year.toString(),
+                    style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)))))
+      ]));
+}
+
+Widget calendarListItemNextPageTrigger(void Function(Message) dispatch) {
+  return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        dispatch(CalendarViewNextPageRequested());
+      },
+      child: Row(children: [
+        Expanded(
+            child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text("...",
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)))))),
+      ]));
+}
+
+Widget calendarMonth(BuildContext context, DateTime today, DateTime month) {
+  var firstOfMonth = DateTime(month.year, month.month, 1);
+  var week = getCurrentWeek(context, firstOfMonth);
+
+  bool isHeader = true;
+  var rows = <Widget>[calendarMonthHeader(month.month)];
+  while (week[0].isSameMonth(month) || week[6].isSameMonth(month)) {
+    rows.add(calendarWeek(context, month, week, today, isHeader));
+    isHeader = false;
+    week = getCurrentWeek(context, week[0].add(const Duration(days: 7)));
+  }
+
+  return Padding(
+      padding: const EdgeInsets.all(TEXT_PADDING),
+      child: Column(children: rows));
+}
+
+Widget calendarMonthHeader(int month) {
+  return Padding(
+      padding: const EdgeInsets.all(TEXT_PADDING * 2),
+      child: Row(children: [
+        Expanded(
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(monthNames[month - 1],
+                    style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)))))
+      ]));
+}
+
+Widget calendarWeek(BuildContext context, DateTime month, List<DateTime> week,
+    DateTime today, bool useHeader) {
+  return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: week
+          .map((d) => GestureDetector(
+              onTap: () {},
+              child: calendarDay(
+                  context,
+                  DateFormat(DateFormat.ABBR_WEEKDAY).format(d),
+                  useHeader,
+                  d.day.toString(),
+                  d.isSameMonth(month),
+                  d.isSameDate(today),
+                  !d.isSameDate(today) && !d.isBefore(today))))
+          .toList());
+}
+
+Widget calendarDay(BuildContext context, String abbreviation, bool isHeader,
+    String numericValue, bool isCurrentMonth, bool isToday, bool isInFuture) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  double circleRadius = min(screenWidth * 0.105, 40);
+  double fontSize = min(screenWidth * 0.04, 16.0);
+  double biggerFontSize = min(screenWidth * 0.045, 20.0);
+
+  return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    isHeader
+        ? Text(abbreviation,
+            style: GoogleFonts.openSans(
+                textStyle: TextStyle(color: Colors.black, fontSize: fontSize)))
+        : Container(),
+    Container(
+        alignment: Alignment.center,
+        width: circleRadius,
+        height: circleRadius,
+        margin: const EdgeInsets.all(4.0),
+        decoration: BoxDecoration(
+            color: isCurrentMonth ? Colors.white : Colors.transparent,
+            shape: BoxShape.circle,
+            border: Border.all(
+                color: getCalendarDayColor(isCurrentMonth, isInFuture),
+                width: 1.0)),
+        child: Text(numericValue,
+            style: GoogleFonts.openSans(
+                textStyle: TextStyle(
+                    fontWeight: (isToday ? FontWeight.w700 : FontWeight.normal),
+                    color: isCurrentMonth ? Colors.black : Colors.transparent,
+                    fontSize: (isToday ? biggerFontSize : fontSize)))))
+  ]);
+}
+
+Color getCalendarDayColor(isCurrentMonth, isInFuture) {
+  if (!isCurrentMonth) return Colors.transparent;
+  if (isInFuture) return Colors.grey.shade200;
+  return Colors.grey.shade500;
 }

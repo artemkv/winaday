@@ -76,8 +76,20 @@ v1.2 Wins ListView
 - --check how errors are handled--
 - how do I go to today?
 
+v1.3 Calendar View
+
+
 
 TODO:
+
+Calendar View
+- Show first 3 months
+- Show today
+- Show year separators
+- Load 3 months more when requested
+- When clicked on day, navigate to that day
+- Show days with wins using color
+
 
 !! Features
 
@@ -103,3 +115,11 @@ I/flutter (15668): Error: google_fonts was unable to load font YesevaOne-Regular
 I/flutter (15668): Exception: Failed to load font with url: https://fonts.gstatic.com/s/a/326eec1af27e3634bbf470c04d8127d985571a07b5b79696eb6424489e27e106.ttf
 - On some devices this error pops up:
 D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.winaday
+
+
+!! Feedback
+
+- Mark days that have wins with dot
+- Show which month/year it is in the win list view
+- Show first word of priority next to the color box in the list view, so that you don't have to remember colors
+- Scrolling left/right does not work

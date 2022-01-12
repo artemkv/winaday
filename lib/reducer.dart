@@ -300,6 +300,32 @@ ModelAndCommand reduce(Model model, Message message) {
     }
   }
 
+  if (message is NavigateToCalendarRequested) {
+    var thisMonth = message.today;
+    var prevMonth = getPreviousMonth(thisMonth);
+    var twoMonthsAgo = getPreviousMonth(prevMonth);
+
+    return ModelAndCommand.justModel(CalendarViewModel(
+        message.date,
+        message.today,
+        twoMonthsAgo,
+        toCalendarViewListItems([twoMonthsAgo, prevMonth, thisMonth])));
+  }
+  if (message is CalendarViewNextPageRequested) {
+    if (model is CalendarViewModel) {
+      var back1Month = getPreviousMonth(model.from);
+      var back2Month = getPreviousMonth(back1Month);
+      var back3Month = getPreviousMonth(back2Month);
+      var updatedItems =
+          toCalendarViewListItems([back3Month, back2Month, back1Month]);
+      updatedItems.addAll(model.items.getRange(
+          1, model.items.length)); // old items except the load more trigger
+
+      return ModelAndCommand.justModel(
+          CalendarViewModel(model.date, model.today, back3Month, updatedItems));
+    }
+  }
+
   return ModelAndCommand.justModel(model);
 }
 
@@ -355,23 +381,22 @@ List<WinListItem> toWinListItems(
     prevDay = day;
     day = day.add(const Duration(days: 1));
   }
+  return winListItems;
+}
 
-/*
-  for (var i = 0; i < wins.length; i++) {
-    var winOnDay = wins[i];
+List<CalendarViewListItem> toCalendarViewListItems(List<DateTime> dates) {
+  List<CalendarViewListItem> calendarListItems = [
+    CalendarViewListItemNextPageTrigger()
+  ];
+  for (int i = 0; i < dates.length; i++) {
+    var date = dates[i];
     if (i > 0) {
-      var winOnPrevDay = wins[i - 1];
-      if (winOnPrevDay.date.year != winOnDay.date.year) {
-        winListItems.add(WinListItemYearSeparator(winOnDay.date.year));
-      }
-      if (winOnPrevDay.date.month != winOnDay.date.month) {
-        winListItems.add(WinListItemMonthSeparator(winOnDay.date.month));
+      var prevDate = dates[i - 1];
+      if (prevDate.year != date.year) {
+        calendarListItems.add(CalendarViewListItemYearSeparator(date.year));
       }
     }
-
-    winListItems.add(WinListItemWin(winOnDay.date, winOnDay.win));
-    //winListItems.add(WinListItemNoWin(winOnDay.date));
+    calendarListItems.add(CalendarViewListItemMonth(date));
   }
-  */
-  return winListItems;
+  return calendarListItems;
 }

@@ -277,3 +277,52 @@ class WinListFailedToLoadModel extends Model {
   WinListFailedToLoadModel(
       this.date, this.today, this.from, this.to, this.reason);
 }
+
+class CalendarViewModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final List<CalendarViewListItem> items;
+
+  CalendarViewModel(this.date, this.today, this.from, this.items);
+}
+
+class CalendarViewListItem {}
+
+class CalendarViewListItemMonth extends CalendarViewListItem {
+  final DateTime month;
+
+  CalendarViewListItemMonth(this.month);
+
+  @override
+  bool operator ==(Object other) {
+    return other is CalendarViewListItemMonth && month == other.month;
+  }
+
+  @override
+  int get hashCode => month.hashCode;
+}
+
+class CalendarViewListItemNextPageTrigger extends CalendarViewListItem {
+  @override
+  bool operator ==(Object other) {
+    return other is CalendarViewListItemNextPageTrigger;
+  }
+
+  @override
+  int get hashCode => 1;
+}
+
+class CalendarViewListItemYearSeparator extends CalendarViewListItem {
+  final int year;
+
+  CalendarViewListItemYearSeparator(this.year);
+
+  @override
+  bool operator ==(Object other) {
+    return other is CalendarViewListItemYearSeparator && year == other.year;
+  }
+
+  @override
+  int get hashCode => year.hashCode;
+}
