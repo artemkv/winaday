@@ -273,7 +273,7 @@ ModelAndCommand reduce(Model model, Message message) {
               updatedItems),
           LoadWinListNextPage(
               model.date,
-              model.from.subtract(const Duration(days: 7)),
+              model.from.subtract(const Duration(days: 14)),
               model.from.subtract(const Duration(days: 1))));
     }
   }
