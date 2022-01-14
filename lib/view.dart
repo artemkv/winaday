@@ -1517,33 +1517,6 @@ Widget calendarListItemYearSeparator(int year) {
       ]));
 }
 
-Widget calendarListItemNextPageTriggerXXXX(void Function(Message) dispatch) {
-  return VisibilityDetector(
-      key: Key('my-widget-key'),
-      onVisibilityChanged: (visibilityInfo) {
-        var visiblePercentage = visibilityInfo.visibleFraction * 100;
-        debugPrint(
-            'Widget ${visibilityInfo.key} is ${visiblePercentage}% visible');
-      },
-      child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            dispatch(CalendarViewNextPageRequested());
-          },
-          child: Row(children: [
-            Expanded(
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text("...",
-                            style: GoogleFonts.openSans(
-                                textStyle: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold)))))),
-          ])));
-}
-
 Widget calendarMonth(BuildContext context, DateTime today, DateTime month,
     WinDaysData winDays, void Function(Message) dispatch) {
   var firstOfMonth = getFirstDayOfMonth(month);
