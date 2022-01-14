@@ -1470,7 +1470,7 @@ Widget winListItemRetryLoadMore(
 Widget winListItem(PriorityListData priorityList, DateTime date, DateTime today,
     WinData win, void Function(Message) dispatch) {
   List<Widget> summary = [Text(overallDayResultEmoji(win.overallResult))];
-  summary.addAll(getPriorityColorBoxes(priorityList, win));
+  summary.addAll(getPriorityTags(priorityList, win));
 
   return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -1528,17 +1528,37 @@ Widget noWinListItem(
       ]));
 }
 
-Iterable<Widget> getPriorityColorBoxes(
-    PriorityListData priorityList, WinData win) {
-  return priorityList.items.where((x) => win.priorities.contains(x.id)).map(
-      (x) => Padding(
-          padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
-          child: Container(
-              height: 20.0,
-              width: 20.0,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2.0),
-                  color: getPriorityBoxColor(x.color)))));
+Iterable<Widget> getPriorityTags(PriorityListData priorityList, WinData win) {
+  return priorityList.items
+      .where((x) => win.priorities.contains(x.id))
+      .expand((x) => [
+            Padding(
+                padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
+                child: Container(
+                    height: 20.0,
+                    child: Padding(
+                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: Text(getFirstWord(x.text),
+                            style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                    color: Colors.white, fontSize: 10)))),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(2.0),
+                        border: Border.all(color: getPriorityBoxColor(x.color)),
+                        color: getPriorityBoxColor(x.color))))
+          ]);
+}
+
+String getFirstWord(String text) {
+  List<String> wordList = text.split(" ");
+  if (wordList.isNotEmpty) {
+    if (wordList.length > 1) {
+      return wordList[0] + "...";
+    }
+    return wordList[0];
+  } else {
+    return '';
+  }
 }
 
 Widget calendarListItemYearSeparator(int year) {

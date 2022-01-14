@@ -78,7 +78,6 @@ v1.2 Wins ListView
 
 v1.3 Calendar View
 
-- Use @immutable where makes sense
 - Calendar View
     - --Show first 3 months--
     - --Show today--
@@ -87,6 +86,8 @@ v1.3 Calendar View
     - --When clicked on day, navigate to that day--
     - --Show days with wins using color--
     - --Cache the responses--
+- Use @immutable where makes sense
+- Show first word of priority inside the color box in the list view, so that you don't have to remember colors
 
 
 TODO:
@@ -121,5 +122,4 @@ D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.win
 
 - Mark days that have wins with dot
 - Show which month/year it is in the win list view
-- Show first word of priority next to the color box in the list view, so that you don't have to remember colors
 - Scrolling left/right does not work
