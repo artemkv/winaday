@@ -121,7 +121,7 @@ class LoadDailyWin implements Command {
         });
       }
 
-      var dateKey = toCompact(date);
+      var dateKey = date.toCompact();
 
       if (cache.containsKey(dateKey)) {
         return Future<void>.delayed(Duration.zero, () {
@@ -152,7 +152,7 @@ class SaveWin implements Command {
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
 
-    var dateKey = toCompact(date);
+    var dateKey = date.toCompact();
 
     postWin(dateKey, win, GoogleSignInFacade.getIdToken).then((_) {
       cache[dateKey] = win;
@@ -245,7 +245,7 @@ class LoadWinListFirstPage implements Command {
     var today = DateTime.now();
 
     loadPriorities().then((priorityList) {
-      var intervalKey = '${toCompact(from)}-${toCompact(to)}';
+      var intervalKey = '${from.toCompact()}-${to.toCompact()}';
 
       if (listCache.containsKey(intervalKey)) {
         return Future<void>.delayed(Duration.zero, () {
@@ -255,7 +255,7 @@ class LoadWinListFirstPage implements Command {
       }
 
       return getWins(
-              toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
+              from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
           .then((json) {
         var winList = WinListData.fromJson(json);
         listCache[intervalKey] = winList.items;
@@ -277,7 +277,7 @@ class LoadWinListNextPage implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    var intervalKey = '${toCompact(from)}-${toCompact(to)}';
+    var intervalKey = '${from.toCompact()}-${to.toCompact()}';
 
     if (listCache.containsKey(intervalKey)) {
       Future<void>.delayed(Duration.zero, () {
@@ -286,7 +286,7 @@ class LoadWinListNextPage implements Command {
       return;
     }
 
-    getWins(toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
+    getWins(from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
         .then((json) {
       var winList = WinListData.fromJson(json);
       listCache[intervalKey] = winList.items;
@@ -307,7 +307,7 @@ class LoadWinDays implements Command {
     var from = getFirstDayOfMonth(month);
     var to = getLastDayOfMonth(month);
 
-    var monthKey = toCompact(from);
+    var monthKey = from.toCompact();
 
     if (calendarCache.containsKey(monthKey)) {
       Future<void>.delayed(Duration.zero, () {
@@ -317,7 +317,7 @@ class LoadWinDays implements Command {
       return;
     }
 
-    getWinDays(toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
+    getWinDays(from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
         .then((json) {
       var winDays = WinDaysData.fromJson(json);
       calendarCache[monthKey] = winDays;

@@ -78,10 +78,6 @@ v1.2 Wins ListView
 
 v1.3 Calendar View
 
-
-
-TODO:
-
 Calendar View
 - --Show first 3 months--
 - --Show today--
@@ -90,8 +86,9 @@ Calendar View
 - --When clicked on day, navigate to that day--
 - --Show days with wins using color--
 - --Cache the responses--
-- Unit test datetime functions
 
+
+TODO:
 
 !! Features
 

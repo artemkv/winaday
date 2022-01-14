@@ -1708,7 +1708,7 @@ Widget calendarWeek(
                   d.isSameMonth(month),
                   d.isSameDate(today),
                   !d.isSameDate(today) && !d.isBefore(today),
-                  winDays.items.contains(toCompact(d)))))
+                  winDays.items.contains(d.toCompact()))))
           .toList());
 }
 

@@ -57,11 +57,11 @@ extension DateOnlyCompare on DateTime {
   bool isSameMonth(DateTime other) {
     return year == other.year && month == other.month;
   }
-}
 
-String toCompact(DateTime date) {
-  final DateFormat format = DateFormat('yyyyMMdd');
-  return format.format(date);
+  String toCompact() {
+    final DateFormat format = DateFormat('yyyyMMdd');
+    return format.format(this);
+  }
 }
 
 DateTime fromCompact(String date) {
@@ -83,7 +83,6 @@ DateTime getFirstDayOfMonth(DateTime date) {
   return DateTime(date.year, date.month, 1);
 }
 
-// TODO: unit-test
 DateTime getLastDayOfMonth(DateTime date) {
   if (date.month < 12) {
     return DateTime(date.year, date.month + 1, 1)

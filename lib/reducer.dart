@@ -378,7 +378,7 @@ Set<String> getUpdatedWinPriorities(
 
 List<WinListItem> toWinListItems(
     DateTime from, final DateTime to, List<WinOnDayData> wins) {
-  var winsByDate = {for (var x in wins) toCompact(x.date): x.win};
+  var winsByDate = {for (var x in wins) x.date.toCompact(): x.win};
 
   List<WinListItem> winListItems = [];
   winListItems.add(WinListItemLoadMoreTrigger());
@@ -393,8 +393,8 @@ List<WinListItem> toWinListItems(
       winListItems.add(WinListItemMonthSeparator(day.month));
     }
 
-    if (winsByDate.containsKey(toCompact(day))) {
-      winListItems.add(WinListItemWin(day, winsByDate[toCompact(day)]!));
+    if (winsByDate.containsKey(day.toCompact())) {
+      winListItems.add(WinListItemWin(day, winsByDate[day.toCompact()]!));
     } else {
       winListItems.add(WinListItemNoWin(day));
     }
