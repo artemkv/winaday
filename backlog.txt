@@ -86,8 +86,10 @@ v1.3 Calendar View
     - --When clicked on day, navigate to that day--
     - --Show days with wins using color--
     - --Cache the responses--
-- Use @immutable where makes sense
-- Show first word of priority inside the color box in the list view, so that you don't have to remember colors
+- --Click to reload should work on the whole area, not only the text--
+- --Use @immutable where makes sense--
+- --Show first word of priority inside the color box in the list view, so that you don't have to remember colors--
+- --Moved the dailyWin view into a stateful widget to dispose of controller--
 
 
 TODO:
@@ -96,10 +98,8 @@ TODO:
 
 !! UX
 
-- Click to reload should work on the whole area, not only the text
 - When changed day overall result, but no win text, does not show overall result in daily win view
 - Show the days that have wins marked with dots
-- Double-check that all gesture detectors are wrapping containers and not inner elements
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
 - The editor shows previous text very quickly before being updated with the new one
 - Until has win, show countdown?

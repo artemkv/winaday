@@ -48,7 +48,7 @@ Widget home(
     return dailyWinFailedToLoad(context, model, dispatch);
   }
   if (model is DailyWinModel) {
-    return dailyWin(context, model, dispatch);
+    return DailyWinView(model: model, dispatch: dispatch);
   }
   if (model is WinEditorModel) {
     return WinEditor(model: model, dispatch: dispatch);
@@ -441,133 +441,70 @@ Widget dailyWinFailedToLoad(BuildContext context,
       ])));
 }
 
-Widget dailyWin(BuildContext context, DailyWinModel model,
+Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
     void Function(Message) dispatch) {
-  const yesterday = 1;
-  const today = 2;
-  const tomorrow = 3;
-
-  final PageController controller = PageController(initialPage: today);
-
-  return Scaffold(
-      appBar: AppBar(
-        title: const Text('One win a day'),
-        elevation: 0.0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            tooltip: 'List',
-            onPressed: () {
-              dispatch(NavigateToWinListRequested(model.date, model.today));
-            },
-          )
-        ],
+  if (index == todayIndex) {
+    if (model.win.text == "") {
+      return Padding(
+          padding: const EdgeInsets.all(TEXT_PADDING),
+          child: Center(
+              child: Text("No win recorded",
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          fontSize: TEXT_FONT_SIZE, color: Colors.grey)))));
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Center(
+          child: Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 12.0),
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Padding(
+                    padding: const EdgeInsets.only(right: TEXT_PADDING / 2),
+                    child: Text(
+                        overallDayResultText(
+                          model.win.overallResult,
+                        ),
+                        style: GoogleFonts.openSans(
+                            textStyle:
+                                const TextStyle(fontSize: TEXT_FONT_SIZE)))),
+                Text(overallDayResultEmoji(model.win.overallResult),
+                    style: const TextStyle(fontSize: TEXT_FONT_SIZE))
+              ]))),
+      const Divider(
+        height: 12,
+        thickness: 1,
+        indent: 64,
+        endIndent: 64,
       ),
-      drawer: drawer(context, model.date, model.today, dispatch),
-      body: Column(children: [
-        calendarStripe(context, model.date, model.today, dispatch),
-        Expanded(
-            child: Center(
-                child: PageView.builder(
-                    onPageChanged: (page) {
-                      if (page == yesterday) {
-                        dispatch(MoveToPrevDay(model.date, model.today));
-                      } else if (page == tomorrow) {
-                        dispatch(MoveToNextDay(model.date, model.today));
-                      }
-                    },
-                    scrollDirection: Axis.horizontal,
-                    controller: controller,
-                    itemBuilder: (context, index) {
-                      if (index == today) {
-                        if (model.win.text == "") {
-                          return Padding(
-                              padding: const EdgeInsets.all(TEXT_PADDING),
-                              child: Center(
-                                  child: Text("No win recorded",
-                                      style: GoogleFonts.openSans(
-                                          textStyle: const TextStyle(
-                                              fontSize: TEXT_FONT_SIZE,
-                                              color: Colors.grey)))));
-                        }
-                        return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 16.0, bottom: 12.0),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: TEXT_PADDING / 2),
-                                                child: Text(
-                                                    overallDayResultText(
-                                                      model.win.overallResult,
-                                                    ),
-                                                    style: GoogleFonts.openSans(
-                                                        textStyle: const TextStyle(
-                                                            fontSize:
-                                                                TEXT_FONT_SIZE)))),
-                                            Text(
-                                                overallDayResultEmoji(
-                                                    model.win.overallResult),
-                                                style: const TextStyle(
-                                                    fontSize: TEXT_FONT_SIZE))
-                                          ]))),
-                              const Divider(
-                                height: 12,
-                                thickness: 1,
-                                indent: 64,
-                                endIndent: 64,
-                              ),
-                              Expanded(
-                                  child: SingleChildScrollView(
-                                      child: Column(children: [
-                                Row(children: [
-                                  Expanded(
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(
-                                              TEXT_PADDING * 1.6),
-                                          child: Text(model.win.text,
-                                              style: GoogleFonts.openSans(
-                                                  textStyle: const TextStyle(
-                                                      fontSize: TEXT_FONT_SIZE *
-                                                          1.4)))))
-                                ]),
-                                Row(children: [
-                                  Expanded(
-                                      child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: TEXT_PADDING * 1.6,
-                                              right: TEXT_PADDING * 1.6,
-                                              bottom: TEXT_PADDING * 1.6),
-                                          child: dailyWinPriorityMap(
-                                              model, dispatch)))
-                                ])
-                              ])))
-                            ]);
-                      } else {
-                        return const Padding(
-                            padding: EdgeInsets.all(TEXT_PADDING),
-                            child: Text("",
-                                style: TextStyle(fontSize: TEXT_FONT_SIZE)));
-                      }
-                    })))
-      ]),
-      floatingActionButton: (model.editable
-          ? FloatingActionButton(
-              onPressed: () {
-                dispatch(EditWinRequested(
-                    model.date, model.today, model.priorityList, model.win));
-              },
-              child: const Icon(Icons.edit),
-              backgroundColor: denimBlue,
-            )
-          : null));
+      Expanded(
+          child: SingleChildScrollView(
+              child: Column(children: [
+        Row(children: [
+          Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.all(TEXT_PADDING * 1.6),
+                  child: Text(model.win.text,
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(
+                              fontSize: TEXT_FONT_SIZE * 1.4)))))
+        ]),
+        Row(children: [
+          Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: TEXT_PADDING * 1.6,
+                      right: TEXT_PADDING * 1.6,
+                      bottom: TEXT_PADDING * 1.6),
+                  child: dailyWinPriorityMap(model, dispatch)))
+        ])
+      ])))
+    ]);
+  } else {
+    return const Padding(
+        padding: EdgeInsets.all(TEXT_PADDING),
+        child: Text("", style: TextStyle(fontSize: TEXT_FONT_SIZE)));
+  }
 }
 
 Widget dailyWinPriorityMap(

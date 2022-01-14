@@ -1,10 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'domain.dart';
 import 'messages.dart';
 import 'model.dart';
+
+class DailyWinView extends StatefulWidget {
+  final DailyWinModel model;
+  final void Function(Message) dispatch;
+
+  const DailyWinView({Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<DailyWinView> createState() => _DailyWinViewState();
+}
+
+class _DailyWinViewState extends State<DailyWinView> {
+  static const yesterday = 1;
+  static const today = 2;
+  static const tomorrow = 3;
+
+  final PageController _controller = PageController(initialPage: today);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('One win a day'),
+          elevation: 0.0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              tooltip: 'List',
+              onPressed: () {
+                widget.dispatch(NavigateToWinListRequested(
+                    widget.model.date, widget.model.today));
+              },
+            )
+          ],
+        ),
+        drawer: drawer(
+            context, widget.model.date, widget.model.today, widget.dispatch),
+        body: Column(children: [
+          calendarStripe(
+              context, widget.model.date, widget.model.today, widget.dispatch),
+          Expanded(
+              child: Center(
+                  child: PageView.builder(
+                      onPageChanged: (page) {
+                        if (page == yesterday) {
+                          widget.dispatch(MoveToPrevDay(
+                              widget.model.date, widget.model.today));
+                        } else if (page == tomorrow) {
+                          widget.dispatch(MoveToNextDay(
+                              widget.model.date, widget.model.today));
+                        }
+                      },
+                      scrollDirection: Axis.horizontal,
+                      controller: _controller,
+                      itemBuilder: (context, index) {
+                        return dailyWinPage(
+                            widget.model, index, today, widget.dispatch);
+                      })))
+        ]),
+        floatingActionButton: (widget.model.editable
+            ? FloatingActionButton(
+                onPressed: () {
+                  widget.dispatch(EditWinRequested(
+                      widget.model.date,
+                      widget.model.today,
+                      widget.model.priorityList,
+                      widget.model.win));
+                },
+                child: const Icon(Icons.edit),
+                backgroundColor: denimBlue,
+              )
+            : null));
+  }
+}
 
 class WinEditor extends StatefulWidget {
   final WinEditorModel model;
