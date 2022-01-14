@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:visibility_detector/visibility_detector.dart';
+import 'package:uuid/uuid.dart';
 
 import 'domain.dart';
 import 'messages.dart';
 import 'model.dart';
+
+var uuid = const Uuid();
 
 class DailyWinView extends StatefulWidget {
   final DailyWinModel model;
@@ -437,7 +442,8 @@ class _CalendarViewState extends State<CalendarView> {
                 var item = widget.model.items[reverseIndex];
                 if (item is CalendarViewListItemNextPageTrigger) {
                   return ListTile(
-                    title: calendarListItemNextPageTrigger(widget.dispatch),
+                    title: CalendarListItemNextPageTrigger(
+                        dispatch: widget.dispatch),
                   );
                 }
                 if (item is CalendarViewListItemYearSeparator) {
@@ -453,5 +459,50 @@ class _CalendarViewState extends State<CalendarView> {
                 throw "Unknown type of WinListItem";
               },
             )));
+  }
+}
+
+class CalendarListItemNextPageTrigger extends StatefulWidget {
+  final void Function(Message) dispatch;
+
+  const CalendarListItemNextPageTrigger({Key? key, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<CalendarListItemNextPageTrigger> createState() =>
+      _CalendarListItemNextPageTriggerState();
+}
+
+class _CalendarListItemNextPageTriggerState
+    extends State<CalendarListItemNextPageTrigger> {
+  final String widgetKey = uuid.v4();
+
+  bool fired = false;
+
+  void setFired() {
+    setState(() {
+      fired = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VisibilityDetector(
+        key: Key(widgetKey),
+        onVisibilityChanged: (visibilityInfo) {
+          if (!fired) {
+            if (visibilityInfo.visibleFraction > 0.0) {
+              widget.dispatch(CalendarViewNextPageRequested());
+              setFired();
+            }
+          }
+        },
+        child: Row(children: [
+          Expanded(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                      padding: const EdgeInsets.all(12.0), child: spinner()))),
+        ]));
   }
 }

@@ -50,6 +50,7 @@ dependencies:
   dotted_border: ^2.0.0+2
   uuid: ^3.0.5
   scrollable_positioned_list: ^0.2.3
+  visibility_detector: ^0.2.2
 
 dev_dependencies:
   flutter_test:

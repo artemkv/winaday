@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:winaday/domain.dart';
 import 'custom_components.dart';
 import 'model.dart';
@@ -1516,23 +1517,31 @@ Widget calendarListItemYearSeparator(int year) {
       ]));
 }
 
-Widget calendarListItemNextPageTrigger(void Function(Message) dispatch) {
-  return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        dispatch(CalendarViewNextPageRequested());
+Widget calendarListItemNextPageTriggerXXXX(void Function(Message) dispatch) {
+  return VisibilityDetector(
+      key: Key('my-widget-key'),
+      onVisibilityChanged: (visibilityInfo) {
+        var visiblePercentage = visibilityInfo.visibleFraction * 100;
+        debugPrint(
+            'Widget ${visibilityInfo.key} is ${visiblePercentage}% visible');
       },
-      child: Row(children: [
-        Expanded(
-            child: Align(
-                alignment: Alignment.center,
-                child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text("...",
-                        style: GoogleFonts.openSans(
-                            textStyle: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)))))),
-      ]));
+      child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            dispatch(CalendarViewNextPageRequested());
+          },
+          child: Row(children: [
+            Expanded(
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text("...",
+                            style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold)))))),
+          ])));
 }
 
 Widget calendarMonth(BuildContext context, DateTime today, DateTime month,
