@@ -8,95 +8,96 @@ import 'package:winaday/reducer.dart';
 
 void main() {
   test('Link win to priority', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("p003", "priority 3", 1, false)
     ]);
 
-    WinData win = WinData("My win", OverallDayResult.gotMyWin, <String>{});
+    WinData win =
+        const WinData("My win", OverallDayResult.gotMyWin, <String>{});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p001"});
   });
 
   test('Unlink win from priority', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("p003", "priority 3", 1, false)
     ]);
 
-    WinData win = WinData("My win", OverallDayResult.gotMyWin, {"p001"});
+    WinData win = const WinData("My win", OverallDayResult.gotMyWin, {"p001"});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, <String>{});
   });
 
   test('Link win with priorities to priority', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("p003", "priority 3", 1, false)
     ]);
 
     WinData win =
-        WinData("My win", OverallDayResult.gotMyWin, <String>{"p002"});
+        const WinData("My win", OverallDayResult.gotMyWin, <String>{"p002"});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p001", "p002"});
   });
 
   test('Unlink win with priorities from priority', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("p003", "priority 3", 1, false)
     ]);
 
-    WinData win =
-        WinData("My win", OverallDayResult.gotMyWin, <String>{"p001", "p002"});
+    WinData win = const WinData(
+        "My win", OverallDayResult.gotMyWin, <String>{"p001", "p002"});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p002"});
   });
 
   test('Drop non-existing and deleted priorities from win when linking', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("deleted", "priority 3", 1, true)
     ]);
 
-    WinData win = WinData("My win", OverallDayResult.gotMyWin,
+    WinData win = const WinData("My win", OverallDayResult.gotMyWin,
         <String>{"non-existing", "deleted", "p002"});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p001", "p002"});
   });
 
   test('Drop non-existing and deleted priorities from win when unlinking', () {
-    PriorityListData priorityList = PriorityListData([
+    PriorityListData priorityList = const PriorityListData([
       PriorityData("p001", "priority 1", 1, false),
       PriorityData("p002", "priority 2", 1, false),
       PriorityData("deleted", "priority 3", 1, true)
     ]);
 
-    WinData win = WinData("My win", OverallDayResult.gotMyWin,
+    WinData win = const WinData("My win", OverallDayResult.gotMyWin,
         <String>{"non-existing", "deleted", "p001", "p002"});
 
     Set<String> updatedPriorities = getUpdatedWinPriorities(
-        win, PriorityData("p001", "priority 1", 1, false), priorityList);
+        win, const PriorityData("p001", "priority 1", 1, false), priorityList);
 
     expect(updatedPriorities, {"p002"});
   });
@@ -106,7 +107,7 @@ void main() {
     var dateJan2 = DateTime(2022, 1, 2);
     var dateJan3 = DateTime(2022, 1, 3);
 
-    var winJan1 = WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
+    var winJan1 = const WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
 
     List<WinOnDayData> wins = <WinOnDayData>[
       WinOnDayData(dateJan1, winJan1),
@@ -148,7 +149,8 @@ void main() {
     var dateNov30 = DateTime(2021, 11, 30);
     var dateDec1 = DateTime(2021, 12, 1);
 
-    var winNov30 = WinData("Nov 30", OverallDayResult.gotMyWin, <String>{});
+    var winNov30 =
+        const WinData("Nov 30", OverallDayResult.gotMyWin, <String>{});
 
     List<WinOnDayData> wins = <WinOnDayData>[
       WinOnDayData(dateNov30, winNov30),
@@ -158,7 +160,7 @@ void main() {
       WinListItemLoadMoreTrigger(),
       WinListItemNoWin(dateNov29),
       WinListItemWin(dateNov30, winNov30),
-      WinListItemMonthSeparator(12),
+      const WinListItemMonthSeparator(12),
       WinListItemNoWin(dateDec1)
     ];
 
@@ -172,7 +174,7 @@ void main() {
     var dateJan1 = DateTime(2022, 1, 1);
     var dateJan2 = DateTime(2022, 1, 2);
 
-    var winJan1 = WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
+    var winJan1 = const WinData("Jan 1", OverallDayResult.gotMyWin, <String>{});
 
     List<WinOnDayData> wins = <WinOnDayData>[
       WinOnDayData(dateJan1, winJan1),
@@ -181,8 +183,8 @@ void main() {
     List<WinListItem> expected = <WinListItem>[
       WinListItemLoadMoreTrigger(),
       WinListItemNoWin(dateDec31),
-      WinListItemYearSeparator(2022),
-      WinListItemMonthSeparator(1),
+      const WinListItemYearSeparator(2022),
+      const WinListItemMonthSeparator(1),
       WinListItemWin(dateJan1, winJan1),
       WinListItemNoWin(dateJan2)
     ];

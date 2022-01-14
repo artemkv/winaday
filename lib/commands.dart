@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:winaday/domain.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:quiver/collection.dart';
@@ -17,6 +18,7 @@ LruMap listCache = LruMap(maximumSize: 100);
 LruMap calendarCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
 
+@immutable
 abstract class Command {
   void execute(void Function(Message) dispatch);
 
@@ -29,15 +31,17 @@ abstract class Command {
   }
 }
 
+@immutable
 class None implements Command {
   @override
   void execute(void Function(Message) dispatch) {}
 }
 
+@immutable
 class CommandList implements Command {
   final List<Command> items;
 
-  CommandList(this.items);
+  const CommandList(this.items);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -47,6 +51,7 @@ class CommandList implements Command {
   }
 }
 
+@immutable
 class InitializeApp implements Command {
   @override
   void execute(void Function(Message) dispatch) {
@@ -77,6 +82,7 @@ class InitializeApp implements Command {
   }
 }
 
+@immutable
 class SignIn implements Command {
   @override
   void execute(void Function(Message) dispatch) {
@@ -87,6 +93,7 @@ class SignIn implements Command {
   }
 }
 
+@immutable
 class SignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
@@ -103,10 +110,11 @@ class SignOut implements Command {
   }
 }
 
+@immutable
 class LoadDailyWin implements Command {
   final DateTime date;
 
-  LoadDailyWin(this.date);
+  const LoadDailyWin(this.date);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -142,11 +150,12 @@ class LoadDailyWin implements Command {
   }
 }
 
+@immutable
 class SaveWin implements Command {
   final DateTime date;
   final WinData win;
 
-  SaveWin(this.date, this.win);
+  const SaveWin(this.date, this.win);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -165,10 +174,11 @@ class SaveWin implements Command {
   }
 }
 
+@immutable
 class LoadPriorities implements Command {
   final DateTime date;
 
-  LoadPriorities(this.date);
+  const LoadPriorities(this.date);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -181,12 +191,13 @@ class LoadPriorities implements Command {
   }
 }
 
+@immutable
 class CreateNewPriority implements Command {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
 
-  CreateNewPriority(this.date, this.today, this.priorityList);
+  const CreateNewPriority(this.date, this.today, this.priorityList);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -200,11 +211,12 @@ class CreateNewPriority implements Command {
   }
 }
 
+@immutable
 class SavePriorities implements Command {
   final DateTime date;
   final PriorityListData priorityList;
 
-  SavePriorities(this.date, this.priorityList);
+  const SavePriorities(this.date, this.priorityList);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -233,12 +245,13 @@ Future<PriorityListData> loadPriorities() async {
   });
 }
 
+@immutable
 class LoadWinListFirstPage implements Command {
   final DateTime date;
   final DateTime from;
   final DateTime to;
 
-  LoadWinListFirstPage(this.date, this.from, this.to);
+  const LoadWinListFirstPage(this.date, this.from, this.to);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -269,11 +282,12 @@ class LoadWinListFirstPage implements Command {
   }
 }
 
+@immutable
 class LoadWinListNextPage implements Command {
   final DateTime from;
   final DateTime to;
 
-  LoadWinListNextPage(this.from, this.to);
+  const LoadWinListNextPage(this.from, this.to);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -297,10 +311,11 @@ class LoadWinListNextPage implements Command {
   }
 }
 
+@immutable
 class LoadWinDays implements Command {
   final DateTime month;
 
-  LoadWinDays(this.month);
+  const LoadWinDays(this.month);
 
   @override
   void execute(void Function(Message) dispatch) {

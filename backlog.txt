@@ -78,14 +78,15 @@ v1.2 Wins ListView
 
 v1.3 Calendar View
 
-Calendar View
-- --Show first 3 months--
-- --Show today--
-- --Show year separators--
-- --Load 3 months more when requested--
-- --When clicked on day, navigate to that day--
-- --Show days with wins using color--
-- --Cache the responses--
+- Use @immutable where makes sense
+- Calendar View
+    - --Show first 3 months--
+    - --Show today--
+    - --Show year separators--
+    - --Load 3 months more when requested--
+    - --When clicked on day, navigate to that day--
+    - --Show days with wins using color--
+    - --Cache the responses--
 
 
 TODO:
@@ -107,7 +108,6 @@ TODO:
 !! Infrastructure
 
 - Use https://pub.dev/packages/visibility_detector to load next page for list instead of ...
-- Use @immutable where makes sense
 - Use LayoutBuilder when need to measure the screen size
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:

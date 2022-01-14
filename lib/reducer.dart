@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:winaday/dateutil.dart';
 import 'package:winaday/domain.dart';
 
@@ -5,11 +6,12 @@ import 'model.dart';
 import 'messages.dart';
 import 'commands.dart';
 
+@immutable
 class ModelAndCommand {
   final Model model;
   final Command command;
 
-  ModelAndCommand(this.model, this.command);
+  const ModelAndCommand(this.model, this.command);
   ModelAndCommand.justModel(Model model) : this(model, Command.none());
 }
 
@@ -17,7 +19,7 @@ class ModelAndCommand {
 
 ModelAndCommand reduce(Model model, Message message) {
   if (message is AppInitializedNotSignedIn) {
-    return ModelAndCommand.justModel(UserNotSignedInModel(false, false));
+    return ModelAndCommand.justModel(const UserNotSignedInModel(false, false));
   }
   if (message is UserConsentUpdated) {
     return ModelAndCommand.justModel(UserNotSignedInModel(
@@ -45,7 +47,7 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(SignOutInProgressModel(), SignOut());
   }
   if (message is UserSignedOut) {
-    return ModelAndCommand.justModel(UserNotSignedInModel(false, false));
+    return ModelAndCommand.justModel(const UserNotSignedInModel(false, false));
   }
 
   if (message is DailyWinViewLoaded) {

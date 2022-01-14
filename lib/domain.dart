@@ -1,5 +1,6 @@
 // These should be all immutable containers, no logic
 
+import 'package:flutter/material.dart';
 import 'package:winaday/dateutil.dart';
 
 class OverallDayResult {
@@ -10,12 +11,13 @@ class OverallDayResult {
   static const awesomeAchievement = 4;
 }
 
+@immutable
 class WinData {
   final String text;
   final int overallResult;
   final Set<String> priorities;
 
-  WinData(this.text, this.overallResult, this.priorities);
+  const WinData(this.text, this.overallResult, this.priorities);
 
   WinData.empty()
       : text = "",
@@ -36,10 +38,11 @@ class WinData {
       };
 }
 
+@immutable
 class PriorityListData {
   final List<PriorityData> items;
 
-  PriorityListData(this.items);
+  const PriorityListData(this.items);
 
   PriorityListData.empty() : items = List.empty();
 
@@ -52,13 +55,14 @@ class PriorityListData {
       {'items': items.map((i) => i.toJson()).toList()};
 }
 
+@immutable
 class PriorityData {
   final String id;
   final String text;
   final int color;
   final bool deleted;
 
-  PriorityData(this.id, this.text, this.color, this.deleted);
+  const PriorityData(this.id, this.text, this.color, this.deleted);
 
   PriorityData.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -70,10 +74,11 @@ class PriorityData {
       {'id': id, 'text': text, 'color': color, 'deleted': deleted};
 }
 
+@immutable
 class WinListData {
   final List<WinOnDayData> items;
 
-  WinListData(this.items);
+  const WinListData(this.items);
 
   WinListData.empty() : items = List.empty();
 
@@ -83,21 +88,23 @@ class WinListData {
             .toList();
 }
 
+@immutable
 class WinOnDayData {
   final DateTime date;
   final WinData win;
 
-  WinOnDayData(this.date, this.win);
+  const WinOnDayData(this.date, this.win);
 
   WinOnDayData.fromJson(Map<String, dynamic> json)
       : date = fromCompact(json['date']),
         win = WinData.fromJson(json['win']);
 }
 
+@immutable
 class WinDaysData {
   final Set<String> items;
 
-  WinDaysData(this.items);
+  const WinDaysData(this.items);
 
   WinDaysData.empty() : items = <String>{};
 

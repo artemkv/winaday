@@ -747,92 +747,19 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
             Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[0], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[0]),
-                          week[0].day.toString(),
-                          week[0].isSameDate(date),
-                          week[0].isSameDate(today),
-                          week[0].isSameDate(today) ||
-                              week[0].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[1], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[1]),
-                          week[1].day.toString(),
-                          week[1].isSameDate(date),
-                          week[1].isSameDate(today),
-                          week[1].isSameDate(today) ||
-                              week[1].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[2], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[2]),
-                          week[2].day.toString(),
-                          week[2].isSameDate(date),
-                          week[2].isSameDate(today),
-                          week[2].isSameDate(today) ||
-                              week[2].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[3], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[3]),
-                          week[3].day.toString(),
-                          week[3].isSameDate(date),
-                          week[3].isSameDate(today),
-                          week[3].isSameDate(today) ||
-                              week[3].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[4], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[4]),
-                          week[4].day.toString(),
-                          week[4].isSameDate(date),
-                          week[4].isSameDate(today),
-                          week[4].isSameDate(today) ||
-                              week[4].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[5], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[5]),
-                          week[5].day.toString(),
-                          week[5].isSameDate(date),
-                          week[5].isSameDate(today),
-                          week[5].isSameDate(today) ||
-                              week[5].isBefore(today))),
-                  GestureDetector(
-                      onTap: () {
-                        dispatch(MoveToDay(week[6], today));
-                      },
-                      child: day(
-                          context,
-                          DateFormat(DateFormat.ABBR_WEEKDAY).format(week[6]),
-                          week[6].day.toString(),
-                          week[6].isSameDate(date),
-                          week[6].isSameDate(today),
-                          week[6].isSameDate(today) ||
-                              week[6].isBefore(today))),
-                ]),
+                children: week
+                    .map((d) => GestureDetector(
+                        onTap: () {
+                          dispatch(MoveToDay(d, today));
+                        },
+                        child: day(
+                            context,
+                            DateFormat(DateFormat.ABBR_WEEKDAY).format(d),
+                            d.day.toString(),
+                            d.isSameDate(date),
+                            d.isSameDate(today),
+                            d.isSameDate(today) || d.isBefore(today))))
+                    .toList()),
           ])));
 }
 
