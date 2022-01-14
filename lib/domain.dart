@@ -93,3 +93,14 @@ class WinOnDayData {
       : date = fromCompact(json['date']),
         win = WinData.fromJson(json['win']);
 }
+
+class WinDaysData {
+  final Set<String> items;
+
+  WinDaysData(this.items);
+
+  WinDaysData.empty() : items = <String>{};
+
+  WinDaysData.fromJson(Map<String, dynamic> json)
+      : items = json['items'].cast<String>().toSet();
+}

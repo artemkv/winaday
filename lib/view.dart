@@ -701,7 +701,6 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
   );
 }
 
-// ***
 Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
     void Function(Message) dispatch) {
   var week = getCurrentWeek(context, date);
@@ -728,8 +727,6 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                               onTap: () {
                                 dispatch(
                                     NavigateToCalendarRequested(date, today));
-                                // TODO: moving to today should still be possible
-                                // dispatch(MoveToDay(today, today));
                               },
                               child: Padding(
                                   padding: const EdgeInsets.all(4.0),
@@ -839,7 +836,6 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
           ])));
 }
 
-// **
 Widget day(BuildContext context, String abbreviation, String numericValue,
     bool isSelected, bool isToday, bool editable) {
   double screenWidth = MediaQuery.of(context).size.width;
@@ -1655,14 +1651,16 @@ Widget calendarListItemNextPageTrigger(void Function(Message) dispatch) {
       ]));
 }
 
-Widget calendarMonth(BuildContext context, DateTime today, DateTime month) {
-  var firstOfMonth = DateTime(month.year, month.month, 1);
+Widget calendarMonth(BuildContext context, DateTime today, DateTime month,
+    WinDaysData winDays, void Function(Message) dispatch) {
+  var firstOfMonth = getFirstDayOfMonth(month);
   var week = getCurrentWeek(context, firstOfMonth);
 
   bool isHeader = true;
   var rows = <Widget>[calendarMonthHeader(month.month)];
   while (week[0].isSameMonth(month) || week[6].isSameMonth(month)) {
-    rows.add(calendarWeek(context, month, week, today, isHeader));
+    rows.add(
+        calendarWeek(context, month, week, today, isHeader, winDays, dispatch));
     isHeader = false;
     week = getCurrentWeek(context, week[0].add(const Duration(days: 7)));
   }
@@ -1686,14 +1684,22 @@ Widget calendarMonthHeader(int month) {
       ]));
 }
 
-Widget calendarWeek(BuildContext context, DateTime month, List<DateTime> week,
-    DateTime today, bool useHeader) {
+Widget calendarWeek(
+    BuildContext context,
+    DateTime month,
+    List<DateTime> week,
+    DateTime today,
+    bool useHeader,
+    WinDaysData winDays,
+    void Function(Message) dispatch) {
   return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: week
           .map((d) => GestureDetector(
-              onTap: () {},
+              onTap: () {
+                dispatch(MoveToDay(d, today));
+              },
               child: calendarDay(
                   context,
                   DateFormat(DateFormat.ABBR_WEEKDAY).format(d),
@@ -1701,12 +1707,20 @@ Widget calendarWeek(BuildContext context, DateTime month, List<DateTime> week,
                   d.day.toString(),
                   d.isSameMonth(month),
                   d.isSameDate(today),
-                  !d.isSameDate(today) && !d.isBefore(today))))
+                  !d.isSameDate(today) && !d.isBefore(today),
+                  winDays.items.contains(toCompact(d)))))
           .toList());
 }
 
-Widget calendarDay(BuildContext context, String abbreviation, bool isHeader,
-    String numericValue, bool isCurrentMonth, bool isToday, bool isInFuture) {
+Widget calendarDay(
+    BuildContext context,
+    String abbreviation,
+    bool isHeader,
+    String numericValue,
+    bool isCurrentMonth,
+    bool isToday,
+    bool isInFuture,
+    bool isWinDay) {
   double screenWidth = MediaQuery.of(context).size.width;
   double circleRadius = min(screenWidth * 0.105, 40);
   double fontSize = min(screenWidth * 0.04, 16.0);
@@ -1727,8 +1741,9 @@ Widget calendarDay(BuildContext context, String abbreviation, bool isHeader,
             color: isCurrentMonth ? Colors.white : Colors.transparent,
             shape: BoxShape.circle,
             border: Border.all(
-                color: getCalendarDayColor(isCurrentMonth, isInFuture),
-                width: 1.0)),
+                color:
+                    getCalendarDayColor(isCurrentMonth, isInFuture, isWinDay),
+                width: isWinDay ? 2.0 : 1.0)),
         child: Text(numericValue,
             style: GoogleFonts.openSans(
                 textStyle: TextStyle(
@@ -1738,7 +1753,8 @@ Widget calendarDay(BuildContext context, String abbreviation, bool isHeader,
   ]);
 }
 
-Color getCalendarDayColor(isCurrentMonth, isInFuture) {
+Color getCalendarDayColor(bool isCurrentMonth, bool isInFuture, bool isWinDay) {
+  if (isWinDay) return brownsOrange;
   if (!isCurrentMonth) return Colors.transparent;
   if (isInFuture) return Colors.grey.shade200;
   return Colors.grey.shade500;

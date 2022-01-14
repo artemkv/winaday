@@ -83,12 +83,14 @@ v1.3 Calendar View
 TODO:
 
 Calendar View
-- Show first 3 months
-- Show today
-- Show year separators
-- Load 3 months more when requested
-- When clicked on day, navigate to that day
-- Show days with wins using color
+- --Show first 3 months--
+- --Show today--
+- --Show year separators--
+- --Load 3 months more when requested--
+- --When clicked on day, navigate to that day--
+- --Show days with wins using color--
+- --Cache the responses--
+- Unit test datetime functions
 
 
 !! Features

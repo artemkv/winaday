@@ -364,8 +364,8 @@ class _CalendarViewState extends State<CalendarView> {
                 }
                 if (item is CalendarViewListItemMonth) {
                   return ListTile(
-                    title:
-                        calendarMonth(context, widget.model.today, item.month),
+                    title: calendarMonth(context, widget.model.today,
+                        item.month, item.winDays, widget.dispatch),
                   );
                 }
                 throw "Unknown type of WinListItem";

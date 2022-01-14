@@ -291,8 +291,9 @@ class CalendarViewListItem {}
 
 class CalendarViewListItemMonth extends CalendarViewListItem {
   final DateTime month;
+  final WinDaysData winDays;
 
-  CalendarViewListItemMonth(this.month);
+  CalendarViewListItemMonth(this.month, this.winDays);
 
   @override
   bool operator ==(Object other) {

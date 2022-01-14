@@ -118,3 +118,7 @@ Future<dynamic> postPriorities(Object data, String session) async {
 Future<dynamic> getWins(String from, String to, String session) async {
   return await getJson('/wins/$from/$to', session);
 }
+
+Future<dynamic> getWinDays(String from, String to, String session) async {
+  return await getJson('/windays/$from/$to', session);
+}

@@ -368,3 +368,10 @@ class NavigateToCalendarRequested implements Message {
 }
 
 class CalendarViewNextPageRequested implements Message {}
+
+class CalendarViewDaysWithWinsReceived implements Message {
+  final DateTime month;
+  final WinDaysData winDays;
+
+  CalendarViewDaysWithWinsReceived(this.month, this.winDays);
+}

@@ -78,3 +78,16 @@ DateTime getPreviousMonth(DateTime date) {
   }
   return DateTime(date.year - 1, 12, 1);
 }
+
+DateTime getFirstDayOfMonth(DateTime date) {
+  return DateTime(date.year, date.month, 1);
+}
+
+// TODO: unit-test
+DateTime getLastDayOfMonth(DateTime date) {
+  if (date.month < 12) {
+    return DateTime(date.year, date.month + 1, 1)
+        .subtract(const Duration(days: 1));
+  }
+  return DateTime(date.year + 1, 1, 1).subtract(const Duration(days: 1));
+}

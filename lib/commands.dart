@@ -14,6 +14,7 @@ var uuid = const Uuid();
 
 LruMap cache = LruMap(maximumSize: 100);
 LruMap listCache = LruMap(maximumSize: 100);
+LruMap calendarCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
 
 abstract class Command {
@@ -31,6 +32,19 @@ abstract class Command {
 class None implements Command {
   @override
   void execute(void Function(Message) dispatch) {}
+}
+
+class CommandList implements Command {
+  final List<Command> items;
+
+  CommandList(this.items);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    for (var cmd in items) {
+      cmd.execute(dispatch);
+    }
+  }
 }
 
 class InitializeApp implements Command {
@@ -78,6 +92,7 @@ class SignOut implements Command {
   void execute(void Function(Message) dispatch) {
     cache.clear();
     listCache.clear();
+    calendarCache.clear();
     cachedPriorities = null;
     killSession();
     GoogleSignInFacade.signOut().then((_) {
@@ -142,6 +157,7 @@ class SaveWin implements Command {
     postWin(dateKey, win, GoogleSignInFacade.getIdToken).then((_) {
       cache[dateKey] = win;
       listCache.clear();
+      calendarCache.clear();
       dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err.toString()));
@@ -254,11 +270,10 @@ class LoadWinListFirstPage implements Command {
 }
 
 class LoadWinListNextPage implements Command {
-  final DateTime date;
   final DateTime from;
   final DateTime to;
 
-  LoadWinListNextPage(this.date, this.from, this.to);
+  LoadWinListNextPage(this.from, this.to);
 
   @override
   void execute(void Function(Message) dispatch) {
@@ -278,6 +293,40 @@ class LoadWinListNextPage implements Command {
       dispatch(WinListNextPageLoaded(from, to, winList.items));
     }).catchError((err) {
       dispatch(WinListNextPageLoadingFailed(err.toString()));
+    });
+  }
+}
+
+class LoadWinDays implements Command {
+  final DateTime month;
+
+  LoadWinDays(this.month);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var from = getFirstDayOfMonth(month);
+    var to = getLastDayOfMonth(month);
+
+    var monthKey = toCompact(from);
+
+    if (calendarCache.containsKey(monthKey)) {
+      Future<void>.delayed(Duration.zero, () {
+        dispatch(
+            CalendarViewDaysWithWinsReceived(month, calendarCache[monthKey]));
+      });
+      return;
+    }
+
+    getWinDays(toCompact(from), toCompact(to), GoogleSignInFacade.getIdToken)
+        .then((json) {
+      var winDays = WinDaysData.fromJson(json);
+      calendarCache[monthKey] = winDays;
+      dispatch(CalendarViewDaysWithWinsReceived(month, winDays));
+    }).catchError((err) {
+      // TODO:
+      /*dispatch(DailyWinViewLoadingFailed(
+          DateTime.now(), DateTime.now(), err.toString()));*/
+      // dispatch(WinListNextPageLoadingFailed(err.toString()));
     });
   }
 }

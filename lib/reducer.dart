@@ -271,9 +271,7 @@ ModelAndCommand reduce(Model model, Message message) {
       return ModelAndCommand(
           WinListModel(model.date, model.today, model.priorityList, model.from,
               updatedItems),
-          LoadWinListNextPage(
-              model.date,
-              model.from.subtract(const Duration(days: 14)),
+          LoadWinListNextPage(model.from.subtract(const Duration(days: 14)),
               model.from.subtract(const Duration(days: 1))));
     }
   }
@@ -305,11 +303,14 @@ ModelAndCommand reduce(Model model, Message message) {
     var prevMonth = getPreviousMonth(thisMonth);
     var twoMonthsAgo = getPreviousMonth(prevMonth);
 
-    return ModelAndCommand.justModel(CalendarViewModel(
-        message.date,
-        message.today,
-        twoMonthsAgo,
-        toCalendarViewListItems([twoMonthsAgo, prevMonth, thisMonth])));
+    return ModelAndCommand(
+        CalendarViewModel(message.date, message.today, twoMonthsAgo,
+            toCalendarViewListItems([twoMonthsAgo, prevMonth, thisMonth])),
+        CommandList([
+          LoadWinDays(thisMonth),
+          LoadWinDays(prevMonth),
+          LoadWinDays(twoMonthsAgo)
+        ]));
   }
   if (message is CalendarViewNextPageRequested) {
     if (model is CalendarViewModel) {
@@ -321,8 +322,27 @@ ModelAndCommand reduce(Model model, Message message) {
       updatedItems.addAll(model.items.getRange(
           1, model.items.length)); // old items except the load more trigger
 
+      return ModelAndCommand(
+          CalendarViewModel(model.date, model.today, back3Month, updatedItems),
+          CommandList([
+            LoadWinDays(back1Month),
+            LoadWinDays(back2Month),
+            LoadWinDays(back3Month)
+          ]));
+    }
+  }
+  if (message is CalendarViewDaysWithWinsReceived) {
+    if (model is CalendarViewModel) {
+      var updatedItems = model.items.map((x) {
+        if (x is CalendarViewListItemMonth) {
+          if (x.month.isSameMonth(message.month)) {
+            return CalendarViewListItemMonth(x.month, message.winDays);
+          }
+        }
+        return x;
+      }).toList();
       return ModelAndCommand.justModel(
-          CalendarViewModel(model.date, model.today, back3Month, updatedItems));
+          CalendarViewModel(model.date, model.today, model.from, updatedItems));
     }
   }
 
@@ -396,7 +416,7 @@ List<CalendarViewListItem> toCalendarViewListItems(List<DateTime> dates) {
         calendarListItems.add(CalendarViewListItemYearSeparator(date.year));
       }
     }
-    calendarListItems.add(CalendarViewListItemMonth(date));
+    calendarListItems.add(CalendarViewListItemMonth(date, WinDaysData.empty()));
   }
   return calendarListItems;
 }
