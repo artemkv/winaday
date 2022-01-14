@@ -1347,26 +1347,6 @@ Widget winListItemMonthSeparator(int month) {
   ]);
 }
 
-Widget winListItemLoadMore(
-    WinListModel model, void Function(Message) dispatch) {
-  return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        dispatch(LoadWinListNextPageRequested());
-      },
-      child: Row(children: [
-        Expanded(
-            child: Align(
-                alignment: Alignment.center,
-                child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text("...",
-                        style: GoogleFonts.openSans(
-                            textStyle: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)))))),
-      ]));
-}
-
 Widget winListItemLoadingMore() {
   return Row(children: [
     Expanded(
@@ -1382,7 +1362,7 @@ Widget winListItemRetryLoadMore(
   return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        dispatch(LoadWinListNextPageRequested());
+        dispatch(WinListRetryLoadNextPageRequested());
       },
       child: Column(children: [
         Padding(

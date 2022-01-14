@@ -399,6 +399,9 @@ class WinListFirstPageReloadRequested implements Message {
 class LoadWinListNextPageRequested implements Message {}
 
 @immutable
+class WinListRetryLoadNextPageRequested implements Message {}
+
+@immutable
 class WinListNextPageLoaded implements Message {
   final List<WinOnDayData> wins;
   final DateTime from;

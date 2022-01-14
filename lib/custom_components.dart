@@ -361,7 +361,7 @@ class _WinListState extends State<WinList> {
               var item = widget.model.items[reverseIndex];
               if (item is WinListItemLoadMoreTrigger) {
                 return ListTile(
-                    title: winListItemLoadMore(widget.model, widget.dispatch));
+                    title: WinListItemLoadMore(dispatch: widget.dispatch));
               }
               if (item is WinListItemLoadingMore) {
                 return ListTile(title: winListItemLoadingMore());
@@ -493,6 +493,49 @@ class _CalendarListItemNextPageTriggerState
           if (!fired) {
             if (visibilityInfo.visibleFraction > 0.0) {
               widget.dispatch(CalendarViewNextPageRequested());
+              setFired();
+            }
+          }
+        },
+        child: Row(children: [
+          Expanded(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                      padding: const EdgeInsets.all(12.0), child: spinner()))),
+        ]));
+  }
+}
+
+class WinListItemLoadMore extends StatefulWidget {
+  final void Function(Message) dispatch;
+
+  const WinListItemLoadMore({Key? key, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<WinListItemLoadMore> createState() => _WinListItemLoadMoreState();
+}
+
+class _WinListItemLoadMoreState extends State<WinListItemLoadMore> {
+  final String widgetKey = uuid.v4();
+
+  bool fired = false;
+
+  void setFired() {
+    setState(() {
+      fired = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VisibilityDetector(
+        key: Key(widgetKey),
+        onVisibilityChanged: (visibilityInfo) {
+          if (!fired) {
+            if (visibilityInfo.visibleFraction > 0.0) {
+              widget.dispatch(LoadWinListNextPageRequested());
               setFired();
             }
           }

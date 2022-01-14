@@ -267,9 +267,17 @@ ModelAndCommand reduce(Model model, Message message) {
   }
   if (message is LoadWinListNextPageRequested) {
     if (model is WinListModel) {
+      return ModelAndCommand(
+          model,
+          LoadWinListNextPage(model.from.subtract(const Duration(days: 14)),
+              model.from.subtract(const Duration(days: 1))));
+    }
+  }
+  if (message is WinListRetryLoadNextPageRequested) {
+    if (model is WinListModel) {
       var updatedItems = <WinListItem>[WinListItemLoadingMore()];
       updatedItems.addAll(model.items.getRange(
-          1, model.items.length)); // old items except the load more trigger
+          1, model.items.length)); // old items except the retry trigger
       return ModelAndCommand(
           WinListModel(model.date, model.today, model.priorityList, model.from,
               updatedItems),

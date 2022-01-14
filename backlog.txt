@@ -91,6 +91,7 @@ v1.3 Calendar View
 - --Use @immutable where makes sense--
 - --Show first word of priority inside the color box in the list view, so that you don't have to remember colors--
 - --Moved the dailyWin view into a stateful widget to dispose of controller--
+- --Infinite scroll for calendar and listview--
 - Consider dropping older items from list and add the way to re-load them
 
 
