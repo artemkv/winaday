@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:winaday/domain.dart';
 import 'custom_components.dart';
 import 'model.dart';
@@ -102,6 +101,16 @@ Widget home(
 
   if (model is CalendarViewModel) {
     return CalendarView(model: model, dispatch: dispatch);
+  }
+
+  if (model is StatsLoadingModel) {
+    return statsLoading(model, dispatch);
+  }
+  if (model is StatsFailedToLoadModel) {
+    return statsFailedToLoad(context, model, dispatch);
+  }
+  if (model is StatsModel) {
+    return stats(model, dispatch);
   }
 
   return unknownModel(model);
@@ -596,12 +605,24 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           title: Row(children: const [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
-                child: Icon(Icons.stars)),
+                child: Icon(Icons.center_focus_strong_outlined)),
             Text('Your Priorities')
           ]),
           onTap: () {
             Navigator.pop(context);
             dispatch(NavigateToPrioritiesRequested(date, today));
+          },
+        ),
+        ListTile(
+          title: Row(children: const [
+            Padding(
+                padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                child: Icon(Icons.insights_outlined)),
+            Text('Your Statistics')
+          ]),
+          onTap: () {
+            Navigator.pop(context);
+            dispatch(NavigateToStatsRequested(date, today));
           },
         ),
         const Divider(
@@ -1604,4 +1625,69 @@ Color getCalendarDayColor(bool isCurrentMonth, bool isInFuture, bool isWinDay) {
   if (!isCurrentMonth) return Colors.transparent;
   if (isInFuture) return Colors.grey.shade200;
   return Colors.grey.shade500;
+}
+
+Widget statsLoading(StatsLoadingModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Statistics'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitStatsRequested(model.date, model.today));
+          return false;
+        },
+        child: Center(child: Column(children: [Expanded(child: spinner())]))),
+  );
+}
+
+Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
+    void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Statistics'),
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitStatsRequested(model.date, model.today));
+          return false;
+        },
+        child: Center(
+            child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.all(TEXT_PADDING),
+              child: Text("Failed to contact the server: " + model.reason,
+                  style: const TextStyle(
+                      fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+          Expanded(
+              child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    dispatch(StatsReloadRequested(
+                        model.date, model.today, model.from, model.to));
+                  },
+                  child: Center(
+                      child: Text("Click to reload",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  color: Colors.grey))))))
+        ]))),
+  );
+}
+
+Widget stats(StatsModel model, void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Your Statistics'),
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            dispatch(ExitStatsRequested(model.date, model.today));
+            return false;
+          },
+          child: Text('$model.stats')));
 }

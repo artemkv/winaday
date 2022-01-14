@@ -435,3 +435,51 @@ class CalendarViewDaysWithWinsReceived implements Message {
 
   const CalendarViewDaysWithWinsReceived(this.month, this.winDays);
 }
+
+@immutable
+class NavigateToStatsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const NavigateToStatsRequested(this.date, this.today);
+}
+
+@immutable
+class StatsLoaded implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final StatsData stats;
+
+  const StatsLoaded(this.date, this.today, this.priorityList, this.stats);
+}
+
+@immutable
+class StatsLoadingFailed implements Message {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final String reason;
+
+  const StatsLoadingFailed(
+      this.date, this.today, this.from, this.to, this.reason);
+}
+
+@immutable
+class StatsReloadRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+
+  const StatsReloadRequested(this.date, this.today, this.from, this.to);
+}
+
+@immutable
+class ExitStatsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const ExitStatsRequested(this.date, this.today);
+}

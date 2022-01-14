@@ -111,3 +111,25 @@ class WinDaysData {
   WinDaysData.fromJson(Map<String, dynamic> json)
       : items = json['items'].cast<String>().toSet();
 }
+
+@immutable
+class StatsData {
+  final int daysWithoutWinsCount;
+  final int daysWithWinsCount;
+  final int daysWithAwesomeWinsCount;
+
+  // TODO: priority stats
+
+  const StatsData(this.daysWithoutWinsCount, this.daysWithWinsCount,
+      this.daysWithAwesomeWinsCount);
+
+  const StatsData.empty()
+      : daysWithoutWinsCount = 0,
+        daysWithWinsCount = 0,
+        daysWithAwesomeWinsCount = 0;
+
+  StatsData.fromJson(Map<String, dynamic> json)
+      : daysWithoutWinsCount = json['days_without_wins_count'],
+        daysWithWinsCount = json['days_with_wins_count'],
+        daysWithAwesomeWinsCount = json['days_with_awesome_wins_count'];
+}

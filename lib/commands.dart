@@ -345,3 +345,30 @@ class LoadWinDays implements Command {
     });
   }
 }
+
+@immutable
+class LoadStats implements Command {
+  final DateTime date;
+  final DateTime from;
+  final DateTime to;
+
+  const LoadStats(this.date, this.from, this.to);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+    loadPriorities().then((priorityList) {
+      // TODO: caching
+
+      return getStats(
+              from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
+          .then((json) {
+        var stats = StatsData.fromJson(json);
+        // TODO: listCache[intervalKey] = winList.items;
+        dispatch(StatsLoaded(date, today, priorityList, stats));
+      });
+    }).catchError((err) {
+      dispatch(StatsLoadingFailed(date, today, from, to, err.toString()));
+    });
+  }
+}

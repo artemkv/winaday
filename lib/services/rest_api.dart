@@ -5,8 +5,8 @@ import 'dart:convert';
 // http://10.0.2.2:8700
 // Real device:
 // http://192.168.0.16:8700
-const BASE_URL = 'https://winaday.artemkv.net:8700';
-//const BASE_URL = 'http://192.168.0.16:8700';
+//const BASE_URL = 'https://winaday.artemkv.net:8700';
+const BASE_URL = 'http://192.168.0.16:8700';
 
 class ApiException implements Exception {
   int statusCode;
@@ -121,4 +121,8 @@ Future<dynamic> getWins(String from, String to, String session) async {
 
 Future<dynamic> getWinDays(String from, String to, String session) async {
   return await getJson('/windays/$from/$to', session);
+}
+
+Future<dynamic> getStats(String from, String to, String session) async {
+  return await getJson('/winstats/$from/$to', session);
 }

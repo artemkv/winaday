@@ -356,6 +356,29 @@ ModelAndCommand reduce(Model model, Message message) {
     }
   }
 
+  if (message is NavigateToStatsRequested) {
+    return ModelAndCommand(
+        StatsLoadingModel(message.date, message.today),
+        LoadStats(message.date, getFirstDayOfMonth(message.date),
+            getLastDayOfMonth(message.date))); // TODO: pass correct from-to
+  }
+  if (message is StatsLoadingFailed) {
+    return ModelAndCommand.justModel(StatsFailedToLoadModel(
+        message.date, message.today, message.from, message.to, message.reason));
+  }
+  if (message is StatsReloadRequested) {
+    return ModelAndCommand(StatsLoadingModel(message.date, message.today),
+        LoadStats(message.date, message.from, message.to));
+  }
+  if (message is StatsLoaded) {
+    return ModelAndCommand.justModel(StatsModel(
+        message.date, message.today, message.priorityList, message.stats));
+  }
+  if (message is ExitStatsRequested) {
+    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+        LoadDailyWin(message.date));
+  }
+
   return ModelAndCommand.justModel(model);
 }
 

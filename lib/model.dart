@@ -376,3 +376,33 @@ class CalendarViewListItemYearSeparator extends CalendarViewListItem {
   @override
   int get hashCode => year.hashCode;
 }
+
+@immutable
+class StatsLoadingModel extends Model {
+  final DateTime date;
+  final DateTime today;
+
+  const StatsLoadingModel(this.date, this.today);
+}
+
+@immutable
+class StatsFailedToLoadModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final String reason;
+
+  const StatsFailedToLoadModel(
+      this.date, this.today, this.from, this.to, this.reason);
+}
+
+@immutable
+class StatsModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final StatsData stats;
+
+  const StatsModel(this.date, this.today, this.priorityList, this.stats);
+}

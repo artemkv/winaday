@@ -68,3 +68,8 @@ Future<dynamic> getWinDays(
     String from, String to, Future<String> Function() getIdToken) {
   return callApi(() => rest.getWinDays(from, to, session), getIdToken);
 }
+
+Future<dynamic> getStats(
+    String from, String to, Future<String> Function() getIdToken) {
+  return callApi(() => rest.getStats(from, to, session), getIdToken);
+}

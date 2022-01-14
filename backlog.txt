@@ -43,7 +43,6 @@ v1.1 Priorities
     - --Use unique ids for priorities--
     - --Actually save priorities--
     - --Clicking back from editing priorities reloads priorities but does not leave the screen--
-    - Limit box sizes for bigger screens?
 
 - Use priorities
     - --Allow selecting on save of win--
@@ -61,7 +60,6 @@ v1.1 Priorities
     - --Deleted priorities should still show in the daily view, if linked--
     - --However, when editing priorities of a win, all deleted priorities should unlink automatically--
     - --Only show "link to priorities/edit" link if there are active priorities--
-    - Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
 
 v1.2 Wins ListView
 
@@ -74,8 +72,6 @@ v1.2 Wins ListView
 - --consider making list item a widget, not a function, for performance reasons - tried and didn't notice any difference--
 - --cache the results--
 - --check how errors are handled--
-- how do I go to today?
-- Consider dropping older items from list and add the way to re-load them
 
 v1.3 Calendar View
 
@@ -92,7 +88,8 @@ v1.3 Calendar View
 - --Show first word of priority inside the color box in the list view, so that you don't have to remember colors--
 - --Moved the dailyWin view into a stateful widget to dispose of controller--
 - --Infinite scroll for calendar and listview--
-- Consider dropping older items from list and add the way to re-load them
+
+v1.4 Stats
 
 
 TODO:
@@ -101,17 +98,24 @@ TODO:
 
 !! UX
 
+- Mark days that have wins with dot in a calendar stripe
+- Show awesome days differently in the calendar
+- Show awesome days differently in the win list
 - When changed day overall result, but no win text, does not show overall result in daily win view
-- Show the days that have wins marked with dots
+
+- Show which month/year it is in the win list view
+- Easy way to navigate to today
+- Consider limiting priority box sizes for bigger screens
+- Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
+- Consider dropping older items from win list/calendar and add the way to re-load them
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
-- The editor shows previous text very quickly before being updated with the new one
 - Until has win, show countdown?
+- The editor shows previous text very quickly before being updated with the new one
 
 !! Performance and doing less with more:
 
 !! Infrastructure
 
-- Use https://pub.dev/packages/visibility_detector to load next page for list instead of ...
 - Use LayoutBuilder when need to measure the screen size
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:
@@ -123,6 +127,4 @@ D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.win
 
 !! Feedback
 
-- Mark days that have wins with dot
-- Show which month/year it is in the win list view
 - Scrolling left/right does not work
