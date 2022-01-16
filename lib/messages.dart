@@ -448,10 +448,13 @@ class NavigateToStatsRequested implements Message {
 class StatsLoaded implements Message {
   final DateTime date;
   final DateTime today;
+  final DateTime from;
+  final DateTime to;
   final PriorityListData priorityList;
-  final StatsData stats;
+  final WinListShortData stats;
 
-  const StatsLoaded(this.date, this.today, this.priorityList, this.stats);
+  const StatsLoaded(
+      this.date, this.today, this.from, this.to, this.priorityList, this.stats);
 }
 
 @immutable
@@ -482,4 +485,26 @@ class ExitStatsRequested implements Message {
   final DateTime today;
 
   const ExitStatsRequested(this.date, this.today);
+}
+
+@immutable
+class StatsTogglePieHistogramsWins implements Message {}
+
+@immutable
+class StatsTogglePieHistogramsPriorities implements Message {}
+
+@immutable
+class MoveToNextMonthStats implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const MoveToNextMonthStats(this.date, this.today);
+}
+
+@immutable
+class MoveToPrevMonthStats implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const MoveToPrevMonthStats(this.date, this.today);
 }

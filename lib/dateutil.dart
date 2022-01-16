@@ -37,19 +37,19 @@ List<DateTime> getCurrentWeek(BuildContext context, DateTime date) {
     goBack -= 7;
   }
 
-  var firstDayOfWeek = date.subtract(Duration(days: goBack));
+  var firstDayOfWeek = DateTime(date.year, date.month, date.day - goBack);
   return [
-    firstDayOfWeek.add(const Duration(days: 0)),
-    firstDayOfWeek.add(const Duration(days: 1)),
-    firstDayOfWeek.add(const Duration(days: 2)),
-    firstDayOfWeek.add(const Duration(days: 3)),
-    firstDayOfWeek.add(const Duration(days: 4)),
-    firstDayOfWeek.add(const Duration(days: 5)),
-    firstDayOfWeek.add(const Duration(days: 6))
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 1),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 2),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 3),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 4),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 5),
+    DateTime(firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day + 6),
   ];
 }
 
-extension DateOnlyCompare on DateTime {
+extension DateFunctions on DateTime {
   bool isSameDate(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
@@ -61,6 +61,22 @@ extension DateOnlyCompare on DateTime {
   String toCompact() {
     final DateFormat format = DateFormat('yyyyMMdd');
     return format.format(this);
+  }
+
+  DateTime prevDay() {
+    return DateTime(year, month, day - 1);
+  }
+
+  DateTime nextDay() {
+    return DateTime(year, month, day + 1);
+  }
+
+  DateTime prevWeek() {
+    return DateTime(year, month, day - 7);
+  }
+
+  DateTime nextWeek() {
+    return DateTime(year, month, day + 7);
   }
 }
 
@@ -79,14 +95,30 @@ DateTime getPreviousMonth(DateTime date) {
   return DateTime(date.year - 1, 12, 1);
 }
 
+DateTime getNextMonth(DateTime date) {
+  if (date.month < 12) {
+    return DateTime(date.year, date.month + 1, 1);
+  }
+  return DateTime(date.year + 1, 1, 1);
+}
+
 DateTime getFirstDayOfMonth(DateTime date) {
   return DateTime(date.year, date.month, 1);
 }
 
 DateTime getLastDayOfMonth(DateTime date) {
   if (date.month < 12) {
-    return DateTime(date.year, date.month + 1, 1)
-        .subtract(const Duration(days: 1));
+    return DateTime(date.year, date.month + 1, 0);
   }
-  return DateTime(date.year + 1, 1, 1).subtract(const Duration(days: 1));
+  return DateTime(date.year + 1, 1, 0);
+}
+
+int getDaysInInterval(DateTime from, DateTime to) {
+  int count = 0;
+  var day = from;
+  while (day.isBefore(to) || day.isSameDate(to)) {
+    count++;
+    day = day.nextDay();
+  }
+  return count;
 }

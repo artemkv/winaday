@@ -16,6 +16,7 @@ var uuid = const Uuid();
 LruMap cache = LruMap(maximumSize: 100);
 LruMap listCache = LruMap(maximumSize: 100);
 LruMap calendarCache = LruMap(maximumSize: 100);
+LruMap statsCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
 
 @immutable
@@ -100,6 +101,7 @@ class SignOut implements Command {
     cache.clear();
     listCache.clear();
     calendarCache.clear();
+    statsCache.clear();
     cachedPriorities = null;
     killSession();
     GoogleSignInFacade.signOut().then((_) {
@@ -167,6 +169,7 @@ class SaveWin implements Command {
       cache[dateKey] = win;
       listCache.clear();
       calendarCache.clear();
+      statsCache.clear();
       dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err.toString()));
@@ -338,10 +341,7 @@ class LoadWinDays implements Command {
       calendarCache[monthKey] = winDays;
       dispatch(CalendarViewDaysWithWinsReceived(month, winDays));
     }).catchError((err) {
-      // TODO:
-      /*dispatch(DailyWinViewLoadingFailed(
-          DateTime.now(), DateTime.now(), err.toString()));*/
-      // dispatch(WinListNextPageLoadingFailed(err.toString()));
+      // Ignore
     });
   }
 }
@@ -357,15 +357,31 @@ class LoadStats implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
+    bool hasStats = to.isSameMonth(today) || to.isBefore(today);
+
     loadPriorities().then((priorityList) {
-      // TODO: caching
+      if (!hasStats) {
+        return Future<void>.delayed(Duration.zero, () {
+          dispatch(StatsLoaded(
+              date, today, from, to, priorityList, WinListShortData.empty()));
+        });
+      }
+
+      var intervalKey = '${from.toCompact()}-${to.toCompact()}';
+
+      if (statsCache.containsKey(intervalKey)) {
+        return Future<void>.delayed(Duration.zero, () {
+          dispatch(StatsLoaded(
+              date, today, from, to, priorityList, statsCache[intervalKey]));
+        });
+      }
 
       return getStats(
               from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
           .then((json) {
-        var stats = StatsData.fromJson(json);
-        // TODO: listCache[intervalKey] = winList.items;
-        dispatch(StatsLoaded(date, today, priorityList, stats));
+        var stats = WinListShortData.fromJson(json);
+        statsCache[intervalKey] = stats;
+        dispatch(StatsLoaded(date, today, from, to, priorityList, stats));
       });
     }).catchError((err) {
       dispatch(StatsLoadingFailed(date, today, from, to, err.toString()));

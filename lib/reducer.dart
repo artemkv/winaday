@@ -103,22 +103,22 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is MoveToPrevDay) {
-    DateTime newDate = message.date.subtract(const Duration(days: 1));
+    DateTime newDate = message.date.prevDay();
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
   if (message is MoveToNextDay) {
-    DateTime newDate = message.date.add(const Duration(days: 1));
+    DateTime newDate = message.date.nextDay();
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
   if (message is MoveToPrevWeek) {
-    DateTime newDate = message.date.subtract(const Duration(days: 7));
+    DateTime newDate = message.date.prevWeek();
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
   if (message is MoveToNextWeek) {
-    DateTime newDate = message.date.add(const Duration(days: 7));
+    DateTime newDate = message.date.nextWeek();
     return ModelAndCommand(
         DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
   }
@@ -240,10 +240,10 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is NavigateToWinListRequested) {
-    return ModelAndCommand(
-        WinListLoadingModel(message.date, message.today),
-        LoadWinListFirstPage(message.date,
-            message.today.subtract(const Duration(days: 13)), message.today));
+    var from = DateTime(
+        message.today.year, message.today.month, message.today.day - 13);
+    return ModelAndCommand(WinListLoadingModel(message.date, message.today),
+        LoadWinListFirstPage(message.date, from, message.today));
   }
   if (message is BackToDailyWinViewRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
@@ -267,10 +267,10 @@ ModelAndCommand reduce(Model model, Message message) {
   }
   if (message is LoadWinListNextPageRequested) {
     if (model is WinListModel) {
+      var from =
+          DateTime(model.from.year, model.from.month, model.from.day - 14);
       return ModelAndCommand(
-          model,
-          LoadWinListNextPage(model.from.subtract(const Duration(days: 14)),
-              model.from.subtract(const Duration(days: 1))));
+          model, LoadWinListNextPage(from, model.from.prevDay()));
     }
   }
   if (message is WinListRetryLoadNextPageRequested) {
@@ -278,11 +278,12 @@ ModelAndCommand reduce(Model model, Message message) {
       var updatedItems = <WinListItem>[WinListItemLoadingMore()];
       updatedItems.addAll(model.items.getRange(
           1, model.items.length)); // old items except the retry trigger
+      var from =
+          DateTime(model.from.year, model.from.month, model.from.day - 14);
       return ModelAndCommand(
           WinListModel(model.date, model.today, model.priorityList, model.from,
               updatedItems),
-          LoadWinListNextPage(model.from.subtract(const Duration(days: 14)),
-              model.from.subtract(const Duration(days: 1))));
+          LoadWinListNextPage(from, model.from.prevDay()));
     }
   }
   if (message is WinListNextPageLoaded) {
@@ -357,26 +358,85 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is NavigateToStatsRequested) {
+    var from = getFirstDayOfMonth(message.today);
+    var to = getLastDayOfMonth(message.today);
     return ModelAndCommand(
-        StatsLoadingModel(message.date, message.today),
-        LoadStats(message.date, getFirstDayOfMonth(message.date),
-            getLastDayOfMonth(message.date))); // TODO: pass correct from-to
+        StatsLoadingModel(message.date, message.today, from, to),
+        LoadStats(message.date, from, to));
   }
   if (message is StatsLoadingFailed) {
     return ModelAndCommand.justModel(StatsFailedToLoadModel(
         message.date, message.today, message.from, message.to, message.reason));
   }
   if (message is StatsReloadRequested) {
-    return ModelAndCommand(StatsLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        StatsLoadingModel(
+            message.date, message.today, message.from, message.to),
         LoadStats(message.date, message.from, message.to));
   }
   if (message is StatsLoaded) {
-    return ModelAndCommand.justModel(StatsModel(
-        message.date, message.today, message.priorityList, message.stats));
+    return ModelAndCommand.justModel(MonthlyStatsModel(
+        message.date,
+        message.today,
+        message.from,
+        message.to,
+        getDaysInInterval(message.from, message.to),
+        message.priorityList,
+        message.stats,
+        true,
+        true));
   }
   if (message is ExitStatsRequested) {
     return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
         LoadDailyWin(message.date));
+  }
+  if (message is StatsTogglePieHistogramsWins) {
+    if (model is MonthlyStatsModel) {
+      return ModelAndCommand.justModel(MonthlyStatsModel(
+          model.date,
+          model.today,
+          model.from,
+          model.to,
+          model.daysTotal,
+          model.priorityList,
+          model.stats,
+          !model.winsShowAsPie,
+          model.prioritiesShowAsPie));
+    }
+  }
+  if (message is StatsTogglePieHistogramsPriorities) {
+    if (model is MonthlyStatsModel) {
+      return ModelAndCommand.justModel(MonthlyStatsModel(
+          model.date,
+          model.today,
+          model.from,
+          model.to,
+          model.daysTotal,
+          model.priorityList,
+          model.stats,
+          model.winsShowAsPie,
+          !model.prioritiesShowAsPie));
+    }
+  }
+  if (message is MoveToPrevMonthStats) {
+    if (model is MonthlyStatsModel) {
+      var prevMonth = getPreviousMonth(model.from);
+      var from = getFirstDayOfMonth(prevMonth);
+      var to = getLastDayOfMonth(prevMonth);
+      return ModelAndCommand(
+          StatsLoadingModel(message.date, message.today, from, to),
+          LoadStats(message.date, from, to));
+    }
+  }
+  if (message is MoveToNextMonthStats) {
+    if (model is MonthlyStatsModel) {
+      var nextMonth = getNextMonth(model.from);
+      var from = getFirstDayOfMonth(nextMonth);
+      var to = getLastDayOfMonth(nextMonth);
+      return ModelAndCommand(
+          StatsLoadingModel(message.date, message.today, from, to),
+          LoadStats(message.date, from, to));
+    }
   }
 
   return ModelAndCommand.justModel(model);
@@ -432,7 +492,7 @@ List<WinListItem> toWinListItems(
       winListItems.add(WinListItemNoWin(day));
     }
     prevDay = day;
-    day = day.add(const Duration(days: 1));
+    day = day.nextDay();
   }
   return winListItems;
 }

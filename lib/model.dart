@@ -381,8 +381,10 @@ class CalendarViewListItemYearSeparator extends CalendarViewListItem {
 class StatsLoadingModel extends Model {
   final DateTime date;
   final DateTime today;
+  final DateTime from;
+  final DateTime to;
 
-  const StatsLoadingModel(this.date, this.today);
+  const StatsLoadingModel(this.date, this.today, this.from, this.to);
 }
 
 @immutable
@@ -398,11 +400,25 @@ class StatsFailedToLoadModel extends Model {
 }
 
 @immutable
-class StatsModel extends Model {
+class MonthlyStatsModel extends Model {
   final DateTime date;
   final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final int daysTotal;
   final PriorityListData priorityList;
-  final StatsData stats;
+  final WinListShortData stats;
+  final bool winsShowAsPie;
+  final bool prioritiesShowAsPie;
 
-  const StatsModel(this.date, this.today, this.priorityList, this.stats);
+  const MonthlyStatsModel(
+      this.date,
+      this.today,
+      this.from,
+      this.to,
+      this.daysTotal,
+      this.priorityList,
+      this.stats,
+      this.winsShowAsPie,
+      this.prioritiesShowAsPie);
 }

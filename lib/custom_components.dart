@@ -56,8 +56,10 @@ class _DailyWinViewState extends State<DailyWinView> {
         drawer: drawer(
             context, widget.model.date, widget.model.today, widget.dispatch),
         body: Column(children: [
-          calendarStripe(
-              context, widget.model.date, widget.model.today, widget.dispatch),
+          Material(
+              elevation: 4.0,
+              child: calendarStripe(context, widget.model.date,
+                  widget.model.today, widget.dispatch)),
           Expanded(
               child: Center(
                   child: PageView.builder(
@@ -87,7 +89,7 @@ class _DailyWinViewState extends State<DailyWinView> {
                       widget.model.win));
                 },
                 child: const Icon(Icons.edit),
-                backgroundColor: denimBlue,
+                backgroundColor: crayolaBlue,
               )
             : null));
   }
@@ -547,5 +549,73 @@ class _WinListItemLoadMoreState extends State<WinListItemLoadMore> {
                   child: Padding(
                       padding: const EdgeInsets.all(12.0), child: spinner()))),
         ]));
+  }
+}
+
+class MonthlyStatsView extends StatefulWidget {
+  final MonthlyStatsModel model;
+  final void Function(Message) dispatch;
+
+  const MonthlyStatsView(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<MonthlyStatsView> createState() => _MonthlyStatsViewState();
+}
+
+class _MonthlyStatsViewState extends State<MonthlyStatsView> {
+  static const prev = 1;
+  static const cur = 2;
+  static const next = 3;
+
+  final PageController _controller = PageController(initialPage: cur);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          leading: const BackButton(),
+          title: const Text('Your Statistics'),
+          elevation: 0.0,
+        ),
+        body: WillPopScope(
+            onWillPop: () async {
+              widget.dispatch(
+                  ExitStatsRequested(widget.model.date, widget.model.today));
+              return false;
+            },
+            child: Column(children: [
+              monthlyStatsHeader(widget.model.date, widget.model.today,
+                  widget.model.from, widget.dispatch),
+              Expanded(
+                  child: Center(
+                      child: PageView.builder(
+                          onPageChanged: (page) {
+                            if (page == prev) {
+                              widget.dispatch(MoveToPrevMonthStats(
+                                  widget.model.date, widget.model.today));
+                            } else if (page == next) {
+                              widget.dispatch(MoveToNextMonthStats(
+                                  widget.model.date, widget.model.today));
+                            }
+                          },
+                          scrollDirection: Axis.horizontal,
+                          controller: _controller,
+                          itemBuilder: (context, index) {
+                            if (index == cur) {
+                              return monthlyStats(
+                                  widget.model, widget.dispatch);
+                            } else {
+                              return Container();
+                            }
+                          })))
+            ])));
   }
 }

@@ -113,23 +113,45 @@ class WinDaysData {
 }
 
 @immutable
-class StatsData {
-  final int daysWithoutWinsCount;
-  final int daysWithWinsCount;
-  final int daysWithAwesomeWinsCount;
+class WinShortData {
+  final int overallResult;
+  final Set<String> priorities;
 
-  // TODO: priority stats
+  const WinShortData(this.overallResult, this.priorities);
 
-  const StatsData(this.daysWithoutWinsCount, this.daysWithWinsCount,
-      this.daysWithAwesomeWinsCount);
+  WinShortData.empty()
+      : overallResult = OverallDayResult.noWinYet,
+        priorities = <String>{};
 
-  const StatsData.empty()
-      : daysWithoutWinsCount = 0,
-        daysWithWinsCount = 0,
-        daysWithAwesomeWinsCount = 0;
+  WinShortData.fromJson(Map<String, dynamic> json)
+      : overallResult = json['overall'],
+        priorities = json['priorities'] != null
+            ? json['priorities'].cast<String>().toSet()
+            : <String>{};
+}
 
-  StatsData.fromJson(Map<String, dynamic> json)
-      : daysWithoutWinsCount = json['days_without_wins_count'],
-        daysWithWinsCount = json['days_with_wins_count'],
-        daysWithAwesomeWinsCount = json['days_with_awesome_wins_count'];
+@immutable
+class WinOnDayShortData {
+  final DateTime date;
+  final WinShortData win;
+
+  const WinOnDayShortData(this.date, this.win);
+
+  WinOnDayShortData.fromJson(Map<String, dynamic> json)
+      : date = fromCompact(json['date']),
+        win = WinShortData.fromJson(json['win']);
+}
+
+@immutable
+class WinListShortData {
+  final List<WinOnDayShortData> items;
+
+  const WinListShortData(this.items);
+
+  WinListShortData.empty() : items = List.empty();
+
+  WinListShortData.fromJson(Map<String, dynamic> json)
+      : items = (json['items'] as List)
+            .map((x) => WinOnDayShortData.fromJson(x))
+            .toList();
 }

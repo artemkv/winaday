@@ -91,10 +91,32 @@ v1.3 Calendar View
 
 v1.4 Stats
 
+- Month:
+    - --Days with wins/no wins/awesome, pie/histograms  + labels--
+    - --Priorities, pie/histograms  + labels--
+    - --Show values for histogram bars--
+- --Display month/year in header--
+- --Go to prev/next month--
+- --Go to prev/next month by swiping--
+- --Cache--
+- --Do not load stats in the future, return empty--
+
 
 TODO:
 
 !! Features
+
+
+!!! More Stats
+
+- Month
+    - Priorities monthly view day by day
+- Year:
+    - Piechart days with wins/no wins/asesome + labels
+    - Piechart priorities + labels
+    - Histograms priorities (simple) + labels
+    - Histograms priorities (stacked), by months + labels
+
 
 !! UX
 
@@ -102,6 +124,7 @@ TODO:
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list
 - When changed day overall result, but no win text, does not show overall result in daily win view
+- Sync calendar/win list or maybe even daily win view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
 
 - Show which month/year it is in the win list view
 - Easy way to navigate to today

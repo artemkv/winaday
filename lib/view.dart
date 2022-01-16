@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:winaday/domain.dart';
+import 'charts.dart';
 import 'custom_components.dart';
 import 'model.dart';
 import 'messages.dart';
@@ -109,8 +110,8 @@ Widget home(
   if (model is StatsFailedToLoadModel) {
     return statsFailedToLoad(context, model, dispatch);
   }
-  if (model is StatsModel) {
-    return stats(model, dispatch);
+  if (model is MonthlyStatsModel) {
+    return MonthlyStatsView(model: model, dispatch: dispatch);
   }
 
   return unknownModel(model);
@@ -405,7 +406,9 @@ Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
       drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
-        calendarStripe(context, model.date, model.today, dispatch),
+        Material(
+            elevation: 4.0,
+            child: calendarStripe(context, model.date, model.today, dispatch)),
         Expanded(child: spinner())
       ])));
 }
@@ -429,7 +432,9 @@ Widget dailyWinFailedToLoad(BuildContext context,
       drawer: drawer(context, model.date, model.today, dispatch),
       body: Center(
           child: Column(children: [
-        calendarStripe(context, model.date, model.today, dispatch),
+        Material(
+            elevation: 4.0,
+            child: calendarStripe(context, model.date, model.today, dispatch)),
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
             child: Text("Failed to contact the server: " + model.reason,
@@ -563,7 +568,7 @@ Widget dailyWinPriorityMap(
                   child: Text(editMode ? "modify" : "link to your priorities",
                       style: GoogleFonts.openSans(
                           textStyle: const TextStyle(
-                              color: denimBlue,
+                              color: crayolaBlue,
                               decoration: TextDecoration.underline,
                               fontSize: TEXT_FONT_SIZE)))),
             ]))));
@@ -580,7 +585,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
       children: [
         DrawerHeader(
           decoration: const BoxDecoration(
-            color: denimBlue,
+            color: crayolaBlue,
           ),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1529,7 +1534,7 @@ Widget calendarMonth(BuildContext context, DateTime today, DateTime month,
     rows.add(
         calendarWeek(context, month, week, today, isHeader, winDays, dispatch));
     isHeader = false;
-    week = getCurrentWeek(context, week[0].add(const Duration(days: 7)));
+    week = getCurrentWeek(context, week[0].nextWeek());
   }
 
   return Padding(
@@ -1629,17 +1634,23 @@ Color getCalendarDayColor(bool isCurrentMonth, bool isInFuture, bool isWinDay) {
 
 Widget statsLoading(StatsLoadingModel model, void Function(Message) dispatch) {
   return Scaffold(
-    appBar: AppBar(
-      leading: const BackButton(),
-      title: const Text('Your Statistics'),
-    ),
-    body: WillPopScope(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Your Statistics'),
+        elevation: 0.0,
+      ),
+      body: WillPopScope(
         onWillPop: () async {
           dispatch(ExitStatsRequested(model.date, model.today));
           return false;
         },
-        child: Center(child: Column(children: [Expanded(child: spinner())]))),
-  );
+        child: Column(children: [
+          monthlyStatsHeader(model.date, model.today, model.from, dispatch),
+          Expanded(
+              child:
+                  Center(child: Column(children: [Expanded(child: spinner())])))
+        ]),
+      ));
 }
 
 Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
@@ -1648,46 +1659,182 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
     appBar: AppBar(
       leading: const BackButton(),
       title: const Text('Your Statistics'),
+      elevation: 0.0,
     ),
     body: WillPopScope(
         onWillPop: () async {
           dispatch(ExitStatsRequested(model.date, model.today));
           return false;
         },
-        child: Center(
-            child: Column(children: [
-          Padding(
-              padding: const EdgeInsets.all(TEXT_PADDING),
-              child: Text("Failed to contact the server: " + model.reason,
-                  style: const TextStyle(
-                      fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+        child: Column(children: [
+          monthlyStatsHeader(model.date, model.today, model.from, dispatch),
           Expanded(
-              child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    dispatch(StatsReloadRequested(
-                        model.date, model.today, model.from, model.to));
-                  },
-                  child: Center(
-                      child: Text("Click to reload",
-                          style: GoogleFonts.openSans(
-                              textStyle: const TextStyle(
-                                  fontSize: TEXT_FONT_SIZE,
-                                  color: Colors.grey))))))
-        ]))),
+              child: Center(
+                  child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(TEXT_PADDING),
+                child: Text("Failed to contact the server: " + model.reason,
+                    style: const TextStyle(
+                        fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+            Expanded(
+                child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      dispatch(StatsReloadRequested(
+                          model.date, model.today, model.from, model.to));
+                    },
+                    child: Center(
+                        child: Text("Click to reload",
+                            style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                    fontSize: TEXT_FONT_SIZE,
+                                    color: Colors.grey))))))
+          ])))
+        ])),
   );
 }
 
-Widget stats(StatsModel model, void Function(Message) dispatch) {
-  return Scaffold(
-      appBar: AppBar(
-        leading: const BackButton(),
-        title: const Text('Your Statistics'),
-      ),
-      body: WillPopScope(
-          onWillPop: () async {
-            dispatch(ExitStatsRequested(model.date, model.today));
-            return false;
-          },
-          child: Text('$model.stats')));
+Widget monthlyStats(MonthlyStatsModel model, void Function(Message) dispatch) {
+  return SingleChildScrollView(
+      child: Column(children: [
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: dualChoice(
+            "Pie chart",
+            "Histograms",
+            model.winsShowAsPie ? 0 : 1,
+            StatsTogglePieHistogramsWins(),
+            dispatch)),
+    SizedBox(
+        height: 300,
+        child: Padding(
+          padding:
+              const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+          child: model.winsShowAsPie
+              ? pieChart("winsPie", getWinDaysDataPoints(model))
+              : histograms("winsHist", getWinDaysDataPoints(model)),
+        )),
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: legend(getWinDaysLegend(model))),
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: dualChoice(
+            "Pie chart",
+            "Histograms",
+            model.prioritiesShowAsPie ? 0 : 1,
+            StatsTogglePieHistogramsPriorities(),
+            dispatch)),
+    SizedBox(
+        height: 300,
+        child: Padding(
+            padding:
+                const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+            child: model.prioritiesShowAsPie
+                ? pieChart("prioritiesPie", getPriorityDataPoints(model))
+                : histograms("prioritiesHist", getPriorityDataPoints(model)))),
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: legend(getPrioritiesLegend(model))),
+    const Divider(
+      height: 12,
+      thickness: 1,
+      indent: 64,
+      endIndent: 64,
+    ),
+    const Padding(
+        padding: EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: Text("Priorities without wins",
+            style: TextStyle(color: Colors.black, fontSize: TEXT_FONT_SIZE))),
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+        child: legend(getUnattendedPrioritiesLegend(model))),
+    Padding(
+        padding:
+            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 32),
+        child: Container())
+  ]));
+}
+
+Widget monthlyStatsHeader(DateTime date, DateTime today, DateTime month,
+    void Function(Message) dispatch) {
+  return Material(
+      elevation: 4.0,
+      child: Padding(
+          padding:
+              const EdgeInsets.only(left: 32, right: 32, top: 12, bottom: 12),
+          child: Row(children: [
+            IconButton(
+                icon: const Icon(Icons.arrow_left),
+                color: Colors.black,
+                tooltip: 'Prev',
+                onPressed: () {
+                  dispatch(MoveToPrevMonthStats(date, today));
+                }),
+            Expanded(
+                child: Center(
+                    child: Text(getDayString(month),
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold))))),
+            IconButton(
+              icon: const Icon(Icons.arrow_right),
+              color: Colors.black,
+              tooltip: 'Next',
+              onPressed: () {
+                dispatch(MoveToNextMonthStats(date, today));
+              },
+            )
+          ])));
+}
+
+Widget dualChoice(String label1, String label2, int currentChoice,
+    Message message, void Function(Message) dispatch) {
+  return Row(children: [
+    Expanded(
+        child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              if (currentChoice == 1) {
+                dispatch(message);
+              }
+            },
+            child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 32, right: 8, top: 16, bottom: 16),
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text(label1,
+                        style: GoogleFonts.openSans(
+                            textStyle: TextStyle(
+                                fontSize: 16,
+                                fontWeight: (currentChoice == 0
+                                    ? FontWeight.bold
+                                    : FontWeight.normal)))))))),
+    Expanded(
+        child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              if (currentChoice == 0) {
+                dispatch(message);
+              }
+            },
+            child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 8, right: 32, top: 16, bottom: 16),
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text(label2,
+                        style: GoogleFonts.openSans(
+                            textStyle: TextStyle(
+                                fontSize: 16,
+                                fontWeight: (currentChoice == 1
+                                    ? FontWeight.bold
+                                    : FontWeight.normal))))))))
+  ]);
 }
