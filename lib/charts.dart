@@ -75,11 +75,14 @@ Map<String, int> getPriorityCounts(MonthlyStatsModel model) {
 
 List<DataPoint> getPriorityDataPoints(MonthlyStatsModel model) {
   var priorityCounts = getPriorityCounts(model);
-  return model.priorityList.items
+  var dataPoints = model.priorityList.items
       .map((p) => DataPoint(p.id, priorityCounts[p.id] ?? 0,
           chartPriorityColors[p.color % chartPriorityColors.length]))
       .where((dp) => dp.value > 0)
       .toList();
+
+  dataPoints.sort((a, b) => b.value.compareTo(a.value));
+  return dataPoints;
 }
 
 List<LegendItem> getPrioritiesLegend(MonthlyStatsModel model) {

@@ -101,6 +101,10 @@ v1.4 Stats
 - --Cache--
 - --Do not load stats in the future, return empty--
 
+v1.4.1 Improve
+
+- --Order priority stats high to low--
+
 
 TODO:
 
@@ -120,11 +124,12 @@ TODO:
 
 !! UX
 
+- Do not count current month days that are in the future for the stats
 - Mark days that have wins with dot in a calendar stripe
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list
-- When changed day overall result, but no win text, does not show overall result in daily win view
-- Sync calendar/win list or maybe even daily win view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
+- When changed day overall result, but no win text, does not show overall result in daily win view, but should
+- Sync calendar/win list or maybe even daily win (and stats?) view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
 
 - Show which month/year it is in the win list view
 - Easy way to navigate to today
