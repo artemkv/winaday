@@ -107,6 +107,10 @@ v1.4.1 Improve
 - --Do not count current month days that are in the future for monthly stats--
 - --Scrolling left/right re-builds the page view to make sure paging is working correctly--
 
+v1.4.2 Improve
+
+- --Definitely order priority labels on stats screen in order high to low--
+
 
 TODO:
 
@@ -124,8 +128,6 @@ TODO:
 
 
 !! UX
-
-- Definitely order priority labels on stats screen in order high to low
 
 - Mark days that have wins with dot in a calendar stripe
 - Show awesome days differently in the calendar

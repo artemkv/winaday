@@ -91,10 +91,24 @@ List<DataPoint> getPriorityDataPoints(MonthlyStatsModel model) {
 
 List<LegendItem> getPrioritiesLegend(MonthlyStatsModel model) {
   var priorityCounts = getPriorityCounts(model);
-  return model.priorityList.items
+  var prioritiesWithCounts = model.priorityList.items
       .where((p) => (priorityCounts[p.id] ?? 0) > 0)
-      .map((p) => LegendItem(p.text, getPriorityBoxColor(p.color)))
+      .map((p) => PriorityDataWithCount(p, priorityCounts[p.id] ?? 0))
       .toList();
+  prioritiesWithCounts.sort((a, b) => b.count.compareTo(a.count));
+
+  return prioritiesWithCounts
+      .map((p) =>
+          LegendItem(p.priority.text, getPriorityBoxColor(p.priority.color)))
+      .toList();
+}
+
+@immutable
+class PriorityDataWithCount extends Model {
+  final PriorityData priority;
+  final int count;
+
+  const PriorityDataWithCount(this.priority, this.count);
 }
 
 List<LegendItem> getUnattendedPrioritiesLegend(MonthlyStatsModel model) {
