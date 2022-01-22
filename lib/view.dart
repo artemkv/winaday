@@ -49,7 +49,7 @@ Widget home(
     return dailyWinFailedToLoad(context, model, dispatch);
   }
   if (model is DailyWinModel) {
-    return DailyWinView(model: model, dispatch: dispatch);
+    return DailyWinView(key: UniqueKey(), model: model, dispatch: dispatch);
   }
   if (model is WinEditorModel) {
     return WinEditor(model: model, dispatch: dispatch);
@@ -111,7 +111,7 @@ Widget home(
     return statsFailedToLoad(context, model, dispatch);
   }
   if (model is MonthlyStatsModel) {
-    return MonthlyStatsView(model: model, dispatch: dispatch);
+    return MonthlyStatsView(key: UniqueKey(), model: model, dispatch: dispatch);
   }
 
   return unknownModel(model);

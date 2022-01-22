@@ -105,6 +105,7 @@ v1.4.1 Improve
 
 - --Order priority stats high to low--
 - --Do not count current month days that are in the future for monthly stats--
+- --Scrolling left/right re-builds the page view to make sure paging is working correctly--
 
 
 TODO:
@@ -154,5 +155,3 @@ D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.win
 
 
 !! Feedback
-
-- Scrolling left/right does not work
