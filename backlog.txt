@@ -116,15 +116,16 @@ TODO:
 !!! More Stats
 
 - Month
-    - Priorities monthly view day by day
+    - Priorities cumulative chart day by day
 - Year:
     - Piechart days with wins/no wins/asesome + labels
     - Piechart priorities + labels
-    - Histograms priorities (simple) + labels
-    - Histograms priorities (stacked), by months + labels
+    - Priorities cumulative chart month by month
 
 
 !! UX
+
+- Definitely order priority labels on stats screen in order high to low
 
 - Mark days that have wins with dot in a calendar stripe
 - Show awesome days differently in the calendar
