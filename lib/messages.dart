@@ -82,19 +82,11 @@ class DailyWinViewReloadRequested implements Message {
 }
 
 @immutable
-class MoveToNextDay implements Message {
+class MoveToDayByOffset implements Message {
   final DateTime date;
-  final DateTime today;
+  final int offset;
 
-  const MoveToNextDay(this.date, this.today);
-}
-
-@immutable
-class MoveToPrevDay implements Message {
-  final DateTime date;
-  final DateTime today;
-
-  const MoveToPrevDay(this.date, this.today);
+  const MoveToDayByOffset(this.date, this.offset);
 }
 
 @immutable

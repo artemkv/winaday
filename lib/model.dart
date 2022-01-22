@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 
+import 'dateutil.dart';
 import 'domain.dart';
 
 @immutable
@@ -68,11 +69,30 @@ class DailyWinModel extends Model {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
+  final Map<String, DailyWinModelWinData> wins;
+
+  const DailyWinModel(this.date, this.today, this.priorityList, this.wins);
+
+  DailyWinModelWinData getWinDateOnDate(DateTime date) {
+    if (wins.containsKey(date.toCompact())) {
+      return wins[date.toCompact()]!;
+    }
+    return DailyWinModelWinDataNotLoaded();
+  }
+}
+
+@immutable
+abstract class DailyWinModelWinData {}
+
+@immutable
+class DailyWinModelWinDataNotLoaded extends DailyWinModelWinData {}
+
+@immutable
+class DailyWinModelWinDataLoaded extends DailyWinModelWinData {
   final WinData win;
   final bool editable;
 
-  const DailyWinModel(
-      this.date, this.today, this.priorityList, this.win, this.editable);
+  DailyWinModelWinDataLoaded(this.win, this.editable);
 }
 
 @immutable

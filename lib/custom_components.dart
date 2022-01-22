@@ -6,6 +6,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:uuid/uuid.dart';
 
+import 'dateutil.dart';
 import 'domain.dart';
 import 'messages.dart';
 import 'model.dart';
@@ -24,11 +25,33 @@ class DailyWinView extends StatefulWidget {
 }
 
 class _DailyWinViewState extends State<DailyWinView> {
-  static const yesterday = 1;
-  static const today = 2;
-  static const tomorrow = 3;
+  static const pageZeroIdx = 1000000;
 
-  final PageController _controller = PageController(initialPage: today);
+  final PageController _controller = PageController(initialPage: pageZeroIdx);
+
+  DateTime _pageZeroDate = DateTime(1900);
+
+  bool allowEditing() {
+    var win = widget.model.getWinDateOnDate(widget.model.date);
+    if (win is DailyWinModelWinDataLoaded) {
+      return win.editable;
+    }
+    return false;
+  }
+
+  void dispatchEditWinRequested() {
+    var winOnDate = widget.model.getWinDateOnDate(widget.model.date);
+    if (winOnDate is DailyWinModelWinDataLoaded) {
+      widget.dispatch(EditWinRequested(widget.model.date, widget.model.today,
+          widget.model.priorityList, winOnDate.win));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageZeroDate = widget.model.date;
+  }
 
   @override
   void dispose() {
@@ -63,30 +86,26 @@ class _DailyWinViewState extends State<DailyWinView> {
           Expanded(
               child: Center(
                   child: PageView.builder(
-                      onPageChanged: (page) {
-                        if (page == yesterday) {
-                          widget.dispatch(MoveToPrevDay(
-                              widget.model.date, widget.model.today));
-                        } else if (page == tomorrow) {
-                          widget.dispatch(MoveToNextDay(
-                              widget.model.date, widget.model.today));
-                        }
+                      onPageChanged: (pageIdx) {
+                        int offset = pageIdx - pageZeroIdx;
+                        widget
+                            .dispatch(MoveToDayByOffset(_pageZeroDate, offset));
                       },
                       scrollDirection: Axis.horizontal,
                       controller: _controller,
-                      itemBuilder: (context, index) {
+                      itemBuilder: (context, pageIdx) {
+                        int offset = pageIdx - pageZeroIdx;
+                        var date = _pageZeroDate.moveTo(offset);
                         return dailyWinPage(
-                            widget.model, index, today, widget.dispatch);
+                            widget.model,
+                            widget.model.getWinDateOnDate(date),
+                            widget.dispatch);
                       })))
         ]),
-        floatingActionButton: (widget.model.editable
+        floatingActionButton: (allowEditing()
             ? FloatingActionButton(
                 onPressed: () {
-                  widget.dispatch(EditWinRequested(
-                      widget.model.date,
-                      widget.model.today,
-                      widget.model.priorityList,
-                      widget.model.win));
+                  dispatchEditWinRequested();
                 },
                 child: const Icon(Icons.edit),
                 backgroundColor: crayolaBlue,

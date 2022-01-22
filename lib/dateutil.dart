@@ -78,6 +78,11 @@ extension DateFunctions on DateTime {
   DateTime nextWeek() {
     return DateTime(year, month, day + 7);
   }
+
+  // TODO: unit-test
+  DateTime moveTo(int offset) {
+    return DateTime(year, month, day + offset);
+  }
 }
 
 DateTime fromCompact(String date) {

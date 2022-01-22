@@ -49,7 +49,7 @@ Widget home(
     return dailyWinFailedToLoad(context, model, dispatch);
   }
   if (model is DailyWinModel) {
-    return DailyWinView(key: UniqueKey(), model: model, dispatch: dispatch);
+    return DailyWinView(model: model, dispatch: dispatch);
   }
   if (model is WinEditorModel) {
     return WinEditor(model: model, dispatch: dispatch);
@@ -456,10 +456,10 @@ Widget dailyWinFailedToLoad(BuildContext context,
       ])));
 }
 
-Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
+Widget dailyWinPage(DailyWinModel model, DailyWinModelWinData winOnDay,
     void Function(Message) dispatch) {
-  if (index == todayIndex) {
-    if (model.win.text == "") {
+  if (winOnDay is DailyWinModelWinDataLoaded) {
+    if (winOnDay.win.text == "") {
       return Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
           child: Center(
@@ -478,12 +478,12 @@ Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
                     padding: const EdgeInsets.only(right: TEXT_PADDING / 2),
                     child: Text(
                         overallDayResultText(
-                          model.win.overallResult,
+                          winOnDay.win.overallResult,
                         ),
                         style: GoogleFonts.openSans(
                             textStyle:
                                 const TextStyle(fontSize: TEXT_FONT_SIZE)))),
-                Text(overallDayResultEmoji(model.win.overallResult),
+                Text(overallDayResultEmoji(winOnDay.win.overallResult),
                     style: const TextStyle(fontSize: TEXT_FONT_SIZE))
               ]))),
       const Divider(
@@ -499,7 +499,7 @@ Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
           Expanded(
               child: Padding(
                   padding: const EdgeInsets.all(TEXT_PADDING * 1.6),
-                  child: Text(model.win.text,
+                  child: Text(winOnDay.win.text,
                       style: GoogleFonts.openSans(
                           textStyle: const TextStyle(
                               fontSize: TEXT_FONT_SIZE * 1.4)))))
@@ -511,21 +511,19 @@ Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
                       left: TEXT_PADDING * 1.6,
                       right: TEXT_PADDING * 1.6,
                       bottom: TEXT_PADDING * 1.6),
-                  child: dailyWinPriorityMap(model, dispatch)))
+                  child: dailyWinPriorityMap(model, winOnDay.win, dispatch)))
         ])
       ])))
     ]);
   } else {
-    return const Padding(
-        padding: EdgeInsets.all(TEXT_PADDING),
-        child: Text("", style: TextStyle(fontSize: TEXT_FONT_SIZE)));
+    return Center(child: spinner());
   }
 }
 
 Widget dailyWinPriorityMap(
-    DailyWinModel model, void Function(Message) dispatch) {
+    DailyWinModel model, WinData win, void Function(Message) dispatch) {
   var rows = model.priorityList.items
-      .where((x) => model.win.priorities.contains(x.id))
+      .where((x) => win.priorities.contains(x.id))
       .map((x) => Padding(
           padding: const EdgeInsets.all(4.0),
           child: Row(children: [
@@ -559,7 +557,7 @@ Widget dailyWinPriorityMap(
         child: GestureDetector(
             onTap: () {
               dispatch(LinkWinToPriorities(
-                  model.date, model.today, model.win, model.priorityList));
+                  model.date, model.today, win, model.priorityList));
             },
             child: Row(children: [
               editMode ? const Icon(Icons.edit) : const Icon(Icons.link),

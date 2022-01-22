@@ -51,8 +51,20 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is DailyWinViewLoaded) {
-    return ModelAndCommand.justModel(DailyWinModel(message.date, message.today,
-        message.priorityList, message.win, message.editable));
+    if (model is DailyWinModel) {
+      var updatedWins = {for (var x in model.wins.entries) x.key: x.value};
+      updatedWins[message.date.toCompact()] =
+          DailyWinModelWinDataLoaded(message.win, message.editable);
+      return ModelAndCommand.justModel(DailyWinModel(
+          model.date, model.today, message.priorityList, updatedWins));
+    } else {
+      var wins = {
+        message.date.toCompact():
+            DailyWinModelWinDataLoaded(message.win, message.editable)
+      };
+      return ModelAndCommand.justModel(DailyWinModel(
+          message.date, message.today, message.priorityList, wins));
+    }
   }
   if (message is DailyWinViewLoadingFailed) {
     return ModelAndCommand.justModel(
@@ -102,15 +114,13 @@ ModelAndCommand reduce(Model model, Message message) {
         WinEditorFailedToSaveModel(message.date, message.win, message.reason));
   }
 
-  if (message is MoveToPrevDay) {
-    DateTime newDate = message.date.prevDay();
-    return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
-  }
-  if (message is MoveToNextDay) {
-    DateTime newDate = message.date.nextDay();
-    return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+  if (message is MoveToDayByOffset) {
+    if (model is DailyWinModel) {
+      DateTime newDate = message.date.moveTo(message.offset);
+      return ModelAndCommand(
+          DailyWinModel(newDate, model.today, model.priorityList, model.wins),
+          LoadDailyWin(newDate));
+    }
   }
   if (message is MoveToPrevWeek) {
     DateTime newDate = message.date.prevWeek();
