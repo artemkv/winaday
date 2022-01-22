@@ -104,6 +104,7 @@ v1.4 Stats
 v1.4.1 Improve
 
 - --Order priority stats high to low--
+- --Do not count current month days that are in the future for monthly stats--
 
 
 TODO:
@@ -124,7 +125,6 @@ TODO:
 
 !! UX
 
-- Do not count current month days that are in the future for the stats
 - Mark days that have wins with dot in a calendar stripe
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list

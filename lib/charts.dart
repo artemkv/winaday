@@ -34,6 +34,10 @@ List<charts.Color> chartPriorityColors = priorityColors
     .toList();
 
 List<DataPoint> getWinDaysDataPoints(MonthlyStatsModel model) {
+  if (model.daysTotal == 0) {
+    return [];
+  }
+
   int daysWithWinsCount = 0;
   int daysWithAwesomeWinsCount = 0;
   for (var x in model.stats.items) {

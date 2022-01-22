@@ -86,12 +86,30 @@ void main() {
     expect(getLastDayOfMonth(DateTime(2022, 1, 25)), DateTime(2022, 1, 31));
   });
 
-  test('getDaysInInterval', () {
-    expect(getDaysInInterval(DateTime(2022, 1, 5), DateTime(2022, 1, 5)), 1);
-    expect(getDaysInInterval(DateTime(2022, 1, 5), DateTime(2022, 1, 7)), 3);
-    expect(getDaysInInterval(DateTime(2021, 12, 30), DateTime(2022, 1, 5)), 7);
-    expect(getDaysInInterval(DateTime(2022, 1, 5), DateTime(2022, 1, 4)), 0);
+  test('getDaysInIntervalUpToToday', () {
     expect(
-        getDaysInInterval(DateTime(2021, 10, 30), DateTime(2021, 10, 31)), 2);
+        getDaysInIntervalUpToToday(
+            DateTime(2022, 1, 5), DateTime(2022, 1, 5), DateTime(2022, 1, 8)),
+        1);
+    expect(
+        getDaysInIntervalUpToToday(
+            DateTime(2022, 1, 5), DateTime(2022, 1, 7), DateTime(2022, 1, 8)),
+        3);
+    expect(
+        getDaysInIntervalUpToToday(
+            DateTime(2021, 12, 30), DateTime(2022, 1, 5), DateTime(2022, 1, 8)),
+        7);
+    expect(
+        getDaysInIntervalUpToToday(
+            DateTime(2022, 1, 5), DateTime(2022, 1, 4), DateTime(2022, 1, 8)),
+        0);
+    expect(
+        getDaysInIntervalUpToToday(DateTime(2021, 10, 30),
+            DateTime(2021, 10, 31), DateTime(2022, 1, 8)),
+        2);
+    expect(
+        getDaysInIntervalUpToToday(
+            DateTime(2021, 12, 30), DateTime(2022, 1, 5), DateTime(2022, 1, 3)),
+        5);
   });
 }

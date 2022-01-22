@@ -380,7 +380,7 @@ ModelAndCommand reduce(Model model, Message message) {
         message.today,
         message.from,
         message.to,
-        getDaysInInterval(message.from, message.to),
+        getDaysInIntervalUpToToday(message.from, message.to, message.today),
         message.priorityList,
         message.stats,
         true,

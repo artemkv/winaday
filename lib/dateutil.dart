@@ -113,10 +113,11 @@ DateTime getLastDayOfMonth(DateTime date) {
   return DateTime(date.year + 1, 1, 0);
 }
 
-int getDaysInInterval(DateTime from, DateTime to) {
+int getDaysInIntervalUpToToday(DateTime from, DateTime to, DateTime today) {
   int count = 0;
   var day = from;
-  while (day.isBefore(to) || day.isSameDate(to)) {
+  while ((day.isBefore(to) || day.isSameDate(to)) &&
+      (day.isBefore(today) || day.isSameDate(today))) {
     count++;
     day = day.nextDay();
   }
