@@ -145,7 +145,6 @@ TODO:
 - Consider dropping older items from win list/calendar and add the way to re-load them
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
 - Until has win, show countdown?
-- The editor shows previous text very quickly before being updated with the new one
 
 !! Performance and doing less with more:
 
