@@ -111,6 +111,9 @@ v1.4.2 Improve
 
 - --Definitely order priority labels on stats screen in order high to low--
 - --Mark days that have wins with dot in a calendar stripe--
+- --When changed day overall result, but no win text, does not show overall result in daily win view, but should--
+- --Only propose to link the win to priorities upon saving if overall result is a win--
+- --Similarly, only show "link to your priorities", if overall result is a win--
 
 
 TODO:
@@ -132,7 +135,6 @@ TODO:
 
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list
-- When changed day overall result, but no win text, does not show overall result in daily win view, but should
 - Sync calendar/win list or maybe even daily win (and stats?) view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
 
 - Make it possible to swipe through multiple days quickly without waiting until they load

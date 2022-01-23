@@ -461,7 +461,8 @@ Widget dailyWinFailedToLoad(BuildContext context,
 Widget dailyWinPage(
     DailyWinModel model, bool todayPage, void Function(Message) dispatch) {
   if (todayPage) {
-    if (model.win.text == "") {
+    if (model.win.text == "" &&
+        model.win.overallResult == OverallDayResult.noWinYet) {
       return Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
           child: Center(
@@ -506,15 +507,18 @@ Widget dailyWinPage(
                           textStyle: const TextStyle(
                               fontSize: TEXT_FONT_SIZE * 1.4)))))
         ]),
-        Row(children: [
-          Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: TEXT_PADDING * 1.6,
-                      right: TEXT_PADDING * 1.6,
-                      bottom: TEXT_PADDING * 1.6),
-                  child: dailyWinPriorityMap(model, dispatch)))
-        ])
+        Row(
+            children: model.win.isWin()
+                ? [
+                    Expanded(
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: TEXT_PADDING * 1.6,
+                                right: TEXT_PADDING * 1.6,
+                                bottom: TEXT_PADDING * 1.6),
+                            child: dailyWinPriorityMap(model, dispatch)))
+                  ]
+                : [])
       ])))
     ]);
   } else {

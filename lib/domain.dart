@@ -36,6 +36,11 @@ class WinData {
         'overall': overallResult,
         'priorities': priorities.toList()
       };
+
+  bool isWin() {
+    return overallResult == OverallDayResult.gotMyWin ||
+        overallResult == OverallDayResult.awesomeAchievement;
+  }
 }
 
 @immutable
