@@ -37,7 +37,8 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(SignInInProgressModel(), SignIn());
   }
   if (message is UserSignedIn) {
-    return ModelAndCommand(DailyWinLoadingModel(message.today, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.today, message.today, WinDaysData.empty()),
         LoadDailyWin(message.today));
   }
   if (message is SignInFailed) {
@@ -51,15 +52,28 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is DailyWinViewLoaded) {
-    return ModelAndCommand.justModel(DailyWinModel(message.date, message.today,
-        message.priorityList, message.win, message.editable));
+    var winDays = getWinDaysIfOnModel(model);
+    var thisMonth = message.date;
+    var prevMonth = getPreviousMonth(thisMonth);
+    var nextMonth = getNextMonth(thisMonth);
+    return ModelAndCommand(
+        DailyWinModel(message.date, message.today, winDays,
+            message.priorityList, message.win, message.editable),
+        CommandList([
+          LoadWinDays(thisMonth),
+          LoadWinDays(prevMonth),
+          LoadWinDays(nextMonth)
+        ]));
   }
   if (message is DailyWinViewLoadingFailed) {
-    return ModelAndCommand.justModel(
-        DailyWinFailedToLoadModel(message.date, message.today, message.reason));
+    var winDays = getWinDaysIfOnModel(model);
+    return ModelAndCommand.justModel(DailyWinFailedToLoadModel(
+        message.date, message.today, winDays, message.reason));
   }
   if (message is DailyWinViewReloadRequested) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    var winDays = getWinDaysIfOnModel(model);
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, winDays),
         LoadDailyWin(message.date));
   }
   if (message is EditWinRequested) {
@@ -73,7 +87,8 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, message.priorityList, winToEdit));
   }
   if (message is CancelEditingWinRequested) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
   if (message is WinChangesConfirmed) {
@@ -94,7 +109,8 @@ ModelAndCommand reduce(Model model, Message message) {
         WinEditorSavingModel(message.date), SaveWin(message.date, message.win));
   }
   if (message is WinSaved) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
   if (message is SavingWinFailed) {
@@ -103,27 +119,37 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is MoveToPrevDay) {
+    var winDays = getWinDaysIfOnModel(model);
     DateTime newDate = message.date.prevDay();
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today, winDays),
+        LoadDailyWin(newDate));
   }
   if (message is MoveToNextDay) {
+    var winDays = getWinDaysIfOnModel(model);
     DateTime newDate = message.date.nextDay();
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today, winDays),
+        LoadDailyWin(newDate));
   }
   if (message is MoveToPrevWeek) {
+    var winDays = getWinDaysIfOnModel(model);
     DateTime newDate = message.date.prevWeek();
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today, winDays),
+        LoadDailyWin(newDate));
   }
   if (message is MoveToNextWeek) {
+    var winDays = getWinDaysIfOnModel(model);
     DateTime newDate = message.date.nextWeek();
     return ModelAndCommand(
-        DailyWinLoadingModel(newDate, message.today), LoadDailyWin(newDate));
+        DailyWinLoadingModel(newDate, message.today, winDays),
+        LoadDailyWin(newDate));
   }
   if (message is MoveToDay) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    var winDays = getWinDaysIfOnModel(model);
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, winDays),
         LoadDailyWin(message.date));
   }
 
@@ -140,7 +166,8 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadPriorities(message.date));
   }
   if (message is ExitPrioritiesRequested) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
   if (message is PrioritiesLoaded) {
@@ -246,7 +273,8 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadWinListFirstPage(message.date, from, message.today));
   }
   if (message is BackToDailyWinViewRequested) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
   if (message is WinListFirstPageLoaded) {
@@ -355,6 +383,24 @@ ModelAndCommand reduce(Model model, Message message) {
       return ModelAndCommand.justModel(
           CalendarViewModel(model.date, model.today, model.from, updatedItems));
     }
+    if (model is DailyWinModel) {
+      var winDaysUpdated =
+          WinDaysData(model.winDays.items.union(message.winDays.items));
+      return ModelAndCommand.justModel(DailyWinModel(model.date, model.today,
+          winDaysUpdated, model.priorityList, model.win, model.editable));
+    }
+    if (model is DailyWinLoadingModel) {
+      var winDaysUpdated =
+          WinDaysData(model.winDays.items.union(message.winDays.items));
+      return ModelAndCommand.justModel(
+          DailyWinLoadingModel(model.date, model.today, winDaysUpdated));
+    }
+    if (model is DailyWinFailedToLoadModel) {
+      var winDaysUpdated =
+          WinDaysData(model.winDays.items.union(message.winDays.items));
+      return ModelAndCommand.justModel(DailyWinFailedToLoadModel(
+          model.date, model.today, winDaysUpdated, model.reason));
+    }
   }
 
   if (message is NavigateToStatsRequested) {
@@ -387,7 +433,8 @@ ModelAndCommand reduce(Model model, Message message) {
         true));
   }
   if (message is ExitStatsRequested) {
-    return ModelAndCommand(DailyWinLoadingModel(message.date, message.today),
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
   if (message is StatsTogglePieHistogramsWins) {
@@ -512,4 +559,17 @@ List<CalendarViewListItem> toCalendarViewListItems(List<DateTime> dates) {
     calendarListItems.add(CalendarViewListItemMonth(date, WinDaysData.empty()));
   }
   return calendarListItems;
+}
+
+WinDaysData getWinDaysIfOnModel(Model model) {
+  if (model is DailyWinModel) {
+    return model.winDays;
+  }
+  if (model is DailyWinLoadingModel) {
+    return model.winDays;
+  }
+  if (model is DailyWinFailedToLoadModel) {
+    return model.winDays;
+  }
+  return WinDaysData.empty();
 }

@@ -110,6 +110,7 @@ v1.4.1 Improve
 v1.4.2 Improve
 
 - --Definitely order priority labels on stats screen in order high to low--
+- --Mark days that have wins with dot in a calendar stripe--
 
 
 TODO:
@@ -120,21 +121,21 @@ TODO:
 !!! More Stats
 
 - Month
-    - Priorities cumulative chart day by day
+    - How priorities are distributed across days
 - Year:
     - Piechart days with wins/no wins/asesome + labels
     - Piechart priorities + labels
-    - Priorities cumulative chart month by month
+    - Priorities cumulative chart month by month?
 
 
 !! UX
 
-- Mark days that have wins with dot in a calendar stripe
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list
 - When changed day overall result, but no win text, does not show overall result in daily win view, but should
 - Sync calendar/win list or maybe even daily win (and stats?) view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
 
+- Make it possible to swipe through multiple days quickly without waiting until they load
 - Show which month/year it is in the win list view
 - Easy way to navigate to today
 - Consider limiting priority box sizes for bigger screens

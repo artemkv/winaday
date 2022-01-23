@@ -408,7 +408,8 @@ Widget dailyWinLoading(BuildContext context, DailyWinLoadingModel model,
           child: Column(children: [
         Material(
             elevation: 4.0,
-            child: calendarStripe(context, model.date, model.today, dispatch)),
+            child: calendarStripe(
+                context, model.date, model.today, model.winDays, dispatch)),
         Expanded(child: spinner())
       ])));
 }
@@ -434,7 +435,8 @@ Widget dailyWinFailedToLoad(BuildContext context,
           child: Column(children: [
         Material(
             elevation: 4.0,
-            child: calendarStripe(context, model.date, model.today, dispatch)),
+            child: calendarStripe(
+                context, model.date, model.today, model.winDays, dispatch)),
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
             child: Text("Failed to contact the server: " + model.reason,
@@ -664,7 +666,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
 }
 
 Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
-    void Function(Message) dispatch) {
+    WinDaysData winDays, void Function(Message) dispatch) {
   var week = getCurrentWeek(context, date);
 
   return Container(
@@ -720,13 +722,14 @@ Widget calendarStripe(BuildContext context, DateTime date, DateTime today,
                             d.day.toString(),
                             d.isSameDate(date),
                             d.isSameDate(today),
-                            d.isSameDate(today) || d.isBefore(today))))
+                            d.isSameDate(today) || d.isBefore(today),
+                            winDays.items.contains(d.toCompact()))))
                     .toList()),
           ])));
 }
 
 Widget day(BuildContext context, String abbreviation, String numericValue,
-    bool isSelected, bool isToday, bool editable) {
+    bool isSelected, bool isToday, bool editable, bool hasWin) {
   double screenWidth = MediaQuery.of(context).size.width;
   double circleRadius = min(screenWidth * 0.105, 40);
   double fontSize = min(screenWidth * 0.04, 16.0);
@@ -738,24 +741,36 @@ Widget day(BuildContext context, String abbreviation, String numericValue,
         Text(abbreviation,
             style: GoogleFonts.openSans(
                 textStyle: TextStyle(color: Colors.white, fontSize: fontSize))),
-        Container(
-            alignment: Alignment.center,
-            width: circleRadius,
-            height: circleRadius,
-            margin: const EdgeInsets.all(4.0),
+        Stack(alignment: const Alignment(0.8, -0.8), children: [
+          Container(
+              alignment: Alignment.center,
+              width: circleRadius,
+              height: circleRadius,
+              margin: const EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : THEME_COLOR,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: editable ? Colors.white : Colors.white30,
+                      width: 2.0)),
+              child: Text(numericValue,
+                  style: GoogleFonts.openSans(
+                      textStyle: TextStyle(
+                          fontWeight:
+                              (isToday ? FontWeight.w900 : FontWeight.normal),
+                          color: (isSelected ? THEME_COLOR : Colors.white),
+                          fontSize: (isToday ? biggerFontSize : fontSize))))),
+          Container(
+            width: 4.0,
+            height: 4.0,
             decoration: BoxDecoration(
-                color: isSelected ? Colors.white : THEME_COLOR,
+                color: hasWin ? Colors.white : Colors.transparent,
                 shape: BoxShape.circle,
                 border: Border.all(
-                    color: editable ? Colors.white : Colors.white30,
-                    width: 2.0)),
-            child: Text(numericValue,
-                style: GoogleFonts.openSans(
-                    textStyle: TextStyle(
-                        fontWeight:
-                            (isToday ? FontWeight.w900 : FontWeight.normal),
-                        color: (isSelected ? THEME_COLOR : Colors.white),
-                        fontSize: (isToday ? biggerFontSize : fontSize)))))
+                    color: hasWin ? Colors.white : Colors.transparent,
+                    width: 1.0)),
+          ),
+        ])
       ]));
 }
 

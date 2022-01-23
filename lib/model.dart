@@ -50,17 +50,20 @@ class SignOutInProgressModel extends Model {}
 class DailyWinLoadingModel extends Model {
   final DateTime date;
   final DateTime today;
+  final WinDaysData winDays;
 
-  const DailyWinLoadingModel(this.date, this.today);
+  const DailyWinLoadingModel(this.date, this.today, this.winDays);
 }
 
 @immutable
 class DailyWinFailedToLoadModel extends Model {
   final DateTime date;
   final DateTime today;
+  final WinDaysData winDays;
   final String reason;
 
-  const DailyWinFailedToLoadModel(this.date, this.today, this.reason);
+  const DailyWinFailedToLoadModel(
+      this.date, this.today, this.winDays, this.reason);
 }
 
 @immutable
@@ -68,11 +71,12 @@ class DailyWinModel extends Model {
   final DateTime date;
   final DateTime today;
   final PriorityListData priorityList;
+  final WinDaysData winDays;
   final WinData win;
   final bool editable;
 
-  const DailyWinModel(
-      this.date, this.today, this.priorityList, this.win, this.editable);
+  const DailyWinModel(this.date, this.today, this.winDays, this.priorityList,
+      this.win, this.editable);
 }
 
 @immutable

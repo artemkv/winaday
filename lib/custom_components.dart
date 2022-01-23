@@ -58,7 +58,7 @@ class _DailyWinViewState extends State<DailyWinView> {
           Material(
               elevation: 4.0,
               child: calendarStripe(context, widget.model.date,
-                  widget.model.today, widget.dispatch)),
+                  widget.model.today, widget.model.winDays, widget.dispatch)),
           Expanded(
               child: Center(
                   child: PageView.builder(
