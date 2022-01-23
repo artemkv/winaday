@@ -456,9 +456,9 @@ Widget dailyWinFailedToLoad(BuildContext context,
       ])));
 }
 
-Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
-    void Function(Message) dispatch) {
-  if (index == todayIndex) {
+Widget dailyWinPage(
+    DailyWinModel model, bool todayPage, void Function(Message) dispatch) {
+  if (todayPage) {
     if (model.win.text == "") {
       return Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
@@ -516,9 +516,7 @@ Widget dailyWinPage(DailyWinModel model, int index, int todayIndex,
       ])))
     ]);
   } else {
-    return const Padding(
-        padding: EdgeInsets.all(TEXT_PADDING),
-        child: Text("", style: TextStyle(fontSize: TEXT_FONT_SIZE)));
+    return Container();
   }
 }
 

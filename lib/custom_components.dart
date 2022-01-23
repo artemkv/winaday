@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -76,7 +75,7 @@ class _DailyWinViewState extends State<DailyWinView> {
                       controller: _controller,
                       itemBuilder: (context, index) {
                         return dailyWinPage(
-                            widget.model, index, today, widget.dispatch);
+                            widget.model, index == today, widget.dispatch);
                       })))
         ]),
         floatingActionButton: (widget.model.editable
