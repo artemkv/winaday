@@ -1,25 +1,36 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:winaday/domain.dart';
-import 'package:winaday/theme.dart';
-import 'package:winaday/view.dart';
 
+import 'domain.dart';
+import 'theme.dart';
+import 'view.dart';
+import 'dateutil.dart';
 import 'model.dart';
 
-class DataPoint {
-  final String label;
+@immutable
+class DataPoint<T> {
+  final T label;
   final int value;
   final charts.Color color;
 
-  DataPoint(this.label, this.value, this.color);
+  const DataPoint(this.label, this.value, this.color);
 }
 
+@immutable
 class LegendItem {
   final String label;
   final Color color;
 
-  LegendItem(this.label, this.color);
+  const LegendItem(this.label, this.color);
+}
+
+@immutable
+class PriorityDataWithCount extends Model {
+  final PriorityData priority;
+  final int count;
+
+  const PriorityDataWithCount(this.priority, this.count);
 }
 
 List<charts.Color> winDayColors = [
@@ -33,7 +44,11 @@ List<charts.Color> chartPriorityColors = priorityColors
     .map((c) => charts.Color(r: c.red, g: c.green, b: c.blue))
     .toList();
 
-List<DataPoint> getWinDaysDataPoints(MonthlyStatsModel model) {
+charts.Color toChartColor(int color) {
+  return chartPriorityColors[color % chartPriorityColors.length];
+}
+
+List<DataPoint<String>> getWinDaysDataPoints(MonthlyStatsModel model) {
   if (model.daysTotal == 0) {
     return [];
   }
@@ -59,6 +74,41 @@ List<DataPoint> getWinDaysDataPoints(MonthlyStatsModel model) {
   ];
 }
 
+List<DataPoint<int>> getCumulativePriorityDataPoints(
+    MonthlyStatsModel model, PriorityData priority) {
+  var prioritiesByDays = {
+    for (var x in model.stats.items) x.date.toCompact(): x.win.priorities
+  };
+
+  var dataPoints = <DataPoint<int>>[];
+
+  int dayIndex = 1;
+  int counter = 0;
+  var day = model.from;
+  while (day.isBefore(model.to) || day.isSameDate(model.to)) {
+    var prioritiesOnDay = prioritiesByDays[day.toCompact()];
+    if (prioritiesOnDay != null && prioritiesOnDay.contains(priority.id)) {
+      counter++;
+    }
+    dataPoints.add(DataPoint(dayIndex, counter, toChartColor(priority.color)));
+    day = day.nextDay();
+    dayIndex++;
+  }
+
+  return dataPoints;
+}
+
+List<List<DataPoint<int>>> getCumulativePrioritySeries(
+    MonthlyStatsModel model) {
+  var priorityCounts = getPriorityCounts(model);
+
+  var series = model.priorityList.items
+      .where((p) => (priorityCounts[p.id] ?? 0) > 0)
+      .map((p) => getCumulativePriorityDataPoints(model, p))
+      .toList();
+  return series;
+}
+
 List<LegendItem> getWinDaysLegend(MonthlyStatsModel model) {
   return [
     LegendItem('Days without wins', grey),
@@ -77,11 +127,11 @@ Map<String, int> getPriorityCounts(MonthlyStatsModel model) {
   return priorityCounts;
 }
 
-List<DataPoint> getPriorityDataPoints(MonthlyStatsModel model) {
+List<DataPoint<String>> getPriorityDataPoints(MonthlyStatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   var dataPoints = model.priorityList.items
-      .map((p) => DataPoint(p.id, priorityCounts[p.id] ?? 0,
-          chartPriorityColors[p.color % chartPriorityColors.length]))
+      .map((p) =>
+          DataPoint(p.id, priorityCounts[p.id] ?? 0, toChartColor(p.color)))
       .where((dp) => dp.value > 0)
       .toList();
 
@@ -103,14 +153,6 @@ List<LegendItem> getPrioritiesLegend(MonthlyStatsModel model) {
       .toList();
 }
 
-@immutable
-class PriorityDataWithCount extends Model {
-  final PriorityData priority;
-  final int count;
-
-  const PriorityDataWithCount(this.priority, this.count);
-}
-
 List<LegendItem> getUnattendedPrioritiesLegend(MonthlyStatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   return model.priorityList.items
@@ -119,7 +161,7 @@ List<LegendItem> getUnattendedPrioritiesLegend(MonthlyStatsModel model) {
       .toList();
 }
 
-Widget pieChart(String id, List<DataPoint> dataPoints) {
+Widget pieChart(String id, List<DataPoint<String>> dataPoints) {
   var seriesList = [
     charts.Series<DataPoint, String>(
       id: id,
@@ -133,7 +175,7 @@ Widget pieChart(String id, List<DataPoint> dataPoints) {
   return charts.PieChart(seriesList, animate: false);
 }
 
-Widget histograms(String id, List<DataPoint> dataPoints) {
+Widget histograms(String id, List<DataPoint<String>> dataPoints) {
   var seriesList = [
     charts.Series<DataPoint, String>(
       id: id,
@@ -150,6 +192,27 @@ Widget histograms(String id, List<DataPoint> dataPoints) {
       barRendererDecorator: charts.BarLabelDecorator<String>(),
       domainAxis: const charts.OrdinalAxisSpec(
           showAxisLine: true, renderSpec: charts.NoneRenderSpec()));
+}
+
+Widget cumulative(String id, List<List<DataPoint<int>>> series) {
+  var seriesList = series
+      .map((dataPoints) => charts.Series<DataPoint, int>(
+            id: id,
+            domainFn: (DataPoint dp, _) => dp.label,
+            measureFn: (DataPoint dp, _) => dp.value,
+            colorFn: (DataPoint dp, _) => dp.color,
+            //areaColorFn: (DataPoint dp, _) => dp.color,
+            labelAccessorFn: (DataPoint dp, _) => dp.value.toString(),
+            data: dataPoints,
+          ))
+      .toList();
+
+  return charts.LineChart(
+    seriesList,
+    animate: false,
+    defaultRenderer:
+        charts.LineRendererConfig(includeArea: false, stacked: false),
+  );
 }
 
 Widget legend(List<LegendItem> items) {

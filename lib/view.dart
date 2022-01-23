@@ -1752,6 +1752,19 @@ Widget monthlyStats(MonthlyStatsModel model, void Function(Message) dispatch) {
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
         child: legend(getUnattendedPrioritiesLegend(model))),
+    const Divider(
+      height: 12,
+      thickness: 1,
+      indent: 64,
+      endIndent: 64,
+    ),
+    SizedBox(
+        height: 300,
+        child: Padding(
+            padding:
+                const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+            child: cumulative(
+                "prioritiesCum", getCumulativePrioritySeries(model)))),
     Padding(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 32),
