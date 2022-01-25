@@ -117,8 +117,9 @@ v1.4.2 Improve
 
 v1.4.3 Improve
 - --Show weekdays in list view--
-
-
+- --Load first two weeks immediately upon lunch, instead of one day, update all the caches from it and fill as much of model as possible--
+- --Upon win save, only clean current month calendarCache--
+- --Do not request win dyas for months in the future--
 
 TODO:
 
@@ -137,7 +138,6 @@ TODO:
 
 !! UX
 
-- Load first two weeks immediately upon lunch, instead of one day, update all the caches from it and fill as much of model as possible
 - Sync calendar/win list or maybe even daily win (and stats?) view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
 - Make it possible to swipe through multiple days quickly without waiting until they load
 - Show which month/year it is in the win list view
@@ -153,6 +153,16 @@ TODO:
 - Until has win, show countdown?
 
 !! Performance and doing less with more:
+
+- As an idea, instead of aligning with the calendar to request win days to show in calendar stripe,
+    I could try to request actual wins week before and week after, thus feeding the daily win cache.
+    Problem is, of course, I would not be aligned with list view cache, so this request would need to be
+    triggered every time I move to the different day, and that sucks.
+    Possible solution: request wins in pages, aligned with list view.
+- Basically think how to avoid extra montly calendar requests
+    (now the strategy is caching + re-use between views)
+- Also, think what is the smart moment to load wins so that swiping is fast
+    (now the strategy is load fisrt 2 weeks immediately on start and re-use from list view)
 
 !! Infrastructure
 

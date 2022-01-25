@@ -113,6 +113,46 @@ class SignOut implements Command {
 }
 
 @immutable
+class LoadDailyWinWithInitialData implements Command {
+  final DateTime date;
+
+  const LoadDailyWinWithInitialData(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+    bool editable = date.isSameDate(today) || date.isBefore(today);
+
+    loadPriorities().then((priorityList) {
+      // Load 2 weeks in advance, up to requested day (which is normally today)
+      var from = DateTime(date.year, date.month, date.day - 13);
+      var to = DateTime(date.year, date.month, date.day);
+
+      var intervalKey = '${from.toCompact()}-${to.toCompact()}';
+
+      return getWins(
+              from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
+          .then((json) {
+        var winList = WinListData.fromJson(json);
+
+        // udpate caches
+        listCache[intervalKey] = winList.items;
+        feedDailyWinCacheFromWinList(from, to, winList);
+
+        var win = WinData.empty();
+        if (winList.items.last.date.isSameDate(date)) {
+          win = winList.items.last.win;
+        }
+        dispatch(DailyWinViewInitialDataLoaded(
+            date, today, priorityList, winList.items, win, editable));
+      });
+    }).catchError((err) {
+      dispatch(DailyWinViewLoadingFailed(date, today, err.toString()));
+    });
+  }
+}
+
+@immutable
 class LoadDailyWin implements Command {
   final DateTime date;
 
@@ -164,11 +204,12 @@ class SaveWin implements Command {
     var today = DateTime.now();
 
     var dateKey = date.toCompact();
+    var monthKey = getFirstDayOfMonth(date).toCompact();
 
     postWin(dateKey, win, GoogleSignInFacade.getIdToken).then((_) {
       cache[dateKey] = win;
       listCache.clear();
-      calendarCache.clear();
+      calendarCache.remove(monthKey);
       statsCache.clear();
       dispatch(WinSaved(date, today));
     }).catchError((err) {
@@ -274,7 +315,11 @@ class LoadWinListFirstPage implements Command {
               from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
           .then((json) {
         var winList = WinListData.fromJson(json);
+
+        // udpate caches
         listCache[intervalKey] = winList.items;
+        feedDailyWinCacheFromWinList(from, to, winList);
+
         dispatch(WinListFirstPageLoaded(
             date, today, priorityList, from, to, winList.items));
       });
@@ -306,7 +351,11 @@ class LoadWinListNextPage implements Command {
     getWins(from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
         .then((json) {
       var winList = WinListData.fromJson(json);
+
+      // udpate caches
       listCache[intervalKey] = winList.items;
+      feedDailyWinCacheFromWinList(from, to, winList);
+
       dispatch(WinListNextPageLoaded(from, to, winList.items));
     }).catchError((err) {
       dispatch(WinListNextPageLoadingFailed(err.toString()));
@@ -324,6 +373,15 @@ class LoadWinDays implements Command {
   void execute(void Function(Message) dispatch) {
     var from = getFirstDayOfMonth(month);
     var to = getLastDayOfMonth(month);
+
+    var today = DateTime.now();
+    bool editable = from.isSameDate(today) || from.isBefore(today);
+    if (!editable) {
+      Future<void>.delayed(Duration.zero, () {
+        dispatch(CalendarViewDaysWithWinsReceived(month, WinDaysData.empty()));
+      });
+      return;
+    }
 
     var monthKey = from.toCompact();
 
@@ -386,5 +444,17 @@ class LoadStats implements Command {
     }).catchError((err) {
       dispatch(StatsLoadingFailed(date, today, from, to, err.toString()));
     });
+  }
+}
+
+feedDailyWinCacheFromWinList(DateTime from, DateTime to, WinListData winList) {
+  var winsByDate = {for (var x in winList.items) x.date.toCompact(): x.win};
+
+  var day = from;
+  while (day.isBefore(to) || day.isSameDate(to)) {
+    var dateKey = day.toCompact();
+    var win = winsByDate[dateKey] ?? WinData.empty();
+    cache[dateKey] = win;
+    day = day.nextDay();
   }
 }

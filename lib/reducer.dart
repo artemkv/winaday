@@ -39,7 +39,7 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is UserSignedIn) {
     return ModelAndCommand(
         DailyWinLoadingModel(message.today, message.today, WinDaysData.empty()),
-        LoadDailyWin(message.today));
+        LoadDailyWinWithInitialData(message.today));
   }
   if (message is SignInFailed) {
     return ModelAndCommand.justModel(UserFailedToSignInModel(message.reason));
@@ -51,6 +51,17 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand.justModel(const UserNotSignedInModel(false, false));
   }
 
+  if (message is DailyWinViewInitialDataLoaded) {
+    var winDays = getWinDaysIfOnModel(model);
+    var receivedWinDays = message.wins
+        .where((x) => x.win.isWin())
+        .map((x) => x.date.toCompact())
+        .toSet();
+    var udpatedWinDays = WinDaysData(winDays.items.union(receivedWinDays));
+
+    return ModelAndCommand.justModel(DailyWinModel(message.date, message.today,
+        udpatedWinDays, message.priorityList, message.win, message.editable));
+  }
   if (message is DailyWinViewLoaded) {
     var winDays = getWinDaysIfOnModel(model);
     var thisMonth = message.date;

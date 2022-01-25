@@ -53,6 +53,19 @@ class SignOutRequested implements Message {}
 class UserSignedOut implements Message {}
 
 @immutable
+class DailyWinViewInitialDataLoaded implements Message {
+  final DateTime date;
+  final DateTime today;
+  final PriorityListData priorityList;
+  final List<WinOnDayData> wins;
+  final WinData win;
+  final bool editable;
+
+  const DailyWinViewInitialDataLoaded(this.date, this.today, this.priorityList,
+      this.wins, this.win, this.editable);
+}
+
+@immutable
 class DailyWinViewLoaded implements Message {
   final DateTime date;
   final DateTime today;
