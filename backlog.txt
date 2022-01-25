@@ -115,6 +115,10 @@ v1.4.2 Improve
 - --Only propose to link the win to priorities upon saving if overall result is a win--
 - --Similarly, only show "link to your priorities", if overall result is a win--
 
+v1.4.3 Improve
+- --Show weekdays in list view--
+
+
 
 TODO:
 
@@ -133,15 +137,17 @@ TODO:
 
 !! UX
 
-- Show awesome days differently in the calendar
-- Show awesome days differently in the win list
+- Load first two weeks immediately upon lunch, instead of one day, update all the caches from it and fill as much of model as possible
 - Sync calendar/win list or maybe even daily win (and stats?) view so that you don't need to start from today every time; or maybe simply remember the last scrolled position
-
 - Make it possible to swipe through multiple days quickly without waiting until they load
 - Show which month/year it is in the win list view
+- Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
+- Ask for review pane
+
+- Show awesome days differently in the calendar
+- Show awesome days differently in the win list
 - Easy way to navigate to today
 - Consider limiting priority box sizes for bigger screens
-- Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
 - Consider dropping older items from win list/calendar and add the way to re-load them
 - See if wave animation when pressing next/prev buttons can be preserved by using stateless widgets
 - Until has win, show countdown?

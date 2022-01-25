@@ -1441,10 +1441,7 @@ Widget winListItem(PriorityListData priorityList, DateTime date, DateTime today,
       child: Row(children: [
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
-            child: Text(date.day.toString().padLeft(2, '0'),
-                style: GoogleFonts.openSans(
-                    textStyle: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold)))),
+            child: listItemDay(date)),
         Expanded(
             child: Padding(
                 padding: const EdgeInsets.all(TEXT_PADDING),
@@ -1481,12 +1478,20 @@ Widget noWinListItem(
       child: Row(children: [
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
-            child: Text(date.day.toString().padLeft(2, '0'),
-                style: GoogleFonts.openSans(
-                    textStyle: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold)))),
+            child: listItemDay(date)),
         Expanded(child: Container()),
       ]));
+}
+
+Widget listItemDay(DateTime date) {
+  return Column(children: [
+    Text(DateFormat(DateFormat.ABBR_WEEKDAY).format(date),
+        style: GoogleFonts.openSans(textStyle: const TextStyle(fontSize: 12))),
+    Text(date.day.toString().padLeft(2, '0'),
+        style: GoogleFonts.openSans(
+            textStyle:
+                const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)))
+  ]);
 }
 
 Iterable<Widget> getPriorityTags(PriorityListData priorityList, WinData win) {
