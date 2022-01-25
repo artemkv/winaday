@@ -140,7 +140,8 @@ class LoadDailyWinWithInitialData implements Command {
         feedDailyWinCacheFromWinList(from, to, winList);
 
         var win = WinData.empty();
-        if (winList.items.last.date.isSameDate(date)) {
+        if (winList.items.isNotEmpty &&
+            winList.items.last.date.isSameDate(date)) {
           win = winList.items.last.win;
         }
         dispatch(DailyWinViewInitialDataLoaded(
