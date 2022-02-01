@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:winaday/services/rest_api.dart' as rest;
 
 String session = "";
@@ -12,6 +14,8 @@ void killSession() {
 
 Future<void> signIn(String idToken) async {
   try {
+    log("ID TOKEN: |" + idToken + "|");
+
     var json = await rest.signIn(idToken);
     session = json['session'];
   } catch (e) {

@@ -29,6 +29,7 @@ abstract class Command {
 
   static Command getInitialCommand() {
     return InitializeApp();
+    //return None();
   }
 }
 

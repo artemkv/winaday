@@ -11,6 +11,132 @@ abstract class Model {
 
   static Model getInitialModel() {
     return ApplicationNotInitializedModel();
+    /*return MonthlyStatsModel(
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        20,
+        PriorityListData(<PriorityData>[
+          PriorityData("Job", "Job/career", 16, false),
+          PriorityData("Fam", "Time with my family", 8, false),
+          PriorityData("Mus", "Music", 9, false),
+          PriorityData("Spo", "Sport and health", 12, false),
+          PriorityData("Fri", "Friends and social life", 10, false),
+          PriorityData("Mar", "Preparing for the marathon", 5, false),
+          PriorityData("Boo", "Writing my book", 15, false),
+          PriorityData("Tra", "Travel", 11, false),
+          PriorityData("Fre", "Learning French", 13, false)
+        ]),
+        WinListShortData(<WinOnDayShortData>[
+          WinOnDayShortData(
+              DateTime(2022, 1, 1),
+              WinShortData(
+                  OverallDayResult.couldNotGetWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Job", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Mus", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Mus", "Fam"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Spo"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Mar"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Mar"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Mar"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.gotMyWin, <String>{"Fri"})),
+          WinOnDayShortData(
+              DateTime(2022, 1, 1),
+              WinShortData(
+                  OverallDayResult.awesomeAchievement, <String>{"Fri"})),
+          WinOnDayShortData(DateTime(2022, 1, 1),
+              WinShortData(OverallDayResult.awesomeAchievement, <String>{})),
+        ]),
+        true,
+        true);*/
+
+    /*return DailyWinModel(
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        WinDaysData.empty(),
+        PriorityListData(<PriorityData>[
+          PriorityData("Job", "Job/career", 16, false),
+          PriorityData("Fam", "Time with my family", 8, false),
+          PriorityData("Mus", "Music", 9, false),
+          PriorityData("Spo", "Sport and health", 12, false),
+          PriorityData("Fri", "Friends and social life", 10, false),
+          PriorityData("Mar", "Preparing for the marathon", 5, false),
+          PriorityData("Boo", "Writing my book", 15, false),
+          PriorityData("Tra", "Travel", 11, false),
+          PriorityData("Fre", "Learning French", 13, false)
+        ]),
+        WinData("Went for a run, despite the cold and rainy weather",
+            OverallDayResult.gotMyWin, <String>{"Spo", "Mar"}),
+        true);*/
+
+    /*return EditWinPrioritiesModel(
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        PriorityListData(<PriorityData>[
+          PriorityData("Job", "Job/career", 16, false),
+          PriorityData("Fam", "Time with my family", 8, false),
+          PriorityData("Mus", "Music", 9, false),
+          PriorityData("Spo", "Sport and health", 12, false),
+          PriorityData("Fri", "Friends and social life", 10, false),
+          PriorityData("Mar", "Preparing for the marathon", 5, false),
+          PriorityData("Boo", "Writing my book", 15, false),
+          PriorityData("Tra", "Travel", 11, false),
+          PriorityData("Fre", "Learning French", 13, false)
+        ]),
+        WinData.empty());*/
+
+/*    return WinEditorModel(
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        PriorityListData.empty(),
+        WinData("Went for a run, despite the cold and rainy weather",
+            OverallDayResult.gotMyWin, <String>{}));*/
+
+/*    return DailyWinModel(
+        DateTime(2022, 1, 20),
+        DateTime(2022, 1, 20),
+        WinDaysData.empty(),
+        PriorityListData(<PriorityData>[
+          PriorityData("Job", "Job/career", 16, false),
+          PriorityData("Fam", "Time with my family", 8, false),
+          PriorityData("Mus", "Music", 9, false),
+          PriorityData("Spo", "Sport and health", 12, false),
+          PriorityData("Fri", "Friends and social life", 10, false),
+          PriorityData("Mar", "Preparing for the marathon", 5, false),
+          PriorityData("Boo", "Writing my book", 15, false),
+          PriorityData("Tra", "Travel", 11, false),
+          PriorityData("Fre", "Learning French", 13, false)
+        ]),
+        WinData('Took my kids hiking in the Mount Rainier National Park',
+            OverallDayResult.gotMyWin, <String>{"Fam", "Spo"}),
+        true);*/
   }
 }
 
