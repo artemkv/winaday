@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/theme.dart';
 import 'package:winaday/view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -74,8 +75,8 @@ class _DailyWinViewState extends State<DailyWinView> {
                       scrollDirection: Axis.horizontal,
                       controller: _controller,
                       itemBuilder: (context, index) {
-                        return dailyWinPage(
-                            widget.model, index == today, widget.dispatch);
+                        return dailyWinPage(widget.model, index == today,
+                            widget.model.askForReview, widget.dispatch);
                       })))
         ]),
         floatingActionButton: (widget.model.editable
@@ -616,5 +617,125 @@ class _MonthlyStatsViewState extends State<MonthlyStatsView> {
                             }
                           })))
             ])));
+  }
+}
+
+class AskForReviewPanel extends StatefulWidget {
+  final void Function(Message) dispatch;
+
+  const AskForReviewPanel({Key? key, required this.dispatch}) : super(key: key);
+
+  @override
+  State<AskForReviewPanel> createState() => _AskForReviewPanelState();
+}
+
+class _AskForReviewPanelState extends State<AskForReviewPanel> {
+  int panelState = ReviewPanelState.askIfLikesTheApp;
+
+  @override
+  Widget build(BuildContext context) {
+    String question, leftChoice, rightChoice;
+    void Function() leftAction, rightAction;
+
+    if (panelState == ReviewPanelState.askIfLikesTheApp) {
+      question = "Enjoying One Win a Day?";
+
+      leftChoice = "Not really";
+      leftAction = () {
+        setState(() {
+          panelState = ReviewPanelState.doesNotLikeTheApp;
+        });
+      };
+
+      rightChoice = "Yes!";
+      rightAction = () {
+        setState(() {
+          panelState = ReviewPanelState.likesTheApp;
+        });
+      };
+    } else if (panelState == ReviewPanelState.likesTheApp) {
+      question = "How about a rating on the App Store, then?";
+
+      leftChoice = "No, thanks";
+      leftAction = () {
+        widget.dispatch(RejectedLeavingFeedback());
+      };
+
+      rightChoice = "Ok, sure";
+      rightAction = () {
+        widget.dispatch(AgreedOnLeavingFeedback());
+      };
+    } else {
+      question = "Would you mind giving us some feedback?";
+
+      leftChoice = "No, thanks";
+      leftAction = () {
+        widget.dispatch(RejectedLeavingFeedback());
+      };
+
+      rightChoice = "Ok, sure";
+      rightAction = () {
+        widget.dispatch(AgreedOnLeavingFeedback());
+      };
+    }
+
+    return Container(
+        decoration: const BoxDecoration(color: crayolaBlue),
+        child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.all(TEXT_PADDING * 1.6),
+              child: Text(question,
+                  style: GoogleFonts.openSans(
+                      color: Colors.white,
+                      textStyle: const TextStyle(fontSize: 16)))),
+          Row(children: [
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: TEXT_PADDING * 1.6,
+                        right: TEXT_PADDING * 1.6,
+                        bottom: TEXT_PADDING * 1.6),
+                    child: GestureDetector(
+                        onTap: leftAction,
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4.0),
+                                color: crayolaBlue,
+                                border: Border.all(
+                                    color: Colors.white, width: 2.0)),
+                            child: Padding(
+                                padding: const EdgeInsets.all(TEXT_PADDING),
+                                child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(leftChoice,
+                                        style: GoogleFonts.openSans(
+                                            color: Colors.white,
+                                            textStyle: const TextStyle(
+                                                fontSize: 16))))))))),
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: TEXT_PADDING * 1.6,
+                        right: TEXT_PADDING * 1.6,
+                        bottom: TEXT_PADDING * 1.6),
+                    child: GestureDetector(
+                        onTap: rightAction,
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4.0),
+                                color: Colors.white),
+                            child: Padding(
+                                padding: const EdgeInsets.all(TEXT_PADDING),
+                                child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(rightChoice,
+                                        style: GoogleFonts.openSans(
+                                            color: crayolaBlue,
+                                            textStyle: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight:
+                                                    FontWeight.bold))))))))),
+          ])
+        ]));
   }
 }

@@ -72,9 +72,10 @@ class DailyWinViewLoaded implements Message {
   final PriorityListData priorityList;
   final WinData win;
   final bool editable;
+  final bool askForReview;
 
-  const DailyWinViewLoaded(
-      this.date, this.today, this.priorityList, this.win, this.editable);
+  const DailyWinViewLoaded(this.date, this.today, this.priorityList, this.win,
+      this.editable, this.askForReview);
 }
 
 @immutable
@@ -521,3 +522,9 @@ class MoveToPrevMonthStats implements Message {
 
   const MoveToPrevMonthStats(this.date, this.today);
 }
+
+@immutable
+class AgreedOnLeavingFeedback implements Message {}
+
+@immutable
+class RejectedLeavingFeedback implements Message {}

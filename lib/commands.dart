@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:winaday/domain.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:quiver/collection.dart';
+import 'package:launch_review/launch_review.dart';
+import 'package:winaday/services/local_data.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +20,9 @@ LruMap listCache = LruMap(maximumSize: 100);
 LruMap calendarCache = LruMap(maximumSize: 100);
 LruMap statsCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
+
+bool savedWinInCurrentSession = false;
+int savedWinsLastTwoWeeksOnStart = 0;
 
 @immutable
 abstract class Command {
@@ -132,8 +137,12 @@ class LoadDailyWinWithInitialData implements Command {
 
       return getWins(
               from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken)
-          .then((json) {
+          .then((json) async {
         var winList = WinListData.fromJson(json);
+        savedWinsLastTwoWeeksOnStart = winList.items.length;
+
+        // uncomment if need to test review flow
+        // await LocalData.resetReviewFlowCompleted();
 
         // udpate caches
         listCache[intervalKey] = winList.items;
@@ -161,35 +170,51 @@ class LoadDailyWin implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () => loadDailyWin(dispatch));
+  }
+
+  Future<void> loadDailyWin(void Function(Message) dispatch) async {
     var today = DateTime.now();
     bool editable = date.isSameDate(today) || date.isBefore(today);
+    bool askForReview = await shouldToAskForReview();
 
-    loadPriorities().then((priorityList) {
+    try {
+      var priorityList = await loadPriorities();
+
       if (!editable) {
-        return Future<void>.delayed(Duration.zero, () {
-          dispatch(DailyWinViewLoaded(
-              date, today, priorityList, WinData.empty(), editable));
-        });
+        dispatch(DailyWinViewLoaded(date, today, priorityList, WinData.empty(),
+            editable, askForReview));
+        return;
       }
 
       var dateKey = date.toCompact();
-
       if (cache.containsKey(dateKey)) {
-        return Future<void>.delayed(Duration.zero, () {
-          dispatch(DailyWinViewLoaded(
-              date, today, priorityList, cache[dateKey], editable));
-        });
+        dispatch(DailyWinViewLoaded(
+            date, today, priorityList, cache[dateKey], editable, askForReview));
+        return;
       }
 
-      return getWin(dateKey, GoogleSignInFacade.getIdToken).then((json) {
-        var winData = WinData.fromJson(json);
-        cache[dateKey] = winData;
-        dispatch(
-            DailyWinViewLoaded(date, today, priorityList, winData, editable));
-      });
-    }).catchError((err) {
+      var json = await getWin(dateKey, GoogleSignInFacade.getIdToken);
+      var winData = WinData.fromJson(json);
+      cache[dateKey] = winData;
+      dispatch(DailyWinViewLoaded(
+          date, today, priorityList, winData, editable, askForReview));
+    } catch (err) {
       dispatch(DailyWinViewLoadingFailed(date, today, err.toString()));
-    });
+    }
+  }
+
+  Future<bool> shouldToAskForReview() async {
+    if (!savedWinInCurrentSession) {
+      return false;
+    }
+
+    if (savedWinsLastTwoWeeksOnStart < 6) {
+      return false;
+    }
+
+    var reviewFlowCompleted = await LocalData.reviewFlowCompleted();
+    return !reviewFlowCompleted;
   }
 }
 
@@ -212,6 +237,7 @@ class SaveWin implements Command {
       listCache.clear();
       calendarCache.remove(monthKey);
       statsCache.clear();
+      savedWinInCurrentSession = true;
       dispatch(WinSaved(date, today));
     }).catchError((err) {
       dispatch(SavingWinFailed(date, win, err.toString()));
@@ -457,5 +483,24 @@ feedDailyWinCacheFromWinList(DateTime from, DateTime to, WinListData winList) {
     var win = winsByDate[dateKey] ?? WinData.empty();
     cache[dateKey] = win;
     day = day.nextDay();
+  }
+}
+
+@immutable
+class NavigateToRatingInAppStore implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(
+            Duration.zero, () => LocalData.setReviewFlowCompleted())
+        .then((_) => LaunchReview.launch());
+  }
+}
+
+@immutable
+class NeverAskForReviewAgain implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(
+        Duration.zero, () => LocalData.setReviewFlowCompleted());
   }
 }

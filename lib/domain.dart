@@ -160,3 +160,9 @@ class WinListShortData {
             .map((x) => WinOnDayShortData.fromJson(x))
             .toList();
 }
+
+class ReviewPanelState {
+  static const askIfLikesTheApp = 0;
+  static const likesTheApp = 1;
+  static const doesNotLikeTheApp = 2;
+}

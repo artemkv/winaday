@@ -59,8 +59,14 @@ ModelAndCommand reduce(Model model, Message message) {
         .toSet();
     var udpatedWinDays = WinDaysData(winDays.items.union(receivedWinDays));
 
-    return ModelAndCommand.justModel(DailyWinModel(message.date, message.today,
-        udpatedWinDays, message.priorityList, message.win, message.editable));
+    return ModelAndCommand.justModel(DailyWinModel(
+        message.date,
+        message.today,
+        udpatedWinDays,
+        message.priorityList,
+        message.win,
+        message.editable,
+        false));
   }
   if (message is DailyWinViewLoaded) {
     var winDays = getWinDaysIfOnModel(model);
@@ -68,8 +74,14 @@ ModelAndCommand reduce(Model model, Message message) {
     var prevMonth = getPreviousMonth(thisMonth);
     var nextMonth = getNextMonth(thisMonth);
     return ModelAndCommand(
-        DailyWinModel(message.date, message.today, winDays,
-            message.priorityList, message.win, message.editable),
+        DailyWinModel(
+            message.date,
+            message.today,
+            winDays,
+            message.priorityList,
+            message.win,
+            message.editable,
+            message.askForReview),
         CommandList([
           LoadWinDays(thisMonth),
           LoadWinDays(prevMonth),
@@ -398,8 +410,14 @@ ModelAndCommand reduce(Model model, Message message) {
     if (model is DailyWinModel) {
       var winDaysUpdated =
           WinDaysData(model.winDays.items.union(message.winDays.items));
-      return ModelAndCommand.justModel(DailyWinModel(model.date, model.today,
-          winDaysUpdated, model.priorityList, model.win, model.editable));
+      return ModelAndCommand.justModel(DailyWinModel(
+          model.date,
+          model.today,
+          winDaysUpdated,
+          model.priorityList,
+          model.win,
+          model.editable,
+          model.askForReview));
     }
     if (model is DailyWinLoadingModel) {
       var winDaysUpdated =
@@ -496,6 +514,22 @@ ModelAndCommand reduce(Model model, Message message) {
           StatsLoadingModel(message.date, message.today, from, to),
           LoadStats(message.date, from, to));
     }
+  }
+  if (message is AgreedOnLeavingFeedback) {
+    Model updatedModel = model;
+    if (model is DailyWinModel) {
+      updatedModel = DailyWinModel(model.date, model.today, model.winDays,
+          model.priorityList, model.win, model.editable, false);
+    }
+    return ModelAndCommand(updatedModel, NavigateToRatingInAppStore());
+  }
+  if (message is RejectedLeavingFeedback) {
+    Model updatedModel = model;
+    if (model is DailyWinModel) {
+      updatedModel = DailyWinModel(model.date, model.today, model.winDays,
+          model.priorityList, model.win, model.editable, false);
+    }
+    return ModelAndCommand(updatedModel, NeverAskForReviewAgain());
   }
 
   return ModelAndCommand.justModel(model);

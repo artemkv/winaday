@@ -458,8 +458,8 @@ Widget dailyWinFailedToLoad(BuildContext context,
       ])));
 }
 
-Widget dailyWinPage(
-    DailyWinModel model, bool todayPage, void Function(Message) dispatch) {
+Widget dailyWinPage(DailyWinModel model, bool todayPage, bool askForReview,
+    void Function(Message) dispatch) {
   if (todayPage) {
     if (model.win.text == "" &&
         model.win.overallResult == OverallDayResult.noWinYet) {
@@ -489,12 +489,14 @@ Widget dailyWinPage(
                 Text(overallDayResultEmoji(model.win.overallResult),
                     style: const TextStyle(fontSize: TEXT_FONT_SIZE))
               ]))),
-      const Divider(
-        height: 12,
-        thickness: 1,
-        indent: 64,
-        endIndent: 64,
-      ),
+      askForReview
+          ? AskForReviewPanel(dispatch: dispatch)
+          : const Divider(
+              height: 12,
+              thickness: 1,
+              indent: 64,
+              endIndent: 64,
+            ),
       Expanded(
           child: SingleChildScrollView(
               child: Column(children: [

@@ -121,6 +121,10 @@ v1.4.3 Improve
 - --Upon win save, only clean current month calendarCache--
 - --Do not request win dyas for months in the future--
 
+v1.4.4 Improve
+- --Ask for review when recorded 7 wins in last 2 weeks--
+
+
 TODO:
 
 !! Features
@@ -167,6 +171,7 @@ TODO:
 
 !! Infrastructure
 
+- Refactor commands into async methods instead of nested features
 - Use LayoutBuilder when need to measure the screen size
 - "A splash screen was provided to Flutter, but this is deprecated."
 - Look into font loading:
@@ -179,3 +184,5 @@ D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.win
 !! Feedback
 
 - Think about using circle colors to indicate days with wins instead of small dots. White for days with wins, the "future" white for days without wins
+- How the priority distribution changed from last moths (maybe with double histograms)
+- What priorities coincide with awesome days

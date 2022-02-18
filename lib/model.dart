@@ -74,9 +74,10 @@ class DailyWinModel extends Model {
   final WinDaysData winDays;
   final WinData win;
   final bool editable;
+  final bool askForReview;
 
   const DailyWinModel(this.date, this.today, this.winDays, this.priorityList,
-      this.win, this.editable);
+      this.win, this.editable, this.askForReview);
 }
 
 @immutable
