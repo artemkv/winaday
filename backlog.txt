@@ -115,18 +115,19 @@ v1.4.2 Improve
 - --Only propose to link the win to priorities upon saving if overall result is a win--
 - --Similarly, only show "link to your priorities", if overall result is a win--
 
-v1.4.3 Improve
+v1.4.4 Improve
+
 - --Show weekdays in list view--
 - --Load first two weeks immediately upon lunch, instead of one day, update all the caches from it and fill as much of model as possible--
 - --Upon win save, only clean current month calendarCache--
 - --Do not request win dyas for months in the future--
 
-v1.4.4 Improve
+v1.4.5 Insights
+
+- --Most awesome days of week--
+- --Priorities that contribute the most to awesome days--
+- --Priorities that go together the most--
 - --Ask for review when recorded 7 wins in last 2 weeks--
-- Insights
-    - --Most awesome days of week--
-    - --Priorities that contribute the most to awesome days--
-    - --Priorities that go together the most--
 
 
 TODO:
