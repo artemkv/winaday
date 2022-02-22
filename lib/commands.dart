@@ -19,6 +19,7 @@ LruMap cache = LruMap(maximumSize: 100);
 LruMap listCache = LruMap(maximumSize: 100);
 LruMap calendarCache = LruMap(maximumSize: 100);
 LruMap statsCache = LruMap(maximumSize: 100);
+LruMap insightsCache = LruMap(maximumSize: 100);
 PriorityListData? cachedPriorities;
 
 bool savedWinInCurrentSession = false;
@@ -107,6 +108,7 @@ class SignOut implements Command {
     listCache.clear();
     calendarCache.clear();
     statsCache.clear();
+    insightsCache.clear();
     cachedPriorities = null;
     killSession();
     GoogleSignInFacade.signOut().then((_) {
@@ -237,6 +239,7 @@ class SaveWin implements Command {
       listCache.clear();
       calendarCache.remove(monthKey);
       statsCache.clear();
+      insightsCache.clear();
       savedWinInCurrentSession = true;
       dispatch(WinSaved(date, today));
     }).catchError((err) {
@@ -453,7 +456,6 @@ class LoadStats implements Command {
       }
 
       var intervalKey = '${from.toCompact()}-${to.toCompact()}';
-
       if (statsCache.containsKey(intervalKey)) {
         return Future<void>.delayed(Duration.zero, () {
           dispatch(StatsLoaded(
@@ -502,5 +504,48 @@ class NeverAskForReviewAgain implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(
         Duration.zero, () => LocalData.setReviewFlowCompleted());
+  }
+}
+
+@immutable
+class LoadInsightData implements Command {
+  final DateTime date;
+  final DateTime from;
+  final DateTime to;
+
+  const LoadInsightData(this.date, this.from, this.to);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () => loadData(dispatch));
+  }
+
+  Future<void> loadData(void Function(Message) dispatch) async {
+    var today = DateTime.now();
+    bool validPeriod = to.isSameMonth(today) || to.isBefore(today);
+
+    try {
+      var priorityList = await loadPriorities();
+      if (!validPeriod) {
+        dispatch(InsightsLoaded(
+            date, today, from, to, priorityList, WinListShortData.empty()));
+        return;
+      }
+
+      var intervalKey = '${from.toCompact()}-${to.toCompact()}';
+      if (insightsCache.containsKey(intervalKey)) {
+        dispatch(InsightsLoaded(
+            date, today, from, to, priorityList, insightsCache[intervalKey]));
+        return;
+      }
+
+      var json = await getStats(
+          from.toCompact(), to.toCompact(), GoogleSignInFacade.getIdToken);
+      var data = WinListShortData.fromJson(json);
+      insightsCache[intervalKey] = data;
+      dispatch(InsightsLoaded(date, today, from, to, priorityList, data));
+    } catch (err) {
+      dispatch(InsightsLoadingFailed(date, today, from, to, err.toString()));
+    }
   }
 }

@@ -16,8 +16,22 @@ const monthNames = <String>[
   "December"
 ];
 
+const dayNames = <String>[
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
 String getDayString(DateTime date) {
   return '${monthNames[date.month - 1]} ${date.year}';
+}
+
+String getDayName(int weekDay) {
+  return dayNames[weekDay - 1];
 }
 
 // weekday:

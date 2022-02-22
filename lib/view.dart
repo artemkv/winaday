@@ -8,6 +8,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:winaday/domain.dart';
 import 'charts.dart';
 import 'custom_components.dart';
+import 'insights.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'domain.dart';
@@ -112,6 +113,16 @@ Widget home(
   }
   if (model is MonthlyStatsModel) {
     return MonthlyStatsView(key: UniqueKey(), model: model, dispatch: dispatch);
+  }
+
+  if (model is InsightsLoadingModel) {
+    return insightsLoading(model, dispatch);
+  }
+  if (model is InsightsFailedToLoadModel) {
+    return insightsFailedToLoad(context, model, dispatch);
+  }
+  if (model is InsightsModel) {
+    return insights(model, dispatch);
   }
 
   return unknownModel(model);
@@ -634,6 +645,18 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           onTap: () {
             Navigator.pop(context);
             dispatch(NavigateToStatsRequested(date, today));
+          },
+        ),
+        ListTile(
+          title: Row(children: const [
+            Padding(
+                padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                child: Icon(Icons.lightbulb_outline)),
+            Text('Your Insights')
+          ]),
+          onTap: () {
+            Navigator.pop(context);
+            dispatch(NavigateToInsightsRequested(date, today));
           },
         ),
         const Divider(
@@ -1861,4 +1884,229 @@ Widget dualChoice(String label1, String label2, int currentChoice,
                                     ? FontWeight.bold
                                     : FontWeight.normal))))))))
   ]);
+}
+
+Widget insightsLoading(
+    InsightsLoadingModel model, void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Your Insights'),
+        elevation: 0.0,
+      ),
+      body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitInsightsRequested(model.date, model.today));
+          return false;
+        },
+        child: Column(children: [
+          Expanded(
+              child:
+                  Center(child: Column(children: [Expanded(child: spinner())])))
+        ]),
+      ));
+}
+
+Widget insightsFailedToLoad(BuildContext context,
+    InsightsFailedToLoadModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Your Insights'),
+      elevation: 0.0,
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitInsightsRequested(model.date, model.today));
+          return false;
+        },
+        child: Column(children: [
+          Expanded(
+              child: Center(
+                  child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(TEXT_PADDING),
+                child: Text("Failed to contact the server: " + model.reason,
+                    style: const TextStyle(
+                        fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+            Expanded(
+                child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      dispatch(InsightsReloadRequested(
+                          model.date, model.today, model.from, model.to));
+                    },
+                    child: Center(
+                        child: Text("Click to reload",
+                            style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                    fontSize: TEXT_FONT_SIZE,
+                                    color: Colors.grey))))))
+          ])))
+        ])),
+  );
+}
+
+Widget insights(InsightsModel model, void Function(Message) dispatch) {
+  var awesomeDays = getAwesomeWeekDays(model.data);
+  var awesomePrioritiesList =
+      getAwesomePriorities(model.data, model.priorityList);
+  var mostPopularPriorityCombination =
+      getMostPopularPriorityCombination(model.data, model.priorityList)
+          .map((x) => LegendItem(x.text, getPriorityBoxColor(x.color)))
+          .toList();
+
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Your Insights'),
+        elevation: 0.0,
+      ),
+      body: WillPopScope(
+        onWillPop: () async {
+          dispatch(ExitInsightsRequested(model.date, model.today));
+          return false;
+        },
+        child: SingleChildScrollView(
+            child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Text("Your most awesome days",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          color: Colors.black, fontSize: TEXT_FONT_SIZE)))),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: awesomeDays.isNotEmpty
+                  ? awesomeWeekDays(awesomeDays)
+                  : noDataAvailable()),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 64,
+            endIndent: 64,
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Text("Priorities that contribute the most to awesome days",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          color: Colors.black, fontSize: TEXT_FONT_SIZE)))),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: awesomePrioritiesList.isNotEmpty
+                  ? awesomePriorities(awesomePrioritiesList)
+                  : noDataAvailable()),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 64,
+            endIndent: 64,
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Text("Priorities that go together the most",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          color: Colors.black, fontSize: TEXT_FONT_SIZE)))),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: mostPopularPriorityCombination.isNotEmpty
+                  ? legend(mostPopularPriorityCombination)
+                  : noDataAvailable()),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 64,
+            endIndent: 64,
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Text("The data is based on last 90 days",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(
+                              fontSize: TEXT_FONT_SIZE, color: Colors.grey)))))
+        ])),
+      ));
+}
+
+Widget noDataAvailable() {
+  return Text("no data available",
+      textAlign: TextAlign.center,
+      style: GoogleFonts.openSans(
+          textStyle:
+              const TextStyle(color: Colors.grey, fontSize: TEXT_FONT_SIZE)));
+}
+
+Widget awesomeWeekDays(List<LabeledValue> items) {
+  final f = NumberFormat("###.00");
+
+  return Column(
+      children: items
+          .map((x) => Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(children: [
+                Flexible(
+                    child: Wrap(children: [
+                  Text("${x.label}:",
+                      style: GoogleFonts.openSans(
+                          textStyle:
+                              const TextStyle(fontSize: TEXT_FONT_SIZE))),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: Text("${f.format(x.value)}%",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  fontWeight: FontWeight.bold))))
+                ]))
+              ])))
+          .toList());
+}
+
+Widget awesomePriorities(List<LabeledValue> items) {
+  final f = NumberFormat("###.00");
+
+  return Column(
+      children: items
+          .map((x) => Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(children: [
+                Container(
+                    height: 32.0,
+                    width: 32.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.0),
+                        color: getPriorityBoxColor(x.color))),
+                Flexible(
+                    child: Wrap(children: [
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: Text("${x.label}:",
+                          style: GoogleFonts.openSans(
+                              textStyle:
+                                  const TextStyle(fontSize: TEXT_FONT_SIZE)))),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: Text("${f.format(x.value)}%",
+                          style: GoogleFonts.openSans(
+                              textStyle: const TextStyle(
+                                  fontSize: TEXT_FONT_SIZE,
+                                  fontWeight: FontWeight.bold))))
+                ]))
+              ])))
+          .toList());
 }

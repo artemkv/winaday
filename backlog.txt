@@ -123,6 +123,10 @@ v1.4.3 Improve
 
 v1.4.4 Improve
 - --Ask for review when recorded 7 wins in last 2 weeks--
+- Insights
+    - --Most awesome days of week--
+    - --Priorities that contribute the most to awesome days--
+    - --Priorities that go together the most--
 
 
 TODO:
@@ -138,6 +142,8 @@ TODO:
     - Piechart days with wins/no wins/asesome + labels
     - Piechart priorities + labels
     - Priorities cumulative chart month by month?
+
+!!! More insights
 
 
 !! UX
@@ -185,4 +191,3 @@ D/libGLESv2( 8898): DTS_GLAPI : DTS is not allowed for Package : net.artemkv.win
 
 - Think about using circle colors to indicate days with wins instead of small dots. White for days with wins, the "future" white for days without wins
 - How the priority distribution changed from last moths (maybe with double histograms)
-- What priorities coincide with awesome days

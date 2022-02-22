@@ -427,3 +427,38 @@ class MonthlyStatsModel extends Model {
       this.winsShowAsPie,
       this.prioritiesShowAsPie);
 }
+
+@immutable
+class InsightsLoadingModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+
+  const InsightsLoadingModel(this.date, this.today, this.from, this.to);
+}
+
+@immutable
+class InsightsFailedToLoadModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final String reason;
+
+  const InsightsFailedToLoadModel(
+      this.date, this.today, this.from, this.to, this.reason);
+}
+
+@immutable
+class InsightsModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final PriorityListData priorityList;
+  final WinListShortData data;
+
+  const InsightsModel(
+      this.date, this.today, this.from, this.to, this.priorityList, this.data);
+}

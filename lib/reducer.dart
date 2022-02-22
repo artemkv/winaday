@@ -532,6 +532,34 @@ ModelAndCommand reduce(Model model, Message message) {
     return ModelAndCommand(updatedModel, NeverAskForReviewAgain());
   }
 
+  if (message is NavigateToInsightsRequested) {
+    var from = DateTime(
+        message.today.year, message.today.month, message.today.day - 89);
+    var to = message.today;
+    return ModelAndCommand(
+        InsightsLoadingModel(message.date, message.today, from, to),
+        LoadInsightData(message.date, from, to));
+  }
+  if (message is InsightsLoadingFailed) {
+    return ModelAndCommand.justModel(InsightsFailedToLoadModel(
+        message.date, message.today, message.from, message.to, message.reason));
+  }
+  if (message is InsightsReloadRequested) {
+    return ModelAndCommand(
+        InsightsLoadingModel(
+            message.date, message.today, message.from, message.to),
+        LoadInsightData(message.date, message.from, message.to));
+  }
+  if (message is InsightsLoaded) {
+    return ModelAndCommand.justModel(InsightsModel(message.date, message.today,
+        message.from, message.to, message.priorityList, message.data));
+  }
+  if (message is ExitInsightsRequested) {
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
+        LoadDailyWin(message.date));
+  }
+
   return ModelAndCommand.justModel(model);
 }
 

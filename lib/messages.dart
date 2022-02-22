@@ -528,3 +528,54 @@ class AgreedOnLeavingFeedback implements Message {}
 
 @immutable
 class RejectedLeavingFeedback implements Message {}
+
+@immutable
+class NavigateToInsightsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const NavigateToInsightsRequested(this.date, this.today);
+}
+
+@immutable
+class InsightsLoaded implements Message {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final PriorityListData priorityList;
+  final WinListShortData data;
+
+  const InsightsLoaded(
+      this.date, this.today, this.from, this.to, this.priorityList, this.data);
+}
+
+@immutable
+class InsightsLoadingFailed implements Message {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+  final String reason;
+
+  const InsightsLoadingFailed(
+      this.date, this.today, this.from, this.to, this.reason);
+}
+
+@immutable
+class InsightsReloadRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+  final DateTime from;
+  final DateTime to;
+
+  const InsightsReloadRequested(this.date, this.today, this.from, this.to);
+}
+
+@immutable
+class ExitInsightsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const ExitInsightsRequested(this.date, this.today);
+}
