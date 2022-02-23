@@ -129,6 +129,11 @@ v1.4.5 Insights
 - --Priorities that go together the most--
 - --Ask for review when recorded 7 wins in last 2 weeks--
 
+v1.4.6 More insights
+
+- --Fixed bug with priorities that go together the most--
+- --Days you struggle getting wins on--
+
 
 TODO:
 

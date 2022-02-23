@@ -1,5 +1,6 @@
 // These should be all immutable containers, no logic
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:winaday/dateutil.dart';
 
@@ -77,6 +78,11 @@ class PriorityData {
 
   Map<String, dynamic> toJson() =>
       {'id': id, 'text': text, 'color': color, 'deleted': deleted};
+
+  @override
+  String toString() {
+    return '$id($text)';
+  }
 }
 
 @immutable
@@ -133,6 +139,18 @@ class WinShortData {
         priorities = json['priorities'] != null
             ? json['priorities'].cast<String>().toSet()
             : <String>{};
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinShortData &&
+        overallResult == other.overallResult &&
+        priorities == other.priorities;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([overallResult, priorities]);
+  }
 }
 
 @immutable
@@ -145,6 +163,16 @@ class WinOnDayShortData {
   WinOnDayShortData.fromJson(Map<String, dynamic> json)
       : date = fromCompact(json['date']),
         win = WinShortData.fromJson(json['win']);
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinOnDayShortData && date == other.date && win == other.win;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([date, win]);
+  }
 }
 
 @immutable
@@ -159,6 +187,16 @@ class WinListShortData {
       : items = (json['items'] as List)
             .map((x) => WinOnDayShortData.fromJson(x))
             .toList();
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinListShortData && listEquals(items, other.items);
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll(items);
+  }
 }
 
 class ReviewPanelState {

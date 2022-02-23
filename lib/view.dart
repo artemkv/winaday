@@ -1949,6 +1949,7 @@ Widget insightsFailedToLoad(BuildContext context,
 
 Widget insights(InsightsModel model, void Function(Message) dispatch) {
   var awesomeDays = getAwesomeWeekDays(model.data);
+  var noWinDays = getNoWinWeekDays(model.data);
   var awesomePrioritiesList =
       getAwesomePriorities(model.data, model.priorityList);
   var mostPopularPriorityCombination =
@@ -1981,7 +1982,27 @@ Widget insights(InsightsModel model, void Function(Message) dispatch) {
               padding: const EdgeInsets.only(
                   left: 32, right: 32, top: 16, bottom: 16),
               child: awesomeDays.isNotEmpty
-                  ? awesomeWeekDays(awesomeDays)
+                  ? weekDayStats(awesomeDays)
+                  : noDataAvailable()),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 64,
+            endIndent: 64,
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Text("Days you struggle getting wins on",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          color: Colors.black, fontSize: TEXT_FONT_SIZE)))),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: noWinDays.isNotEmpty
+                  ? weekDayStats(noWinDays)
                   : noDataAvailable()),
           const Divider(
             height: 12,
@@ -2051,7 +2072,7 @@ Widget noDataAvailable() {
               const TextStyle(color: Colors.grey, fontSize: TEXT_FONT_SIZE)));
 }
 
-Widget awesomeWeekDays(List<LabeledValue> items) {
+Widget weekDayStats(List<LabeledValue> items) {
   final f = NumberFormat("###.00");
 
   return Column(

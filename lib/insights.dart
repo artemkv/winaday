@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:winaday/dateutil.dart';
 
 import 'domain.dart';
@@ -14,11 +15,45 @@ List<LabeledValue> getAwesomeWeekDays(WinListShortData data) {
     }
   }
 
+  var counters = cnt.entries.toList();
+  counters.sort((a, b) {
+    if (a.value == b.value) {
+      return a.key.compareTo(b.key);
+    }
+    return b.value.compareTo(a.value);
+  });
+
   var days = {
-    for (var e in cnt.entries)
-      LabeledValue(getDayName(e.key), e.value / total * 100)
+    for (var c in counters)
+      LabeledValue(getDayName(c.key), c.value / total * 100)
   }.toList();
-  days.sort((a, b) => b.value.compareTo(a.value));
+  return days;
+}
+
+List<LabeledValue> getNoWinWeekDays(WinListShortData data) {
+  Map<int, int> cnt = {};
+  int total = 0;
+
+  for (var x in data.items) {
+    if (x.win.overallResult == OverallDayResult.couldNotGetWin) {
+      var d = x.date.weekday;
+      cnt[d] = (cnt[d] ?? 0) + 1;
+      total++;
+    }
+  }
+
+  var counters = cnt.entries.toList();
+  counters.sort((a, b) {
+    if (a.value == b.value) {
+      return a.key.compareTo(b.key);
+    }
+    return b.value.compareTo(a.value);
+  });
+
+  var days = {
+    for (var c in counters)
+      LabeledValue(getDayName(c.key), c.value / total * 100)
+  }.toList();
   return days;
 }
 
@@ -28,6 +63,24 @@ class LabeledValue {
   final int color;
 
   LabeledValue(this.label, this.value, {this.color = 0});
+
+  @override
+  bool operator ==(Object other) {
+    return other is LabeledValue &&
+        label == other.label &&
+        value == other.value &&
+        color == other.color;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([label, value, color]);
+  }
+
+  @override
+  String toString() {
+    return '$label: $value (color: $color)';
+  }
 }
 
 List<LabeledValue> getAwesomePriorities(
@@ -55,16 +108,12 @@ List<LabeledValue> getAwesomePriorities(
 
 List<PriorityData> getMostPopularPriorityCombination(
     WinListShortData data, PriorityListData priorityList) {
-  Map<Set<String>, int> cnt = {};
+  Map<Combination, int> cnt = {};
 
   for (var x in data.items) {
-    for (var p1 in x.win.priorities) {
-      for (var p2 in x.win.priorities) {
-        if (p1 != p2) {
-          var key = {p1, p2};
-          cnt[key] = (cnt[key] ?? 0) + 1;
-        }
-      }
+    var combinations = getCombinations(x.win.priorities);
+    for (var c in combinations) {
+      cnt[c] = (cnt[c] ?? 0) + 1;
     }
   }
 
@@ -72,11 +121,11 @@ List<PriorityData> getMostPopularPriorityCombination(
     for (var p in priorityList.items) p.id: p
   };
 
-  var combinations = cnt.entries.toList();
-  combinations.sort((a, b) => b.value.compareTo(a.value));
+  var combinationCounts = cnt.entries.toList();
+  combinationCounts.sort((a, b) => b.value.compareTo(a.value));
 
-  if (combinations.isNotEmpty) {
-    return combinations.first.key
+  if (combinationCounts.isNotEmpty) {
+    return combinationCounts.first.key
         .toList()
         .map((id) => priorities[id])
         .where((x) => x != null)
@@ -85,4 +134,57 @@ List<PriorityData> getMostPopularPriorityCombination(
   }
 
   return [];
+}
+
+@immutable
+class Combination {
+  final String a;
+  final String b;
+
+  const Combination(this.a, this.b);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Combination &&
+        ((a == other.a && b == other.b) || (a == other.b && b == other.a));
+  }
+
+  @override
+  int get hashCode {
+    if (a.compareTo(b) <= 0) {
+      return (a + b).hashCode;
+    } else {
+      return (b + a).hashCode;
+    }
+  }
+
+  @override
+  String toString() {
+    return a + ',' + b;
+  }
+
+  List<String> toList() {
+    if (a.compareTo(b) <= 0) {
+      return [a, b];
+    } else {
+      return [b, a];
+    }
+  }
+}
+
+List<Combination> getCombinations(Set<String> s) {
+  Set<Combination> cs = {};
+
+  for (var a in s) {
+    for (var b in s) {
+      if (a != b) {
+        var c = Combination(a, b);
+        cs.add(c);
+      }
+    }
+  }
+
+  var csl = cs.toList();
+  csl.sort((a, b) => a.toString().compareTo(b.toString()));
+  return csl;
 }
