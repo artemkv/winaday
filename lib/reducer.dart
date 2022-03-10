@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:winaday/commands_journey.dart';
 import 'package:winaday/dateutil.dart';
 import 'package:winaday/domain.dart';
 
@@ -39,13 +40,15 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is UserSignedIn) {
     return ModelAndCommand(
         DailyWinLoadingModel(message.today, message.today, WinDaysData.empty()),
-        LoadDailyWinWithInitialData(message.today));
+        CommandList(
+            [LoadDailyWinWithInitialData(message.today), ReportSignIn()]));
   }
   if (message is SignInFailed) {
     return ModelAndCommand.justModel(UserFailedToSignInModel(message.reason));
   }
   if (message is SignOutRequested) {
-    return ModelAndCommand(SignOutInProgressModel(), SignOut());
+    return ModelAndCommand(
+        SignOutInProgressModel(), CommandList([SignOut(), ReportSignOut()]));
   }
   if (message is UserSignedOut) {
     return ModelAndCommand.justModel(const UserNotSignedInModel(false, false));
@@ -85,13 +88,16 @@ ModelAndCommand reduce(Model model, Message message) {
         CommandList([
           LoadWinDays(thisMonth),
           LoadWinDays(prevMonth),
-          LoadWinDays(nextMonth)
+          LoadWinDays(nextMonth),
+          ReportMovedToDay()
         ]));
   }
   if (message is DailyWinViewLoadingFailed) {
     var winDays = getWinDaysIfOnModel(model);
-    return ModelAndCommand.justModel(DailyWinFailedToLoadModel(
-        message.date, message.today, winDays, message.reason));
+    return ModelAndCommand(
+        DailyWinFailedToLoadModel(
+            message.date, message.today, winDays, message.reason),
+        ReportDailyWinViewLoadingFailed());
   }
   if (message is DailyWinViewReloadRequested) {
     var winDays = getWinDaysIfOnModel(model);
@@ -106,8 +112,10 @@ ModelAndCommand reduce(Model model, Message message) {
             ? OverallDayResult.gotMyWin
             : message.win.overallResult,
         message.win.priorities);
-    return ModelAndCommand.justModel(WinEditorModel(
-        message.date, message.today, message.priorityList, winToEdit));
+    return ModelAndCommand(
+        WinEditorModel(
+            message.date, message.today, message.priorityList, winToEdit),
+        ReportEditWin());
   }
   if (message is CancelEditingWinRequested) {
     return ModelAndCommand(
@@ -135,11 +143,12 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is WinSaved) {
     return ModelAndCommand(
         DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
-        LoadDailyWin(message.date));
+        CommandList([LoadDailyWin(message.date), ReportWinSaved()]));
   }
   if (message is SavingWinFailed) {
-    return ModelAndCommand.justModel(
-        WinEditorFailedToSaveModel(message.date, message.win, message.reason));
+    return ModelAndCommand(
+        WinEditorFailedToSaveModel(message.date, message.win, message.reason),
+        ReportSavingWinFailed());
   }
 
   if (message is MoveToPrevDay) {
@@ -178,12 +187,16 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is NavigateToPrioritiesRequested) {
-    return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
-        LoadPriorities(message.date));
+    return ModelAndCommand(
+        PrioritiesLoadingModel(message.date, message.today),
+        CommandList(
+            [LoadPriorities(message.date), ReportNavigateToPriorities()]));
   }
   if (message is PrioritiesLoadingFailed) {
-    return ModelAndCommand.justModel(PrioritiesFailedToLoadModel(
-        message.date, message.today, message.reason));
+    return ModelAndCommand(
+        PrioritiesFailedToLoadModel(
+            message.date, message.today, message.reason),
+        ReportPrioritiesLoadingFailed());
   }
   if (message is PrioritiesReloadRequested) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
@@ -202,8 +215,9 @@ ModelAndCommand reduce(Model model, Message message) {
         canAddMorePriorities(message.priorityList)));
   }
   if (message is EditPrioritiesRequested) {
-    return ModelAndCommand.justModel(
-        EditPrioritiesModel(message.date, message.today, message.priorityList));
+    return ModelAndCommand(
+        EditPrioritiesModel(message.date, message.today, message.priorityList),
+        ReportEditPriorities());
   }
   if (message is PrioritiesReorderRequested) {
     var reordered = message.priorityList.items.map((e) {
@@ -233,8 +247,10 @@ ModelAndCommand reduce(Model model, Message message) {
         message.date, message.today, PriorityListData(List.from(updatedList))));
   }
   if (message is SaveChangesInPrioritiesRequested) {
-    return ModelAndCommand(PrioritiesSavingModel(message.date),
-        SavePriorities(message.date, message.priorityList));
+    return ModelAndCommand(
+      PrioritiesSavingModel(message.date),
+      SavePriorities(message.date, message.priorityList),
+    );
   }
   if (message is CancelEditingPrioritiesRequested) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
@@ -242,8 +258,10 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is EditExistingPriorityRequested) {
-    return ModelAndCommand.justModel(PriorityEditorModel(
-        message.date, message.today, message.priorityList, message.priority));
+    return ModelAndCommand(
+        PriorityEditorModel(message.date, message.today, message.priorityList,
+            message.priority),
+        ReportEditPriority());
   }
   if (message is EditNewPriorityRequested) {
     return ModelAndCommand(
@@ -251,8 +269,10 @@ ModelAndCommand reduce(Model model, Message message) {
         CreateNewPriority(message.date, message.today, message.priorityList));
   }
   if (message is NewPriorityCreated) {
-    return ModelAndCommand.justModel(PriorityEditorModel(
-        message.date, message.today, message.priorityList, message.priority));
+    return ModelAndCommand(
+        PriorityEditorModel(message.date, message.today, message.priorityList,
+            message.priority),
+        ReportEditPriority());
   }
   if (message is CancelEditingPriorityRequested) {
     return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
@@ -267,17 +287,27 @@ ModelAndCommand reduce(Model model, Message message) {
       }
     });
 
-    return ModelAndCommand(PrioritiesSavingModel(message.date),
-        SavePriorities(message.date, PriorityListData(List.from(updatedList))));
+    return ModelAndCommand(
+      PrioritiesSavingModel(message.date),
+      SavePriorities(message.date, PriorityListData(List.from(updatedList))),
+    );
+  }
+  if (message is PrioritiesSaved) {
+    return ModelAndCommand(PrioritiesLoadingModel(message.date, message.today),
+        CommandList([LoadPriorities(message.date), ReportPrioritiesSaved()]));
   }
   if (message is SavingPrioritiesFailed) {
-    return ModelAndCommand.justModel(PriorityEditorFailedToSaveModel(
-        message.date, message.priorityList, message.reason));
+    return ModelAndCommand(
+        PriorityEditorFailedToSaveModel(
+            message.date, message.priorityList, message.reason),
+        ReportSavingPrioritiesFailed());
   }
 
   if (message is LinkWinToPriorities) {
-    return ModelAndCommand.justModel(EditWinPrioritiesModel(
-        message.date, message.today, message.priorityList, message.win));
+    return ModelAndCommand(
+        EditWinPrioritiesModel(
+            message.date, message.today, message.priorityList, message.win),
+        ReportEditWinPriorities());
   }
   if (message is ToggleWinPriority) {
     Set<String> udpatedPriorities = getUpdatedWinPriorities(
@@ -293,8 +323,12 @@ ModelAndCommand reduce(Model model, Message message) {
   if (message is NavigateToWinListRequested) {
     var from = DateTime(
         message.today.year, message.today.month, message.today.day - 13);
-    return ModelAndCommand(WinListLoadingModel(message.date, message.today),
-        LoadWinListFirstPage(message.date, from, message.today));
+    return ModelAndCommand(
+        WinListLoadingModel(message.date, message.today),
+        CommandList([
+          LoadWinListFirstPage(message.date, from, message.today),
+          ReportNavigateToWinList()
+        ]));
   }
   if (message is BackToDailyWinViewRequested) {
     return ModelAndCommand(
@@ -310,8 +344,10 @@ ModelAndCommand reduce(Model model, Message message) {
         toWinListItems(message.from, message.to, message.wins)));
   }
   if (message is WinListFirstPageLoadingFailed) {
-    return ModelAndCommand.justModel(WinListFailedToLoadModel(
-        message.date, message.today, message.from, message.to, message.reason));
+    return ModelAndCommand(
+        WinListFailedToLoadModel(message.date, message.today, message.from,
+            message.to, message.reason),
+        ReportWinListFirstPageLoadingFailed());
   }
   if (message is WinListFirstPageReloadRequested) {
     return ModelAndCommand(WinListLoadingModel(message.date, message.today),
@@ -356,8 +392,10 @@ ModelAndCommand reduce(Model model, Message message) {
       ];
       updatedItems.addAll(model.items.getRange(
           1, model.items.length)); // old items except the loading spinner
-      return ModelAndCommand.justModel(WinListModel(model.date, model.today,
-          model.priorityList, model.from, updatedItems));
+      return ModelAndCommand(
+          WinListModel(model.date, model.today, model.priorityList, model.from,
+              updatedItems),
+          ReportWinListNextPageLoadingFailed());
     }
   }
 
@@ -372,7 +410,8 @@ ModelAndCommand reduce(Model model, Message message) {
         CommandList([
           LoadWinDays(thisMonth),
           LoadWinDays(prevMonth),
-          LoadWinDays(twoMonthsAgo)
+          LoadWinDays(twoMonthsAgo),
+          ReportNavigateToCalendar()
         ]));
   }
   if (message is CalendarViewNextPageRequested) {
@@ -438,11 +477,14 @@ ModelAndCommand reduce(Model model, Message message) {
     var to = getLastDayOfMonth(message.today);
     return ModelAndCommand(
         StatsLoadingModel(message.date, message.today, from, to),
-        LoadStats(message.date, from, to));
+        CommandList(
+            [LoadStats(message.date, from, to), ReportNavigateToStats()]));
   }
   if (message is StatsLoadingFailed) {
-    return ModelAndCommand.justModel(StatsFailedToLoadModel(
-        message.date, message.today, message.from, message.to, message.reason));
+    return ModelAndCommand(
+        StatsFailedToLoadModel(message.date, message.today, message.from,
+            message.to, message.reason),
+        ReportStatsLoadingFailed());
   }
   if (message is StatsReloadRequested) {
     return ModelAndCommand(
@@ -538,11 +580,16 @@ ModelAndCommand reduce(Model model, Message message) {
     var to = message.today;
     return ModelAndCommand(
         InsightsLoadingModel(message.date, message.today, from, to),
-        LoadInsightData(message.date, from, to));
+        CommandList([
+          LoadInsightData(message.date, from, to),
+          ReportNavigateToInsights()
+        ]));
   }
   if (message is InsightsLoadingFailed) {
-    return ModelAndCommand.justModel(InsightsFailedToLoadModel(
-        message.date, message.today, message.from, message.to, message.reason));
+    return ModelAndCommand(
+        InsightsFailedToLoadModel(message.date, message.today, message.from,
+            message.to, message.reason),
+        ReportInsightsLoadingFailed());
   }
   if (message is InsightsReloadRequested) {
     return ModelAndCommand(

@@ -327,6 +327,14 @@ class PrioritySaveRequested implements Message {
 }
 
 @immutable
+class PrioritiesSaved implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const PrioritiesSaved(this.date, this.today);
+}
+
+@immutable
 class SavingPrioritiesFailed implements Message {
   final DateTime date;
   final PriorityListData priorityList;

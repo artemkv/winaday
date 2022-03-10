@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:winaday/domain.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:quiver/collection.dart';
 import 'package:launch_review/launch_review.dart';
+import 'package:winaday/journey/journey.dart';
 import 'package:winaday/services/local_data.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
@@ -85,6 +88,14 @@ class InitializeApp implements Command {
       );
     }).catchError((err) {
       dispatch(AppInitializationFailed(err.toString()));
+    });
+
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      Journey.initialize(
+          'e04b43c9-69c1-4172-9dfd-a3ef1aa17d5e',
+          '663b16c8-c35e-4887-b964-35a74e5732d2',
+          packageInfo.version,
+          kReleaseMode);
     });
   }
 }
@@ -298,7 +309,7 @@ class SavePriorities implements Command {
 
     postPriorities(priorityList, GoogleSignInFacade.getIdToken).then((_) {
       cachedPriorities = priorityList;
-      dispatch(NavigateToPrioritiesRequested(date, today));
+      dispatch(PrioritiesSaved(date, today));
     }).catchError((err) {
       dispatch(SavingPrioritiesFailed(date, priorityList, err.toString()));
     });

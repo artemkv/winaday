@@ -134,6 +134,10 @@ v1.4.6 More insights
 - --Fixed bug with priorities that go together the most--
 - --Days you struggle getting wins on--
 
+v1.4.7 Telemetry
+
+- Send events to Journey
+
 
 TODO:
 
@@ -151,6 +155,10 @@ TODO:
 
 !!! More insights
 
+!!! Events
+
+- can I report init/sign has failed?
+- save priorities should be reported only after saved
 
 !! UX
 
@@ -160,6 +168,7 @@ TODO:
 - Do I really want to unlink from deleted priorities? Maybe that priority was still valid on that date. On the other hand, if I don't allow unlink it automatically, how would user be able to unlink, considering deleted priorities do not appear to un-toggle?
 - Ask for review pane
 - Quick way to go to your stats
+- "Failed to save priorities" screen does not have back button
 
 - Show awesome days differently in the calendar
 - Show awesome days differently in the win list
