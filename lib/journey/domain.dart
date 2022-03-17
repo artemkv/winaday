@@ -2,17 +2,6 @@ import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
 
-class JourneyState {
-  bool firstLaunchReported = false;
-
-  JourneyState();
-
-  JourneyState.fromJson(Map<String, dynamic> json)
-      : firstLaunchReported = json['fst_launch_reported'];
-
-  Map<String, dynamic> toJson() => {'fst_launch_reported': firstLaunchReported};
-}
-
 // TODO: maybe ts should be received encoded from server
 class Session {
   final String id;
@@ -23,7 +12,13 @@ class Session {
   final bool isRelease;
 
   DateTime end;
+
   bool firstLaunch = false;
+  bool firstLaunchToday = false;
+  bool firstLaunchThisMonth = false;
+  bool firstLaunchThisYear = false;
+  bool firstLaunchThisVersion = false;
+
   bool hasError = false;
   Map<String, int> eventCounts =
       {}; // TODO: limit on number of different events?
@@ -43,6 +38,10 @@ class Session {
         version = json['version'] ?? '',
         isRelease = json['is_release'] ?? false,
         firstLaunch = json['fst_launch'] ?? false,
+        firstLaunchToday = json['fst_launch_day'] ?? false,
+        firstLaunchThisMonth = json['fst_launch_month'] ?? false,
+        firstLaunchThisYear = json['fst_launch_year'] ?? false,
+        firstLaunchThisVersion = json['fst_launch_version'] ?? false,
         hasError = json['has_error'] ?? false,
         eventCounts =
             json['evts'] != null ? json['evts'].cast<String, int>() : {},
@@ -58,6 +57,10 @@ class Session {
         'version': version,
         'is_release': isRelease,
         'fst_launch': firstLaunch,
+        'fst_launch_day': firstLaunchToday,
+        'fst_launch_month': firstLaunchThisMonth,
+        'fst_launch_year': firstLaunchThisYear,
+        'fst_launch_version': firstLaunchThisVersion,
         'has_error': hasError,
         'evts': eventCounts,
         'evt_seq': eventSequence

@@ -4,6 +4,7 @@ import 'package:logging/logging.dart';
 
 import 'domain.dart';
 import 'rest.dart';
+import 'dateutil.dart';
 
 Session? currentSession;
 
@@ -23,27 +24,35 @@ class Journey {
       log('Journey3: Started new session ${currentSession!.id}',
           level: Level.INFO.value);
 
-      // restore state
-      final state = await restoreState();
-
       // report previous session
       log('Journey3: Report last saved session', level: Level.INFO.value);
       final session = await loadLastSession();
       if (session != null) {
         await postSession(session);
-
-        // update the state based on previous session
-        state.firstLaunchReported = true;
       }
 
-      // update current session based on the state
-      currentSession!.firstLaunch = !state.firstLaunchReported;
+      // configure current session based on previous session
+      if (session == null) {
+        currentSession!.firstLaunch = true;
+      } else {
+        var today = DateTime.now();
+        var lastSessionStart = session.start;
+        if (!lastSessionStart.isSameDay(today)) {
+          currentSession!.firstLaunchToday = true;
+        }
+        if (!lastSessionStart.isSameMonth(today)) {
+          currentSession!.firstLaunchThisMonth = true;
+        }
+        if (!lastSessionStart.isSameYear(today)) {
+          currentSession!.firstLaunchThisYear = true;
+        }
+        if (session.version != version) {
+          currentSession!.firstLaunchThisVersion = true;
+        }
+      }
 
       // save current session
       await saveSession(currentSession!);
-
-      // save state
-      await persistState(state);
     } catch (err) {
       log('Journey3: Failed to initialize Journey: ${err.toString()}');
     }
