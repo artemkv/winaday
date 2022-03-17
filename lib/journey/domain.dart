@@ -14,6 +14,7 @@ class Session {
   DateTime end;
 
   bool firstLaunch = false;
+  bool firstLaunchThisHour = false;
   bool firstLaunchToday = false;
   bool firstLaunchThisMonth = false;
   bool firstLaunchThisYear = false;
@@ -38,6 +39,7 @@ class Session {
         version = json['version'] ?? '',
         isRelease = json['is_release'] ?? false,
         firstLaunch = json['fst_launch'] ?? false,
+        firstLaunchThisHour = json['fst_launch_hour'] ?? false,
         firstLaunchToday = json['fst_launch_day'] ?? false,
         firstLaunchThisMonth = json['fst_launch_month'] ?? false,
         firstLaunchThisYear = json['fst_launch_year'] ?? false,
@@ -57,6 +59,7 @@ class Session {
         'version': version,
         'is_release': isRelease,
         'fst_launch': firstLaunch,
+        'fst_launch_hour': firstLaunchThisHour,
         'fst_launch_day': firstLaunchToday,
         'fst_launch_month': firstLaunchThisMonth,
         'fst_launch_year': firstLaunchThisYear,

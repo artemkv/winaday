@@ -35,8 +35,11 @@ class Journey {
       if (session == null) {
         currentSession!.firstLaunch = true;
       } else {
-        var today = DateTime.now();
+        var today = DateTime.now().toUtc();
         var lastSessionStart = session.start;
+        if (!lastSessionStart.isSameHour(today)) {
+          currentSession!.firstLaunchThisHour = true;
+        }
         if (!lastSessionStart.isSameDay(today)) {
           currentSession!.firstLaunchToday = true;
         }

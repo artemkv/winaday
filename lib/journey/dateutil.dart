@@ -10,4 +10,11 @@ extension DateFunctions on DateTime {
   bool isSameDay(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
+
+  bool isSameHour(DateTime other) {
+    return year == other.year &&
+        month == other.month &&
+        day == other.day &&
+        hour == other.hour;
+  }
 }
