@@ -27,3 +27,10 @@ Future<void> saveSession(Session session) async {
   final jsonString = jsonEncode(json);
   await file.writeAsString(jsonString);
 }
+
+// Only for debugging
+Future<void> removeSession() async {
+  final path = await getApplicationSupportDirectory();
+  final file = File('${path.path}/$sessionFileName');
+  await file.delete();
+}
