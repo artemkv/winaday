@@ -16,6 +16,7 @@ class Session {
   Stage prevStage = Stage.empty();
   Stage newStage = Stage.empty();
 
+  DateTime since;
   bool firstLaunch = false;
   bool firstLaunchThisHour = false;
   bool firstLaunchToday = false;
@@ -30,11 +31,13 @@ class Session {
 
   Session(this.accountId, this.appId, this.version, this.isRelease)
       : id = uuid.v4(),
+        since = DateTime.now().toUtc(),
         start = DateTime.now().toUtc(),
         end = DateTime.now().toUtc();
 
   Session.fromJson(Map<String, dynamic> json)
       : id = json['id'] ?? uuid.v4(),
+        since = DateTime.tryParse(json['since']) ?? DateTime.now().toUtc(),
         start = DateTime.tryParse(json['start']) ?? DateTime.now().toUtc(),
         end = DateTime.tryParse(json['end']) ?? DateTime.now().toUtc(),
         accountId = json['acc'] ?? '',
@@ -61,6 +64,7 @@ class Session {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'since': since.toIso8601String(),
         'start': start.toIso8601String(),
         'end': end.toIso8601String(),
         'acc': accountId,
@@ -89,13 +93,13 @@ class Stage {
   Stage(this.stage, this.name) : ts = DateTime.now().toUtc();
 
   Stage.empty()
-      : stage = 0,
+      : stage = 1,
         name = "new_user",
         ts = DateTime.now().toUtc();
 
   Stage.fromJson(Map<String, dynamic> json)
       : ts = DateTime.tryParse(json['ts']) ?? DateTime.now().toUtc(),
-        stage = json['stage'] ?? 0,
+        stage = json['stage'] ?? 1,
         name = json['name'] ?? 'new_user';
 
   Map<String, dynamic> toJson() => {

@@ -25,15 +25,20 @@ class Journey {
           level: Level.INFO.value);
 
       // report previous session
-      log('Journey3: Report last saved session', level: Level.INFO.value);
       final session = await loadLastSession();
       if (session != null) {
+        log('Journey3: Report last saved session', level: Level.INFO.value);
         await postSession(session);
       }
 
       // configure current session based on previous session
       if (session == null) {
         currentSession!.firstLaunch = true;
+        currentSession!.firstLaunchThisHour = true;
+        currentSession!.firstLaunchToday = true;
+        currentSession!.firstLaunchThisMonth = true;
+        currentSession!.firstLaunchThisYear = true;
+        currentSession!.firstLaunchThisVersion = true;
       } else {
         var today = DateTime.now().toUtc();
         var lastSessionStart = session.start;
@@ -55,6 +60,8 @@ class Journey {
 
         currentSession!.prevStage = session.newStage;
         currentSession!.newStage = session.newStage;
+
+        currentSession!.since = session.since;
       }
 
       // save current session
@@ -122,19 +129,26 @@ class Journey {
   /// Reports the stage transition, e.g. 'engagement', 'checkout', 'payment'.
   /// Stage transitions are used to build funnels.
   ///
-  /// [stage] is an ordinal number that defines the stage.
+  /// [stage] is an ordinal number [1..10] that defines the stage.
   /// Stage transitions must be increasing. If the current session is already
   /// at the higher stage, the call will be ignored.
   /// This means you don't need to keep track of a current stage.
   ///
   /// [stageName] provides the stage name for informational purposes.
-  /// It is recommended to define stages upfront.
+  ///
+  /// It is recommended to define stages upfront as the numbers used to build
+  /// conversion funnel.
   /// If you sumbit the new name for the same stage, that new name will be used
   /// in all future reports.
   static Future<void> reportStageTransition(int stage, String stageName) async {
     if (currentSession == null) {
       log('Journey3: Cannot update stage. Journey have not been initialized.');
       return;
+    }
+
+    if (stage < 1 || stage > 10) {
+      throw Exception(
+          'Invalid value $stage for stage, must be between 1 and 10');
     }
 
     // TODO: maybe queue stage transitions until session is initialized?

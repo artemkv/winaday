@@ -4,13 +4,13 @@ import 'commands.dart';
 import 'journey/journey.dart';
 import 'messages.dart';
 
-const stageExploration = 10;
+const stageExploration = 2;
 const stageExplorationName = 'explore';
 
-const stageEngagement = 20;
+const stageEngagement = 3;
 const stageEngagementName = 'engage';
 
-const stageLoyalty = 30;
+const stageLoyalty = 4;
 const stageLoyaltyName = 'stick';
 
 @immutable
