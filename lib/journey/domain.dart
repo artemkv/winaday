@@ -13,6 +13,9 @@ class Session {
 
   DateTime end;
 
+  Stage prevStage = Stage.empty();
+  Stage newStage = Stage.empty();
+
   bool firstLaunch = false;
   bool firstLaunchThisHour = false;
   bool firstLaunchToday = false;
@@ -48,7 +51,13 @@ class Session {
         eventCounts =
             json['evts'] != null ? json['evts'].cast<String, int>() : {},
         eventSequence =
-            json['evt_seq'] != null ? json['evt_seq'].cast<String>() : [];
+            json['evt_seq'] != null ? json['evt_seq'].cast<String>() : [],
+        prevStage = json['prev_stage'] != null
+            ? Stage.fromJson(json['prev_stage'])
+            : Stage.empty(),
+        newStage = json['new_stage'] != null
+            ? Stage.fromJson(json['new_stage'])
+            : Stage.empty();
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -66,7 +75,33 @@ class Session {
         'fst_launch_version': firstLaunchThisVersion,
         'has_error': hasError,
         'evts': eventCounts,
-        'evt_seq': eventSequence
+        'evt_seq': eventSequence,
+        'prev_stage': prevStage,
+        'new_stage': newStage,
+      };
+}
+
+class Stage {
+  final DateTime ts;
+  final int stage;
+  final String name;
+
+  Stage(this.stage, this.name) : ts = DateTime.now().toUtc();
+
+  Stage.empty()
+      : stage = 0,
+        name = "new_user",
+        ts = DateTime.now().toUtc();
+
+  Stage.fromJson(Map<String, dynamic> json)
+      : ts = DateTime.tryParse(json['ts']) ?? DateTime.now().toUtc(),
+        stage = json['stage'] ?? 0,
+        name = json['name'] ?? 'new_user';
+
+  Map<String, dynamic> toJson() => {
+        'ts': ts.toIso8601String(),
+        'stage': stage,
+        'name': name,
       };
 }
 

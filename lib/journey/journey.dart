@@ -52,6 +52,9 @@ class Journey {
         if (session.version != version) {
           currentSession!.firstLaunchThisVersion = true;
         }
+
+        currentSession!.prevStage = session.newStage;
+        currentSession!.newStage = session.newStage;
       }
 
       // save current session
@@ -108,6 +111,37 @@ class Journey {
 
       // update endtime
       currentSession!.end = DateTime.now().toUtc();
+
+      // save session
+      await saveSession(currentSession!);
+    } catch (err) {
+      log('Journey3: Cannot update session: ${err.toString()}');
+    }
+  }
+
+  /// Reports the stage transition, e.g. 'engagement', 'checkout', 'payment'.
+  /// Stage transitions are used to build funnels.
+  ///
+  /// [stage] is an ordinal number that defines the stage.
+  /// Stage transitions must be increasing. If the current session is already
+  /// at the higher stage, the call will be ignored.
+  /// This means you don't need to keep track of a current stage.
+  ///
+  /// [stageName] provides the stage name for informational purposes.
+  /// It is recommended to define stages upfront.
+  /// If you sumbit the new name for the same stage, that new name will be used
+  /// in all future reports.
+  static Future<void> reportStageTransition(int stage, String stageName) async {
+    if (currentSession == null) {
+      log('Journey3: Cannot update stage. Journey have not been initialized.');
+      return;
+    }
+
+    // TODO: maybe queue stage transitions until session is initialized?
+    try {
+      if (currentSession!.newStage.stage < stage) {
+        currentSession!.newStage = Stage(stage, stageName);
+      }
 
       // save session
       await saveSession(currentSession!);

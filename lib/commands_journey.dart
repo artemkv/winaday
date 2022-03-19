@@ -4,6 +4,15 @@ import 'commands.dart';
 import 'journey/journey.dart';
 import 'messages.dart';
 
+const stageExploration = 10;
+const stageExplorationName = 'explore';
+
+const stageEngagement = 20;
+const stageEngagementName = 'engage';
+
+const stageLoyalty = 30;
+const stageLoyaltyName = 'stick';
+
 @immutable
 class ReportSignIn implements Command {
   @override
@@ -40,6 +49,7 @@ class ReportEditWin implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('edit_win');
+      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -50,6 +60,7 @@ class ReportEditWinPriorities implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('edit_win_priorities');
+      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -70,6 +81,8 @@ class ReportNavigateToPriorities implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('navto_priorities');
+      await Journey.reportStageTransition(
+          stageExploration, stageExplorationName);
     });
   }
 }
@@ -80,6 +93,7 @@ class ReportEditPriorities implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('edit_priorities');
+      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -90,6 +104,7 @@ class ReportEditPriority implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('edit_priority');
+      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -110,6 +125,8 @@ class ReportNavigateToStats implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('navto_stats');
+      await Journey.reportStageTransition(
+          stageExploration, stageExplorationName);
     });
   }
 }
@@ -120,6 +137,8 @@ class ReportNavigateToInsights implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('navto_insights');
+      await Journey.reportStageTransition(
+          stageExploration, stageExplorationName);
     });
   }
 }
@@ -220,6 +239,16 @@ class ReportInsightsLoadingFailed implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
       await Journey.reportEvent('err_load_insights', isError: true);
+    });
+  }
+}
+
+@immutable
+class ReportLoyalUser implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.reportStageTransition(stageLoyalty, stageLoyaltyName);
     });
   }
 }

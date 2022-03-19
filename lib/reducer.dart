@@ -76,6 +76,17 @@ ModelAndCommand reduce(Model model, Message message) {
     var thisMonth = message.date;
     var prevMonth = getPreviousMonth(thisMonth);
     var nextMonth = getNextMonth(thisMonth);
+
+    var commands = [
+      LoadWinDays(thisMonth),
+      LoadWinDays(prevMonth),
+      LoadWinDays(nextMonth),
+      ReportMovedToDay(),
+    ];
+    if (message.askForReview) {
+      commands.add(ReportLoyalUser());
+    }
+
     return ModelAndCommand(
         DailyWinModel(
             message.date,
@@ -85,12 +96,7 @@ ModelAndCommand reduce(Model model, Message message) {
             message.win,
             message.editable,
             message.askForReview),
-        CommandList([
-          LoadWinDays(thisMonth),
-          LoadWinDays(prevMonth),
-          LoadWinDays(nextMonth),
-          ReportMovedToDay()
-        ]));
+        CommandList(commands));
   }
   if (message is DailyWinViewLoadingFailed) {
     var winDays = getWinDaysIfOnModel(model);
