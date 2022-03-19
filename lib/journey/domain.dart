@@ -37,9 +37,17 @@ class Session {
 
   Session.fromJson(Map<String, dynamic> json)
       : id = json['id'] ?? uuid.v4(),
-        since = DateTime.tryParse(json['since']) ?? DateTime.now().toUtc(),
-        start = DateTime.tryParse(json['start']) ?? DateTime.now().toUtc(),
-        end = DateTime.tryParse(json['end']) ?? DateTime.now().toUtc(),
+        since =
+            (json['since'] == null || DateTime.tryParse(json['since']) == null)
+                ? DateTime.now().toUtc()
+                : DateTime.tryParse(json['since'])!,
+        start =
+            (json['start'] == null || DateTime.tryParse(json['start']) == null)
+                ? DateTime.now().toUtc()
+                : DateTime.tryParse(json['start'])!,
+        end = (json['end'] == null || DateTime.tryParse(json['end']) == null)
+            ? DateTime.now().toUtc()
+            : DateTime.tryParse(json['end'])!,
         accountId = json['acc'] ?? '',
         appId = json['aid'] ?? '',
         version = json['version'] ?? '',
