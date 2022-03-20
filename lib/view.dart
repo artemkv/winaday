@@ -1952,6 +1952,8 @@ Widget insights(InsightsModel model, void Function(Message) dispatch) {
   var noWinDays = getNoWinWeekDays(model.data);
   var awesomePrioritiesList =
       getAwesomePriorities(model.data, model.priorityList);
+  var awesomePrioritiesWeightedList =
+      getAwesomePrioritiesWeighted(model.data, model.priorityList);
   var mostPopularPriorityCombination =
       getMostPopularPriorityCombination(model.data, model.priorityList)
           .map((x) => LegendItem(x.text, getPriorityBoxColor(x.color)))
@@ -2023,6 +2025,27 @@ Widget insights(InsightsModel model, void Function(Message) dispatch) {
                   left: 32, right: 32, top: 16, bottom: 16),
               child: awesomePrioritiesList.isNotEmpty
                   ? awesomePriorities(awesomePrioritiesList)
+                  : noDataAvailable()),
+          const Divider(
+            height: 12,
+            thickness: 1,
+            indent: 64,
+            endIndent: 64,
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: Text(
+                  "How likely each of the priorities is to make your day awesome",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      textStyle: const TextStyle(
+                          color: Colors.black, fontSize: TEXT_FONT_SIZE)))),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 32, right: 32, top: 16, bottom: 16),
+              child: awesomePrioritiesWeightedList.isNotEmpty
+                  ? awesomePriorities(awesomePrioritiesWeightedList)
                   : noDataAvailable()),
           const Divider(
             height: 12,

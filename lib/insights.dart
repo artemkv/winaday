@@ -106,6 +106,32 @@ List<LabeledValue> getAwesomePriorities(
   return priorities;
 }
 
+List<LabeledValue> getAwesomePrioritiesWeighted(
+    WinListShortData data, PriorityListData priorityList) {
+  Map<String, int> awesomeCount = {};
+  Map<String, int> totalCount = {};
+
+  for (var x in data.items) {
+    for (var p in x.win.priorities) {
+      totalCount[p] = (totalCount[p] ?? 0) + 1;
+    }
+    if (x.win.overallResult == OverallDayResult.awesomeAchievement) {
+      for (var p in x.win.priorities) {
+        awesomeCount[p] = (awesomeCount[p] ?? 0) + 1;
+      }
+    }
+  }
+
+  var priorities = priorityList.items
+      .map((p) => LabeledValue(
+          p.text, (awesomeCount[p.id] ?? 0) / (totalCount[p.id] ?? 1) * 100,
+          color: p.color))
+      .where((v) => v.value > 0)
+      .toList();
+  priorities.sort((a, b) => b.value.compareTo(a.value));
+  return priorities;
+}
+
 List<PriorityData> getMostPopularPriorityCombination(
     WinListShortData data, PriorityListData priorityList) {
   Map<Combination, int> cnt = {};
