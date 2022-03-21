@@ -72,6 +72,11 @@ extension DateFunctions on DateTime {
     return year == other.year && month == other.month;
   }
 
+  // TODO: unit-test
+  bool isSameYear(DateTime other) {
+    return year == other.year;
+  }
+
   String toCompact() {
     final DateFormat format = DateFormat('yyyyMMdd');
     return format.format(this);
@@ -124,6 +129,26 @@ DateTime getLastDayOfMonth(DateTime date) {
   if (date.month < 12) {
     return DateTime(date.year, date.month + 1, 0);
   }
+  return DateTime(date.year + 1, 1, 0);
+}
+
+// TODO: unit-test
+DateTime getPreviousYear(DateTime date) {
+  return DateTime(date.year - 1, 1, 1);
+}
+
+// TODO: unit-test
+DateTime getNextYear(DateTime date) {
+  return DateTime(date.year + 1, 1, 1);
+}
+
+// TODO: unit-test
+DateTime getFirstDayOfYear(DateTime date) {
+  return DateTime(date.year, 1, 1);
+}
+
+// TODO: unit-test
+DateTime getLastDayOfYear(DateTime date) {
   return DateTime(date.year + 1, 1, 0);
 }
 

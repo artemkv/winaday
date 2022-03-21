@@ -33,7 +33,7 @@ List<charts.Color> chartPriorityColors = priorityColors
     .map((c) => charts.Color(r: c.red, g: c.green, b: c.blue))
     .toList();
 
-List<DataPoint> getWinDaysDataPoints(MonthlyStatsModel model) {
+List<DataPoint> getWinDaysDataPoints(StatsModel model) {
   if (model.daysTotal == 0) {
     return [];
   }
@@ -59,7 +59,7 @@ List<DataPoint> getWinDaysDataPoints(MonthlyStatsModel model) {
   ];
 }
 
-List<LegendItem> getWinDaysLegend(MonthlyStatsModel model) {
+List<LegendItem> getWinDaysLegend(StatsModel model) {
   return [
     LegendItem('Days without wins', grey),
     LegendItem('Days with wins', crayolaBlue),
@@ -67,7 +67,7 @@ List<LegendItem> getWinDaysLegend(MonthlyStatsModel model) {
   ];
 }
 
-Map<String, int> getPriorityCounts(MonthlyStatsModel model) {
+Map<String, int> getPriorityCounts(StatsModel model) {
   var priorityCounts = <String, int>{};
   for (var x in model.stats.items) {
     for (var p in x.win.priorities) {
@@ -77,7 +77,7 @@ Map<String, int> getPriorityCounts(MonthlyStatsModel model) {
   return priorityCounts;
 }
 
-List<DataPoint> getPriorityDataPoints(MonthlyStatsModel model) {
+List<DataPoint> getPriorityDataPoints(StatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   var dataPoints = model.priorityList.items
       .map((p) => DataPoint(p.id, priorityCounts[p.id] ?? 0,
@@ -89,7 +89,7 @@ List<DataPoint> getPriorityDataPoints(MonthlyStatsModel model) {
   return dataPoints;
 }
 
-List<LegendItem> getPrioritiesLegend(MonthlyStatsModel model) {
+List<LegendItem> getPrioritiesLegend(StatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   var prioritiesWithCounts = model.priorityList.items
       .where((p) => (priorityCounts[p.id] ?? 0) > 0)
@@ -111,7 +111,7 @@ class PriorityDataWithCount extends Model {
   const PriorityDataWithCount(this.priority, this.count);
 }
 
-List<LegendItem> getUnattendedPrioritiesLegend(MonthlyStatsModel model) {
+List<LegendItem> getUnattendedPrioritiesLegend(StatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   return model.priorityList.items
       .where((p) => (priorityCounts[p.id] ?? 0) == 0 && !p.deleted)

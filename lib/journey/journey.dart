@@ -6,6 +6,8 @@ import 'domain.dart';
 import 'rest.dart';
 import 'dateutil.dart';
 
+const maxSeqLength = 100;
+
 Session? currentSession;
 
 class Journey {
@@ -109,11 +111,13 @@ class Journey {
 
       // sequence events
       var seq = currentSession!.eventSequence;
-      var seqEventName = isCollapsible ? '($eventName)' : eventName;
-      if (!(seq.isNotEmpty && seq.last == seqEventName && isCollapsible)) {
-        seq.add(seqEventName);
-      } else {
-        // ignore the event for the sequence
+      if (seq.length < maxSeqLength) {
+        var seqEventName = isCollapsible ? '($eventName)' : eventName;
+        if (!(seq.isNotEmpty && seq.last == seqEventName && isCollapsible)) {
+          seq.add(seqEventName);
+        } else {
+          // ignore the event for the sequence
+        }
       }
 
       // update endtime

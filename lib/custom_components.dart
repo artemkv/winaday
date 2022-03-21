@@ -553,7 +553,7 @@ class _WinListItemLoadMoreState extends State<WinListItemLoadMore> {
 }
 
 class MonthlyStatsView extends StatefulWidget {
-  final MonthlyStatsModel model;
+  final StatsModel model;
   final void Function(Message) dispatch;
 
   const MonthlyStatsView(
@@ -584,6 +584,23 @@ class _MonthlyStatsViewState extends State<MonthlyStatsView> {
           leading: const BackButton(),
           title: const Text('Your Statistics'),
           elevation: 0.0,
+          actions: [
+            PopupMenuButton(
+                onSelected: (value) {
+                  widget.dispatch(NavigateToStatsRequested(widget.model.date,
+                      widget.model.today, value as StatsPeriod));
+                },
+                itemBuilder: (context) => [
+                      const PopupMenuItem<StatsPeriod>(
+                        value: StatsPeriod.month,
+                        child: Text('By month'),
+                      ),
+                      const PopupMenuItem<StatsPeriod>(
+                        value: StatsPeriod.year,
+                        child: Text('By year'),
+                      ),
+                    ])
+          ],
         ),
         body: WillPopScope(
             onWillPop: () async {
@@ -610,8 +627,90 @@ class _MonthlyStatsViewState extends State<MonthlyStatsView> {
                           controller: _controller,
                           itemBuilder: (context, index) {
                             if (index == cur) {
-                              return monthlyStats(
-                                  widget.model, widget.dispatch);
+                              return stats(widget.model, widget.dispatch);
+                            } else {
+                              return Container();
+                            }
+                          })))
+            ])));
+  }
+}
+
+class YearlyStatsView extends StatefulWidget {
+  final StatsModel model;
+  final void Function(Message) dispatch;
+
+  const YearlyStatsView({Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<YearlyStatsView> createState() => _YearlyStatsViewState();
+}
+
+class _YearlyStatsViewState extends State<YearlyStatsView> {
+  static const prev = 1;
+  static const cur = 2;
+  static const next = 3;
+
+  final PageController _controller = PageController(initialPage: cur);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          leading: const BackButton(),
+          title: const Text('Your Statistics'),
+          elevation: 0.0,
+          actions: [
+            PopupMenuButton(
+                onSelected: (value) {
+                  widget.dispatch(NavigateToStatsRequested(widget.model.date,
+                      widget.model.today, value as StatsPeriod));
+                },
+                itemBuilder: (context) => [
+                      const PopupMenuItem<StatsPeriod>(
+                        value: StatsPeriod.month,
+                        child: Text('By month'),
+                      ),
+                      const PopupMenuItem<StatsPeriod>(
+                        value: StatsPeriod.year,
+                        child: Text('By year'),
+                      ),
+                    ])
+          ],
+        ),
+        body: WillPopScope(
+            onWillPop: () async {
+              widget.dispatch(
+                  ExitStatsRequested(widget.model.date, widget.model.today));
+              return false;
+            },
+            child: Column(children: [
+              yearlyStatsHeader(widget.model.date, widget.model.today,
+                  widget.model.from, widget.dispatch),
+              Expanded(
+                  child: Center(
+                      child: PageView.builder(
+                          onPageChanged: (page) {
+                            if (page == prev) {
+                              widget.dispatch(MoveToPrevYearStats(
+                                  widget.model.date, widget.model.today));
+                            } else if (page == next) {
+                              widget.dispatch(MoveToNextYearStats(
+                                  widget.model.date, widget.model.today));
+                            }
+                          },
+                          scrollDirection: Axis.horizontal,
+                          controller: _controller,
+                          itemBuilder: (context, index) {
+                            if (index == cur) {
+                              return stats(widget.model, widget.dispatch);
                             } else {
                               return Container();
                             }

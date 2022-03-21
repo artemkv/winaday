@@ -204,3 +204,5 @@ class ReviewPanelState {
   static const likesTheApp = 1;
   static const doesNotLikeTheApp = 2;
 }
+
+enum StatsPeriod { month, year }

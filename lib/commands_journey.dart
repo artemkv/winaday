@@ -132,6 +132,16 @@ class ReportNavigateToStats implements Command {
 }
 
 @immutable
+class ReportToggleStatsPieToHistograms implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.reportEvent('toggle_pie_hist', isCollapsible: true);
+    });
+  }
+}
+
+@immutable
 class ReportNavigateToInsights implements Command {
   @override
   void execute(void Function(Message) dispatch) {

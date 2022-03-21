@@ -111,8 +111,14 @@ Widget home(
   if (model is StatsFailedToLoadModel) {
     return statsFailedToLoad(context, model, dispatch);
   }
-  if (model is MonthlyStatsModel) {
-    return MonthlyStatsView(key: UniqueKey(), model: model, dispatch: dispatch);
+  if (model is StatsModel) {
+    if (model.period == StatsPeriod.month) {
+      return MonthlyStatsView(
+          key: UniqueKey(), model: model, dispatch: dispatch);
+    } else {
+      return YearlyStatsView(
+          key: UniqueKey(), model: model, dispatch: dispatch);
+    }
   }
 
   if (model is InsightsLoadingModel) {
@@ -644,7 +650,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           ]),
           onTap: () {
             Navigator.pop(context);
-            dispatch(NavigateToStatsRequested(date, today));
+            dispatch(NavigateToStatsRequested(date, today, StatsPeriod.month));
           },
         ),
         ListTile(
@@ -1692,7 +1698,11 @@ Widget statsLoading(StatsLoadingModel model, void Function(Message) dispatch) {
           return false;
         },
         child: Column(children: [
-          monthlyStatsHeader(model.date, model.today, model.from, dispatch),
+          model.period == StatsPeriod.month
+              ? monthlyStatsHeader(
+                  model.date, model.today, model.from, dispatch)
+              : yearlyStatsHeader(
+                  model.date, model.today, model.from, dispatch),
           Expanded(
               child:
                   Center(child: Column(children: [Expanded(child: spinner())])))
@@ -1714,7 +1724,11 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
           return false;
         },
         child: Column(children: [
-          monthlyStatsHeader(model.date, model.today, model.from, dispatch),
+          model.period == StatsPeriod.month
+              ? monthlyStatsHeader(
+                  model.date, model.today, model.from, dispatch)
+              : yearlyStatsHeader(
+                  model.date, model.today, model.from, dispatch),
           Expanded(
               child: Center(
                   child: Column(children: [
@@ -1727,8 +1741,8 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
                 child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
-                      dispatch(StatsReloadRequested(
-                          model.date, model.today, model.from, model.to));
+                      dispatch(StatsReloadRequested(model.date, model.today,
+                          model.period, model.from, model.to));
                     },
                     child: Center(
                         child: Text("Click to reload",
@@ -1741,7 +1755,7 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
   );
 }
 
-Widget monthlyStats(MonthlyStatsModel model, void Function(Message) dispatch) {
+Widget stats(StatsModel model, void Function(Message) dispatch) {
   return SingleChildScrollView(
       child: Column(children: [
     Padding(
@@ -1835,6 +1849,38 @@ Widget monthlyStatsHeader(DateTime date, DateTime today, DateTime month,
               tooltip: 'Next',
               onPressed: () {
                 dispatch(MoveToNextMonthStats(date, today));
+              },
+            )
+          ])));
+}
+
+Widget yearlyStatsHeader(DateTime date, DateTime today, DateTime year,
+    void Function(Message) dispatch) {
+  return Material(
+      elevation: 4.0,
+      child: Padding(
+          padding:
+              const EdgeInsets.only(left: 32, right: 32, top: 12, bottom: 12),
+          child: Row(children: [
+            IconButton(
+                icon: const Icon(Icons.arrow_left),
+                color: Colors.black,
+                tooltip: 'Prev',
+                onPressed: () {
+                  dispatch(MoveToPrevYearStats(date, today));
+                }),
+            Expanded(
+                child: Center(
+                    child: Text(year.year.toString(),
+                        style: GoogleFonts.openSans(
+                            textStyle: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold))))),
+            IconButton(
+              icon: const Icon(Icons.arrow_right),
+              color: Colors.black,
+              tooltip: 'Next',
+              onPressed: () {
+                dispatch(MoveToNextYearStats(date, today));
               },
             )
           ])));

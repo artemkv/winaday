@@ -479,29 +479,45 @@ ModelAndCommand reduce(Model model, Message message) {
   }
 
   if (message is NavigateToStatsRequested) {
-    var from = getFirstDayOfMonth(message.today);
-    var to = getLastDayOfMonth(message.today);
-    return ModelAndCommand(
-        StatsLoadingModel(message.date, message.today, from, to),
-        CommandList(
-            [LoadStats(message.date, from, to), ReportNavigateToStats()]));
+    if (message.period == StatsPeriod.month) {
+      var from = getFirstDayOfMonth(message.today);
+      var to = getLastDayOfMonth(message.today);
+      return ModelAndCommand(
+          StatsLoadingModel(
+              message.date, message.today, message.period, from, to),
+          CommandList([
+            LoadStats(message.date, message.period, from, to),
+            ReportNavigateToStats()
+          ]));
+    } else {
+      var from = getFirstDayOfYear(message.today);
+      var to = getLastDayOfMonth(message.today);
+      return ModelAndCommand(
+          StatsLoadingModel(
+              message.date, message.today, message.period, from, to),
+          CommandList([
+            LoadStats(message.date, message.period, from, to),
+            ReportNavigateToStats()
+          ]));
+    }
   }
   if (message is StatsLoadingFailed) {
     return ModelAndCommand(
-        StatsFailedToLoadModel(message.date, message.today, message.from,
-            message.to, message.reason),
+        StatsFailedToLoadModel(message.date, message.today, message.period,
+            message.from, message.to, message.reason),
         ReportStatsLoadingFailed());
   }
   if (message is StatsReloadRequested) {
     return ModelAndCommand(
-        StatsLoadingModel(
-            message.date, message.today, message.from, message.to),
-        LoadStats(message.date, message.from, message.to));
+        StatsLoadingModel(message.date, message.today, message.period,
+            message.from, message.to),
+        LoadStats(message.date, message.period, message.from, message.to));
   }
   if (message is StatsLoaded) {
-    return ModelAndCommand.justModel(MonthlyStatsModel(
+    return ModelAndCommand.justModel(StatsModel(
         message.date,
         message.today,
+        message.period,
         message.from,
         message.to,
         getDaysInIntervalUpToToday(message.from, message.to, message.today),
@@ -516,51 +532,81 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadDailyWin(message.date));
   }
   if (message is StatsTogglePieHistogramsWins) {
-    if (model is MonthlyStatsModel) {
-      return ModelAndCommand.justModel(MonthlyStatsModel(
-          model.date,
-          model.today,
-          model.from,
-          model.to,
-          model.daysTotal,
-          model.priorityList,
-          model.stats,
-          !model.winsShowAsPie,
-          model.prioritiesShowAsPie));
+    if (model is StatsModel) {
+      return ModelAndCommand(
+          StatsModel(
+              model.date,
+              model.today,
+              model.period,
+              model.from,
+              model.to,
+              model.daysTotal,
+              model.priorityList,
+              model.stats,
+              !model.winsShowAsPie,
+              model.prioritiesShowAsPie),
+          ReportToggleStatsPieToHistograms());
     }
   }
   if (message is StatsTogglePieHistogramsPriorities) {
-    if (model is MonthlyStatsModel) {
-      return ModelAndCommand.justModel(MonthlyStatsModel(
-          model.date,
-          model.today,
-          model.from,
-          model.to,
-          model.daysTotal,
-          model.priorityList,
-          model.stats,
-          model.winsShowAsPie,
-          !model.prioritiesShowAsPie));
+    if (model is StatsModel) {
+      return ModelAndCommand(
+          StatsModel(
+              model.date,
+              model.today,
+              model.period,
+              model.from,
+              model.to,
+              model.daysTotal,
+              model.priorityList,
+              model.stats,
+              model.winsShowAsPie,
+              !model.prioritiesShowAsPie),
+          ReportToggleStatsPieToHistograms());
     }
   }
   if (message is MoveToPrevMonthStats) {
-    if (model is MonthlyStatsModel) {
+    if (model is StatsModel) {
       var prevMonth = getPreviousMonth(model.from);
       var from = getFirstDayOfMonth(prevMonth);
       var to = getLastDayOfMonth(prevMonth);
       return ModelAndCommand(
-          StatsLoadingModel(message.date, message.today, from, to),
-          LoadStats(message.date, from, to));
+          StatsLoadingModel(
+              message.date, message.today, StatsPeriod.month, from, to),
+          LoadStats(message.date, StatsPeriod.month, from, to));
     }
   }
   if (message is MoveToNextMonthStats) {
-    if (model is MonthlyStatsModel) {
+    if (model is StatsModel) {
       var nextMonth = getNextMonth(model.from);
       var from = getFirstDayOfMonth(nextMonth);
       var to = getLastDayOfMonth(nextMonth);
       return ModelAndCommand(
-          StatsLoadingModel(message.date, message.today, from, to),
-          LoadStats(message.date, from, to));
+          StatsLoadingModel(
+              message.date, message.today, StatsPeriod.month, from, to),
+          LoadStats(message.date, StatsPeriod.month, from, to));
+    }
+  }
+  if (message is MoveToPrevYearStats) {
+    if (model is StatsModel) {
+      var prevYear = getPreviousYear(model.from);
+      var from = getFirstDayOfYear(prevYear);
+      var to = getLastDayOfYear(prevYear);
+      return ModelAndCommand(
+          StatsLoadingModel(
+              message.date, message.today, StatsPeriod.year, from, to),
+          LoadStats(message.date, StatsPeriod.year, from, to));
+    }
+  }
+  if (message is MoveToNextYearStats) {
+    if (model is StatsModel) {
+      var nextYear = getNextYear(model.from);
+      var from = getFirstDayOfYear(nextYear);
+      var to = getLastDayOfYear(nextYear);
+      return ModelAndCommand(
+          StatsLoadingModel(
+              message.date, message.today, StatsPeriod.year, from, to),
+          LoadStats(message.date, StatsPeriod.year, from, to));
     }
   }
   if (message is AgreedOnLeavingFeedback) {

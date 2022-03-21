@@ -462,43 +462,48 @@ class CalendarViewDaysWithWinsReceived implements Message {
 class NavigateToStatsRequested implements Message {
   final DateTime date;
   final DateTime today;
+  final StatsPeriod period;
 
-  const NavigateToStatsRequested(this.date, this.today);
+  const NavigateToStatsRequested(this.date, this.today, this.period);
 }
 
 @immutable
 class StatsLoaded implements Message {
   final DateTime date;
   final DateTime today;
+  final StatsPeriod period;
   final DateTime from;
   final DateTime to;
   final PriorityListData priorityList;
   final WinListShortData stats;
 
-  const StatsLoaded(
-      this.date, this.today, this.from, this.to, this.priorityList, this.stats);
+  const StatsLoaded(this.date, this.today, this.period, this.from, this.to,
+      this.priorityList, this.stats);
 }
 
 @immutable
 class StatsLoadingFailed implements Message {
   final DateTime date;
   final DateTime today;
+  final StatsPeriod period;
   final DateTime from;
   final DateTime to;
   final String reason;
 
   const StatsLoadingFailed(
-      this.date, this.today, this.from, this.to, this.reason);
+      this.date, this.today, this.period, this.from, this.to, this.reason);
 }
 
 @immutable
 class StatsReloadRequested implements Message {
   final DateTime date;
   final DateTime today;
+  final StatsPeriod period;
   final DateTime from;
   final DateTime to;
 
-  const StatsReloadRequested(this.date, this.today, this.from, this.to);
+  const StatsReloadRequested(
+      this.date, this.today, this.period, this.from, this.to);
 }
 
 @immutable
@@ -529,6 +534,22 @@ class MoveToPrevMonthStats implements Message {
   final DateTime today;
 
   const MoveToPrevMonthStats(this.date, this.today);
+}
+
+@immutable
+class MoveToPrevYearStats implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const MoveToPrevYearStats(this.date, this.today);
+}
+
+@immutable
+class MoveToNextYearStats implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const MoveToNextYearStats(this.date, this.today);
 }
 
 @immutable

@@ -448,29 +448,35 @@ class LoadWinDays implements Command {
 @immutable
 class LoadStats implements Command {
   final DateTime date;
+  final StatsPeriod period;
   final DateTime from;
   final DateTime to;
 
-  const LoadStats(this.date, this.from, this.to);
+  const LoadStats(this.date, this.period, this.from, this.to);
 
   @override
   void execute(void Function(Message) dispatch) {
     var today = DateTime.now();
-    bool hasStats = to.isSameMonth(today) || to.isBefore(today);
+    bool hasStats = false;
+    if (period == StatsPeriod.month) {
+      hasStats = to.isSameMonth(today) || to.isBefore(today);
+    } else {
+      hasStats = to.isSameYear(today) || to.isBefore(today);
+    }
 
     loadPriorities().then((priorityList) {
       if (!hasStats) {
         return Future<void>.delayed(Duration.zero, () {
-          dispatch(StatsLoaded(
-              date, today, from, to, priorityList, WinListShortData.empty()));
+          dispatch(StatsLoaded(date, today, period, from, to, priorityList,
+              WinListShortData.empty()));
         });
       }
 
       var intervalKey = '${from.toCompact()}-${to.toCompact()}';
       if (statsCache.containsKey(intervalKey)) {
         return Future<void>.delayed(Duration.zero, () {
-          dispatch(StatsLoaded(
-              date, today, from, to, priorityList, statsCache[intervalKey]));
+          dispatch(StatsLoaded(date, today, period, from, to, priorityList,
+              statsCache[intervalKey]));
         });
       }
 
@@ -479,10 +485,12 @@ class LoadStats implements Command {
           .then((json) {
         var stats = WinListShortData.fromJson(json);
         statsCache[intervalKey] = stats;
-        dispatch(StatsLoaded(date, today, from, to, priorityList, stats));
+        dispatch(
+            StatsLoaded(date, today, period, from, to, priorityList, stats));
       });
     }).catchError((err) {
-      dispatch(StatsLoadingFailed(date, today, from, to, err.toString()));
+      dispatch(
+          StatsLoadingFailed(date, today, period, from, to, err.toString()));
     });
   }
 }
