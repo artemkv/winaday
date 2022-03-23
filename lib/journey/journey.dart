@@ -21,53 +21,63 @@ class Journey {
   static Future<void> initialize(
       String accountId, String appId, String version, bool isRelease) async {
     try {
-      // start new session synchronously
-      currentSession = Session(accountId, appId, version, isRelease);
+      // start new session
+      var header = SessionHeader(accountId, appId, version, isRelease);
+      currentSession = Session(
+          header.id, accountId, appId, version, isRelease, header.start);
       log('Journey3: Started new session ${currentSession!.id}',
           level: Level.INFO.value);
 
       // report previous session
       final session = await loadLastSession();
       if (session != null) {
-        log('Journey3: Report last saved session', level: Level.INFO.value);
+        log('Journey3: Report the end of the previous session',
+            level: Level.INFO.value);
         await postSession(session);
       }
 
-      // configure current session based on previous session
+      // update current session based on the previous one
       if (session == null) {
-        currentSession!.firstLaunch = true;
-        currentSession!.firstLaunchThisHour = true;
-        currentSession!.firstLaunchToday = true;
-        currentSession!.firstLaunchThisMonth = true;
-        currentSession!.firstLaunchThisYear = true;
-        currentSession!.firstLaunchThisVersion = true;
+        header.firstLaunch = true;
+        header.firstLaunchThisHour = true;
+        header.firstLaunchToday = true;
+        header.firstLaunchThisMonth = true;
+        header.firstLaunchThisYear = true;
+        header.firstLaunchThisVersion = true;
       } else {
         var today = DateTime.now().toUtc();
         var lastSessionStart = session.start;
+
         if (!lastSessionStart.isSameHour(today)) {
-          currentSession!.firstLaunchThisHour = true;
+          header.firstLaunchThisHour = true;
         }
         if (!lastSessionStart.isSameDay(today)) {
-          currentSession!.firstLaunchToday = true;
+          header.firstLaunchToday = true;
         }
         if (!lastSessionStart.isSameMonth(today)) {
-          currentSession!.firstLaunchThisMonth = true;
+          header.firstLaunchThisMonth = true;
         }
         if (!lastSessionStart.isSameYear(today)) {
-          currentSession!.firstLaunchThisYear = true;
+          header.firstLaunchThisYear = true;
         }
         if (session.version != version) {
-          currentSession!.firstLaunchThisVersion = true;
+          header.firstLaunchThisVersion = true;
         }
 
         currentSession!.prevStage = session.newStage;
         currentSession!.newStage = session.newStage;
 
+        header.since = session.since;
         currentSession!.since = session.since;
       }
 
       // save current session
       await saveSession(currentSession!);
+
+      // report the new session (header)
+      log('Journey3: Report the start of a new session',
+          level: Level.INFO.value);
+      await postSessionHeader(header);
     } catch (err) {
       log('Journey3: Failed to initialize Journey: ${err.toString()}');
     }

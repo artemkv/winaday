@@ -2,21 +2,18 @@ import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
 
-// TODO: maybe ts should be received encoded from server
-class Session {
+class SessionHeader {
+  final String v = "1.0.0";
+
   final String id;
-  final DateTime start;
   final String accountId;
   final String appId;
   final String version;
   final bool isRelease;
 
-  DateTime end;
-
-  Stage prevStage = Stage.empty();
-  Stage newStage = Stage.empty();
-
+  final DateTime start;
   DateTime since;
+
   bool firstLaunch = false;
   bool firstLaunchThisHour = false;
   bool firstLaunchToday = false;
@@ -24,16 +21,55 @@ class Session {
   bool firstLaunchThisYear = false;
   bool firstLaunchThisVersion = false;
 
+  SessionHeader(this.accountId, this.appId, this.version, this.isRelease)
+      : id = uuid.v4(),
+        start = DateTime.now().toUtc(),
+        since = DateTime.now().toUtc();
+
+  Map<String, dynamic> toJson() => {
+        'v': v,
+        'id': id,
+        'since': since.toIso8601String(),
+        'start': start.toIso8601String(),
+        'acc': accountId,
+        'aid': appId,
+        'version': version,
+        'is_release': isRelease,
+        'fst_launch': firstLaunch,
+        'fst_launch_hour': firstLaunchThisHour,
+        'fst_launch_day': firstLaunchToday,
+        'fst_launch_month': firstLaunchThisMonth,
+        'fst_launch_year': firstLaunchThisYear,
+        'fst_launch_version': firstLaunchThisVersion,
+      };
+}
+
+// TODO: maybe ts should be received encoded from server
+class Session {
+  final String v = "1.0.0";
+
+  final String id;
+  final String accountId;
+  final String appId;
+  final String version;
+  final bool isRelease;
+
+  final DateTime start;
+  DateTime end;
+  DateTime since;
+
+  Stage prevStage = Stage.empty();
+  Stage newStage = Stage.empty();
+
   bool hasError = false;
   Map<String, int> eventCounts =
       {}; // TODO: limit on number of different events?
   List<String> eventSequence = []; // TODO: limit on number of events?
 
-  Session(this.accountId, this.appId, this.version, this.isRelease)
-      : id = uuid.v4(),
-        since = DateTime.now().toUtc(),
-        start = DateTime.now().toUtc(),
-        end = DateTime.now().toUtc();
+  Session(this.id, this.accountId, this.appId, this.version, this.isRelease,
+      this.start)
+      : end = start,
+        since = start;
 
   Session.fromJson(Map<String, dynamic> json)
       : id = json['id'] ?? uuid.v4(),
@@ -52,12 +88,6 @@ class Session {
         appId = json['aid'] ?? '',
         version = json['version'] ?? '',
         isRelease = json['is_release'] ?? false,
-        firstLaunch = json['fst_launch'] ?? false,
-        firstLaunchThisHour = json['fst_launch_hour'] ?? false,
-        firstLaunchToday = json['fst_launch_day'] ?? false,
-        firstLaunchThisMonth = json['fst_launch_month'] ?? false,
-        firstLaunchThisYear = json['fst_launch_year'] ?? false,
-        firstLaunchThisVersion = json['fst_launch_version'] ?? false,
         hasError = json['has_error'] ?? false,
         eventCounts =
             json['evts'] != null ? json['evts'].cast<String, int>() : {},
@@ -71,6 +101,7 @@ class Session {
             : Stage.empty();
 
   Map<String, dynamic> toJson() => {
+        'v': v,
         'id': id,
         'since': since.toIso8601String(),
         'start': start.toIso8601String(),
@@ -79,12 +110,6 @@ class Session {
         'aid': appId,
         'version': version,
         'is_release': isRelease,
-        'fst_launch': firstLaunch,
-        'fst_launch_hour': firstLaunchThisHour,
-        'fst_launch_day': firstLaunchToday,
-        'fst_launch_month': firstLaunchThisMonth,
-        'fst_launch_year': firstLaunchThisYear,
-        'fst_launch_version': firstLaunchThisVersion,
         'has_error': hasError,
         'evts': eventCounts,
         'evt_seq': eventSequence,
