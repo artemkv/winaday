@@ -4,8 +4,8 @@ import 'dart:developer';
 
 import 'domain.dart';
 
-const journeyBaseUrl = 'http://192.168.0.16:8060';
-//const journeyUrl = 'https://journey3-ingest.artemkv.net:8060';
+//const journeyBaseUrl = 'http://192.168.0.16:8060';
+const journeyBaseUrl = 'https://journey3-ingest.artemkv.net:8060';
 const postSessionTimeout = Duration(seconds: 30);
 
 Future<void> postSessionHeader(SessionHeader header) async {
@@ -13,7 +13,7 @@ Future<void> postSessionHeader(SessionHeader header) async {
   try {
     final url = Uri.parse('$journeyBaseUrl/session_head');
     final bodyText = jsonEncode(header);
-    log('Session: $bodyText'); // TODO: this is debug code
+    // log('Session: $bodyText'); // TODO: this is debug code
     final response =
         await client.post(url, body: bodyText).timeout(postSessionTimeout);
     if (response.statusCode >= 400) {
@@ -35,7 +35,7 @@ Future<void> postSession(Session session) async {
   try {
     final url = Uri.parse('$journeyBaseUrl/session_tail');
     final bodyText = jsonEncode(session);
-    log('Session: $bodyText'); // TODO: this is debug code
+    // log('Session: $bodyText'); // TODO: this is debug code
     final response =
         await client.post(url, body: bodyText).timeout(postSessionTimeout);
     if (response.statusCode >= 400) {

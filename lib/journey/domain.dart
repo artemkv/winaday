@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 const uuid = Uuid();
 
 class SessionHeader {
+  final String t = "shead";
   final String v = "1.0.0";
 
   final String id;
@@ -27,6 +28,7 @@ class SessionHeader {
         since = DateTime.now().toUtc();
 
   Map<String, dynamic> toJson() => {
+        't': t,
         'v': v,
         'id': id,
         'since': since.toIso8601String(),
@@ -44,8 +46,8 @@ class SessionHeader {
       };
 }
 
-// TODO: maybe ts should be received encoded from server
 class Session {
+  final String t = "stail";
   final String v = "1.0.0";
 
   final String id;
@@ -58,13 +60,16 @@ class Session {
   DateTime end;
   DateTime since;
 
+  bool firstLaunch = false; // duplicated here to save on session
+
   Stage prevStage = Stage.empty();
   Stage newStage = Stage.empty();
 
   bool hasError = false;
-  Map<String, int> eventCounts =
-      {}; // TODO: limit on number of different events?
-  List<String> eventSequence = []; // TODO: limit on number of events?
+
+  // TODO: limit on number of different events?
+  Map<String, int> eventCounts = {};
+  List<String> eventSequence = [];
 
   Session(this.id, this.accountId, this.appId, this.version, this.isRelease,
       this.start)
@@ -88,6 +93,7 @@ class Session {
         appId = json['aid'] ?? '',
         version = json['version'] ?? '',
         isRelease = json['is_release'] ?? false,
+        firstLaunch = json['fst_launch'] ?? false,
         hasError = json['has_error'] ?? false,
         eventCounts =
             json['evts'] != null ? json['evts'].cast<String, int>() : {},
@@ -101,6 +107,7 @@ class Session {
             : Stage.empty();
 
   Map<String, dynamic> toJson() => {
+        't': t,
         'v': v,
         'id': id,
         'since': since.toIso8601String(),
@@ -110,6 +117,7 @@ class Session {
         'aid': appId,
         'version': version,
         'is_release': isRelease,
+        'fst_launch': firstLaunch,
         'has_error': hasError,
         'evts': eventCounts,
         'evt_seq': eventSequence,

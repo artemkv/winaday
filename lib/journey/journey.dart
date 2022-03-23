@@ -39,6 +39,8 @@ class Journey {
       // update current session based on the previous one
       if (session == null) {
         header.firstLaunch = true;
+        currentSession!.firstLaunch = true;
+
         header.firstLaunchThisHour = true;
         header.firstLaunchToday = true;
         header.firstLaunchThisMonth = true;
