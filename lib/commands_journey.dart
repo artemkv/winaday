@@ -154,6 +154,28 @@ class ReportNavigateToInsights implements Command {
 }
 
 @immutable
+class ReportNavigateToSettings implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.reportEvent('navto_settings');
+      await Journey.reportStageTransition(
+          stageExploration, stageExplorationName);
+    });
+  }
+}
+
+@immutable
+class ReportAppSettingsSaved implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.reportEvent('settings_saved');
+    });
+  }
+}
+
+@immutable
 class ReportNavigateToWinList implements Command {
   @override
   void execute(void Function(Message) dispatch) {

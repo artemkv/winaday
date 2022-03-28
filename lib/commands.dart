@@ -8,11 +8,13 @@ import 'package:quiver/collection.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:winaday/journey/journey.dart';
 import 'package:winaday/services/local_data.dart';
+import 'package:winaday/services/settings.dart';
 import 'services/google_sign_in.dart';
 import 'services/session_api.dart';
 import 'package:uuid/uuid.dart';
 import 'messages.dart';
 import 'dateutil.dart';
+import 'services/notifications.dart';
 
 // This is the only place where side-effects are allowed!
 
@@ -566,5 +568,41 @@ class LoadInsightData implements Command {
     } catch (err) {
       dispatch(InsightsLoadingFailed(date, today, from, to, err.toString()));
     }
+  }
+}
+
+@immutable
+class InitializeAppSettings implements Command {
+  final DateTime date;
+
+  const InitializeAppSettings(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    Future<void>.delayed(Duration.zero, () async {
+      var appSettings = await getAppSettings();
+      dispatch(AppSettingsInitialized(date, today, appSettings));
+    });
+  }
+}
+
+@immutable
+class SaveAppSettings implements Command {
+  final DateTime date;
+  final AppSettings appSettings;
+
+  const SaveAppSettings(this.date, this.appSettings);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    Future<void>.delayed(Duration.zero, () async {
+      await saveAppSettings(appSettings);
+      await NotificationService().setupNotifications();
+      dispatch(AppSettingsSaved(date, today));
+    });
   }
 }

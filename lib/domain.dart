@@ -206,3 +206,18 @@ class ReviewPanelState {
 }
 
 enum StatsPeriod { month, year }
+
+@immutable
+class AppSettings {
+  final bool showNotifications;
+  final int notificationTimeHour;
+  final int notificationTimeMinute;
+
+  const AppSettings(this.showNotifications, this.notificationTimeHour,
+      this.notificationTimeMinute);
+
+  const AppSettings.empty()
+      : showNotifications = false,
+        notificationTimeHour = 0,
+        notificationTimeMinute = 0;
+}

@@ -4,6 +4,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:winaday/domain.dart';
+import 'package:winaday/services/settings.dart';
 
 class NotificationService {
   static const AndroidInitializationSettings settingsAndroid =
@@ -35,31 +37,44 @@ class NotificationService {
     final String currentTimeZone =
         await FlutterNativeTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(currentTimeZone));
+  }
 
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('reminder', 'User-configured reminder',
-            channelDescription: 'Notifications configured by the user');
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+  Future<void> setupNotifications() async {
+    var appSettings = await getAppSettings();
+    if (appSettings.showNotifications) {
+      const AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails('reminder', 'User-configured reminder',
+              channelDescription: 'Notifications configured by the user');
+      const NotificationDetails notificationDetails =
+          NotificationDetails(android: androidNotificationDetails);
 
-    await notificationsPlugin.zonedSchedule(
-        0,
-        'Have you got the win?',
-        'All you need a one small win a day!',
-        getScheduledTime(),
-        notificationDetails,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.wallClockTime,
-        matchDateTimeComponents: DateTimeComponents.time);
+      await notificationsPlugin.zonedSchedule(
+          0,
+          'Have you got the win?',
+          'All you need a one small win a day!',
+          getScheduledTime(appSettings),
+          notificationDetails,
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.wallClockTime,
+          matchDateTimeComponents: DateTimeComponents.time);
+    } else {
+      await notificationsPlugin.cancel(0);
+    }
   }
 
   Future<void> onSelectNotification(String? payload) async {}
 
-  tz.TZDateTime getScheduledTime() {
+  tz.TZDateTime getScheduledTime(AppSettings appSettings) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, 15, 35, 0);
+    var scheduledDate = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        appSettings.notificationTimeHour,
+        appSettings.notificationTimeMinute,
+        0);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }

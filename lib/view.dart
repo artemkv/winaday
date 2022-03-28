@@ -131,6 +131,16 @@ Widget home(
     return insights(model, dispatch);
   }
 
+  if (model is AppSettingsInititalizingModel) {
+    return appSettingsInitializing(model, dispatch);
+  }
+  if (model is AppSettingsModel) {
+    return AppSettingsEditor(model: model, dispatch: dispatch);
+  }
+  if (model is AppSettingsSavingModel) {
+    return appSettingsSaving(model);
+  }
+
   return unknownModel(model);
 }
 
@@ -684,6 +694,17 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
                 // ...
               },
             ),*/
+        ListTile(
+          title: Row(children: const [
+            Padding(
+                padding: EdgeInsets.only(left: 4.0, right: 32.0),
+                child: Icon(Icons.settings_outlined)),
+            Text('Settings')
+          ]),
+          onTap: () {
+            dispatch(NavigateToAppSettingsRequested(date, today));
+          },
+        ),
         ListTile(
           title: Row(children: const [
             Padding(
@@ -2199,4 +2220,30 @@ Widget awesomePriorities(List<LabeledValue> items) {
                 ]))
               ])))
           .toList());
+}
+
+Widget appSettingsInitializing(
+    AppSettingsInititalizingModel model, void Function(Message) dispatch) {
+  return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Settings'),
+        elevation: 0.0,
+      ),
+      body: WillPopScope(
+        onWillPop: () async {
+          dispatch(CancelEditingAppSettingsRequested(model.date, model.today));
+          return false;
+        },
+        child: Container(),
+      ));
+}
+
+Widget appSettingsSaving(AppSettingsSavingModel model) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Saving'),
+    ),
+    body: Center(child: spinner()),
+  );
 }

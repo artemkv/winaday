@@ -467,3 +467,27 @@ class InsightsModel extends Model {
   const InsightsModel(
       this.date, this.today, this.from, this.to, this.priorityList, this.data);
 }
+
+@immutable
+class AppSettingsInititalizingModel extends Model {
+  final DateTime date;
+  final DateTime today;
+
+  const AppSettingsInititalizingModel(this.date, this.today);
+}
+
+@immutable
+class AppSettingsModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final AppSettings appSettings;
+
+  const AppSettingsModel(this.date, this.today, this.appSettings);
+}
+
+@immutable
+class AppSettingsSavingModel extends Model {
+  final DateTime date;
+
+  const AppSettingsSavingModel(this.date);
+}

@@ -659,6 +659,31 @@ ModelAndCommand reduce(Model model, Message message) {
         LoadDailyWin(message.date));
   }
 
+  if (message is NavigateToAppSettingsRequested) {
+    return ModelAndCommand(
+        AppSettingsInititalizingModel(message.date, message.today),
+        CommandList(
+            [InitializeAppSettings(message.date), ReportNavigateToSettings()]));
+  }
+  if (message is AppSettingsInitialized) {
+    return ModelAndCommand.justModel(
+        AppSettingsModel(message.date, message.today, message.appSettings));
+  }
+  if (message is CancelEditingAppSettingsRequested) {
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
+        LoadDailyWin(message.date));
+  }
+  if (message is AppSettingsSaveRequested) {
+    return ModelAndCommand(AppSettingsSavingModel(message.date),
+        SaveAppSettings(message.date, message.appSettings));
+  }
+  if (message is AppSettingsSaved) {
+    return ModelAndCommand(
+        DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
+        CommandList([LoadDailyWin(message.date), ReportAppSettingsSaved()]));
+  }
+
   return ModelAndCommand.justModel(model);
 }
 

@@ -838,3 +838,129 @@ class _AskForReviewPanelState extends State<AskForReviewPanel> {
         ]));
   }
 }
+
+class AppSettingsEditor extends StatefulWidget {
+  final AppSettingsModel model;
+  final void Function(Message) dispatch;
+
+  const AppSettingsEditor(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<AppSettingsEditor> createState() => _AppSettingsEditorState();
+}
+
+class _AppSettingsEditorState extends State<AppSettingsEditor> {
+  AppSettings _appSettings = const AppSettings.empty();
+
+  @override
+  void initState() {
+    super.initState();
+    _appSettings = widget.model.appSettings;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TimeOfDay time = TimeOfDay(
+        hour: _appSettings.notificationTimeHour,
+        minute: _appSettings.notificationTimeMinute);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Settings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            tooltip: 'Save',
+            onPressed: () {
+              widget.dispatch(
+                  AppSettingsSaveRequested(widget.model.date, _appSettings));
+            },
+          )
+        ],
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            widget.dispatch(CancelEditingAppSettingsRequested(
+                widget.model.date, widget.model.today));
+            return false;
+          },
+          child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(children: [
+                  Checkbox(
+                    checkColor: Colors.white,
+                    fillColor: MaterialStateProperty.resolveWith(getColor),
+                    value: _appSettings.showNotifications,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _appSettings = AppSettings(
+                            value!,
+                            _appSettings.notificationTimeHour,
+                            _appSettings.notificationTimeMinute);
+                      });
+                    },
+                  ),
+                  Text(
+                    "Remind me to record the win",
+                    style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(fontSize: TEXT_FONT_SIZE)),
+                  )
+                ])),
+            Padding(
+                padding: const EdgeInsets.only(left: 32.0),
+                child: Row(children: [
+                  Flexible(
+                      child: Wrap(children: [
+                    Text(
+                      "Remind at: ",
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(fontSize: TEXT_FONT_SIZE),
+                          color: _appSettings.showNotifications
+                              ? Colors.black
+                              : Colors.grey),
+                    ),
+                    Text(
+                      time.format(context),
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(fontSize: TEXT_FONT_SIZE),
+                          color: _appSettings.showNotifications
+                              ? Colors.black
+                              : Colors.grey,
+                          fontWeight: FontWeight.w600),
+                    )
+                  ])),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+                    child: ElevatedButton(
+                        onPressed:
+                            _appSettings.showNotifications ? _selectTime : null,
+                        child: const Text('SELECT TIME')),
+                  )
+                ])),
+          ])),
+    );
+  }
+
+  Color getColor(Set<MaterialState> states) {
+    return brownsOrange;
+  }
+
+  void _selectTime() async {
+    final TimeOfDay? newTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+          hour: _appSettings.notificationTimeHour,
+          minute: _appSettings.notificationTimeMinute),
+    );
+    if (newTime != null) {
+      setState(() {
+        _appSettings = AppSettings(
+            _appSettings.showNotifications, newTime.hour, newTime.minute);
+      });
+    }
+  }
+}

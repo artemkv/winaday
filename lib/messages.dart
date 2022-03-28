@@ -608,3 +608,44 @@ class ExitInsightsRequested implements Message {
 
   const ExitInsightsRequested(this.date, this.today);
 }
+
+@immutable
+class NavigateToAppSettingsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const NavigateToAppSettingsRequested(this.date, this.today);
+}
+
+@immutable
+class AppSettingsInitialized implements Message {
+  final DateTime date;
+  final DateTime today;
+  final AppSettings appSettings;
+
+  const AppSettingsInitialized(this.date, this.today, this.appSettings);
+}
+
+@immutable
+class CancelEditingAppSettingsRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const CancelEditingAppSettingsRequested(this.date, this.today);
+}
+
+@immutable
+class AppSettingsSaveRequested implements Message {
+  final DateTime date;
+  final AppSettings appSettings;
+
+  const AppSettingsSaveRequested(this.date, this.appSettings);
+}
+
+@immutable
+class AppSettingsSaved implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const AppSettingsSaved(this.date, this.today);
+}
