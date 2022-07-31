@@ -4,7 +4,7 @@ const uuid = Uuid();
 
 class SessionHeader {
   final String t = "shead";
-  final String v = "1.0.0";
+  final String v = "1.1.0";
 
   final String id;
   final String accountId;
@@ -21,6 +21,8 @@ class SessionHeader {
   bool firstLaunchThisMonth = false;
   bool firstLaunchThisYear = false;
   bool firstLaunchThisVersion = false;
+
+  Stage prevStage = Stage.newUser();
 
   SessionHeader(this.accountId, this.appId, this.version, this.isRelease)
       : id = uuid.v4(),
@@ -43,12 +45,13 @@ class SessionHeader {
         'fst_launch_month': firstLaunchThisMonth,
         'fst_launch_year': firstLaunchThisYear,
         'fst_launch_version': firstLaunchThisVersion,
+        'prev_stage': prevStage,
       };
 }
 
 class Session {
   final String t = "stail";
-  final String v = "1.0.0";
+  final String v = "1.1.0";
 
   final String id;
   final String accountId;
@@ -60,12 +63,13 @@ class Session {
   DateTime end;
   DateTime since;
 
-  bool firstLaunch = false; // duplicated here to save on session
+  bool firstLaunch = false;
 
-  Stage prevStage = Stage.empty();
-  Stage newStage = Stage.empty();
+  Stage prevStage = Stage.newUser();
+  Stage newStage = Stage.newUser();
 
   bool hasError = false;
+  bool hasCrash = false;
 
   // TODO: limit on number of different events?
   Map<String, int> eventCounts = {};
@@ -95,16 +99,17 @@ class Session {
         isRelease = json['is_release'] ?? false,
         firstLaunch = json['fst_launch'] ?? false,
         hasError = json['has_error'] ?? false,
+        hasCrash = json['has_crash'] ?? false,
         eventCounts =
             json['evts'] != null ? json['evts'].cast<String, int>() : {},
         eventSequence =
             json['evt_seq'] != null ? json['evt_seq'].cast<String>() : [],
         prevStage = json['prev_stage'] != null
             ? Stage.fromJson(json['prev_stage'])
-            : Stage.empty(),
+            : Stage.newUser(),
         newStage = json['new_stage'] != null
             ? Stage.fromJson(json['new_stage'])
-            : Stage.empty();
+            : Stage.newUser();
 
   Map<String, dynamic> toJson() => {
         't': t,
@@ -119,6 +124,7 @@ class Session {
         'is_release': isRelease,
         'fst_launch': firstLaunch,
         'has_error': hasError,
+        'has_crash': hasCrash,
         'evts': eventCounts,
         'evt_seq': eventSequence,
         'prev_stage': prevStage,
@@ -133,7 +139,7 @@ class Stage {
 
   Stage(this.stage, this.name) : ts = DateTime.now().toUtc();
 
-  Stage.empty()
+  Stage.newUser()
       : stage = 1,
         name = "new_user",
         ts = DateTime.now().toUtc();

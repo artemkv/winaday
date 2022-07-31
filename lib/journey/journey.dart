@@ -68,6 +68,7 @@ class Journey {
 
         currentSession!.prevStage = session.newStage;
         currentSession!.newStage = session.newStage;
+        header.prevStage = session.newStage;
 
         header.since = session.since;
         currentSession!.since = session.since;
@@ -104,7 +105,9 @@ class Journey {
   /// Collapsible event names appear in brackets in the sequence,
   /// for example '(scroll_to_next_album)'.
   static Future<void> reportEvent(String eventName,
-      {bool isCollapsible = false, bool isError = false}) async {
+      {bool isCollapsible = false,
+      bool isError = false,
+      bool isCrash = false}) async {
     if (currentSession == null) {
       log('Journey3: Cannot update session. Journey have not been initialized.');
       return;
@@ -119,6 +122,9 @@ class Journey {
       // set error
       if (isError) {
         currentSession!.hasError = true;
+      }
+      if (isCrash) {
+        currentSession!.hasCrash = true;
       }
 
       // sequence events
