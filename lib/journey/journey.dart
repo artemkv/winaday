@@ -8,9 +8,15 @@ import 'dateutil.dart';
 
 const maxSeqLength = 100;
 
-Session? currentSession;
+Journey journey = Journey();
 
 class Journey {
+  Session? currentSession;
+
+  static Journey instance() {
+    return journey;
+  }
+
   /// Initializes new session.
   /// [accountId] is your account id
   /// [appId] is your application id
@@ -18,7 +24,7 @@ class Journey {
   /// Use packageInfo.version to access version.
   /// [isRelease] is to separate debug sessions from release sessions.
   /// Use kReleaseMode to access mode.
-  static Future<void> initialize(
+  Future<void> initialize(
       String accountId, String appId, String version, bool isRelease) async {
     try {
       // start new session
@@ -104,7 +110,7 @@ class Journey {
   ///
   /// Collapsible event names appear in brackets in the sequence,
   /// for example '(scroll_to_next_album)'.
-  static Future<void> reportEvent(String eventName,
+  Future<void> reportEvent(String eventName,
       {bool isCollapsible = false,
       bool isError = false,
       bool isCrash = false}) async {
@@ -162,7 +168,7 @@ class Journey {
   /// conversion funnel.
   /// If you sumbit the new name for the same stage, that new name will be used
   /// in all future reports.
-  static Future<void> reportStageTransition(int stage, String stageName) async {
+  Future<void> reportStageTransition(int stage, String stageName) async {
     if (currentSession == null) {
       log('Journey3: Cannot update stage. Journey have not been initialized.');
       return;

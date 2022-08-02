@@ -15,7 +15,7 @@ Future<void> main() async {
   await NotificationService().init();
 
   FlutterError.onError = (FlutterErrorDetails details) async {
-    await Journey.reportEvent('crash', isCrash: true);
+    await Journey.instance().reportEvent('crash', isCrash: true);
     exit(0);
     //FlutterError.presentError(details);
   };

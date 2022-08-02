@@ -18,7 +18,7 @@ class ReportSignIn implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('sign_in');
+      await Journey.instance().reportEvent('sign_in');
     });
   }
 }
@@ -28,7 +28,7 @@ class ReportSignOut implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('sign_out');
+      await Journey.instance().reportEvent('sign_out');
     });
   }
 }
@@ -38,7 +38,7 @@ class ReportMovedToDay implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('move_day', isCollapsible: true);
+      await Journey.instance().reportEvent('move_day', isCollapsible: true);
     });
   }
 }
@@ -48,8 +48,9 @@ class ReportEditWin implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('edit_win');
-      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
+      await Journey.instance().reportEvent('edit_win');
+      await Journey.instance()
+          .reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -59,8 +60,9 @@ class ReportEditWinPriorities implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('edit_win_priorities');
-      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
+      await Journey.instance().reportEvent('edit_win_priorities');
+      await Journey.instance()
+          .reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -70,7 +72,7 @@ class ReportWinSaved implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('win_saved');
+      await Journey.instance().reportEvent('win_saved');
     });
   }
 }
@@ -80,9 +82,9 @@ class ReportNavigateToPriorities implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_priorities');
-      await Journey.reportStageTransition(
-          stageExploration, stageExplorationName);
+      await Journey.instance().reportEvent('navto_priorities');
+      await Journey.instance()
+          .reportStageTransition(stageExploration, stageExplorationName);
     });
   }
 }
@@ -92,8 +94,9 @@ class ReportEditPriorities implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('edit_priorities');
-      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
+      await Journey.instance().reportEvent('edit_priorities');
+      await Journey.instance()
+          .reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -103,8 +106,9 @@ class ReportEditPriority implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('edit_priority');
-      await Journey.reportStageTransition(stageEngagement, stageEngagementName);
+      await Journey.instance().reportEvent('edit_priority');
+      await Journey.instance()
+          .reportStageTransition(stageEngagement, stageEngagementName);
     });
   }
 }
@@ -114,7 +118,7 @@ class ReportPrioritiesSaved implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('priorities_saved');
+      await Journey.instance().reportEvent('priorities_saved');
     });
   }
 }
@@ -124,9 +128,9 @@ class ReportNavigateToStats implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_stats');
-      await Journey.reportStageTransition(
-          stageExploration, stageExplorationName);
+      await Journey.instance().reportEvent('navto_stats');
+      await Journey.instance()
+          .reportStageTransition(stageExploration, stageExplorationName);
     });
   }
 }
@@ -136,7 +140,8 @@ class ReportToggleStatsPieToHistograms implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('toggle_pie_hist', isCollapsible: true);
+      await Journey.instance()
+          .reportEvent('toggle_pie_hist', isCollapsible: true);
     });
   }
 }
@@ -146,9 +151,9 @@ class ReportNavigateToInsights implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_insights');
-      await Journey.reportStageTransition(
-          stageExploration, stageExplorationName);
+      await Journey.instance().reportEvent('navto_insights');
+      await Journey.instance()
+          .reportStageTransition(stageExploration, stageExplorationName);
     });
   }
 }
@@ -158,9 +163,9 @@ class ReportNavigateToSettings implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_settings');
-      await Journey.reportStageTransition(
-          stageExploration, stageExplorationName);
+      await Journey.instance().reportEvent('navto_settings');
+      await Journey.instance()
+          .reportStageTransition(stageExploration, stageExplorationName);
     });
   }
 }
@@ -170,7 +175,7 @@ class ReportAppSettingsSaved implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('settings_saved');
+      await Journey.instance().reportEvent('settings_saved');
     });
   }
 }
@@ -180,7 +185,7 @@ class ReportNavigateToWinList implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_winlist');
+      await Journey.instance().reportEvent('navto_winlist');
     });
   }
 }
@@ -190,7 +195,7 @@ class ReportNavigateToCalendar implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('navto_calendar');
+      await Journey.instance().reportEvent('navto_calendar');
     });
   }
 }
@@ -200,7 +205,7 @@ class ReportDailyWinViewLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_dailywin', isError: true);
+      await Journey.instance().reportEvent('err_load_dailywin', isError: true);
     });
   }
 }
@@ -210,7 +215,7 @@ class ReportSavingWinFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_save_win', isError: true);
+      await Journey.instance().reportEvent('err_save_win', isError: true);
     });
   }
 }
@@ -220,7 +225,8 @@ class ReportPrioritiesLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_priorities', isError: true);
+      await Journey.instance()
+          .reportEvent('err_load_priorities', isError: true);
     });
   }
 }
@@ -230,7 +236,8 @@ class ReportSavingPrioritiesFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_save_priorities', isError: true);
+      await Journey.instance()
+          .reportEvent('err_save_priorities', isError: true);
     });
   }
 }
@@ -240,7 +247,8 @@ class ReportWinListFirstPageLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_winlist_fst', isError: true);
+      await Journey.instance()
+          .reportEvent('err_load_winlist_fst', isError: true);
     });
   }
 }
@@ -250,7 +258,8 @@ class ReportWinListNextPageLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_winlist_next', isError: true);
+      await Journey.instance()
+          .reportEvent('err_load_winlist_next', isError: true);
     });
   }
 }
@@ -260,7 +269,7 @@ class ReportStatsLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_stats', isError: true);
+      await Journey.instance().reportEvent('err_load_stats', isError: true);
     });
   }
 }
@@ -270,7 +279,7 @@ class ReportInsightsLoadingFailed implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportEvent('err_load_insights', isError: true);
+      await Journey.instance().reportEvent('err_load_insights', isError: true);
     });
   }
 }
@@ -280,7 +289,8 @@ class ReportLoyalUser implements Command {
   @override
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(Duration.zero, () async {
-      await Journey.reportStageTransition(stageLoyalty, stageLoyaltyName);
+      await Journey.instance()
+          .reportStageTransition(stageLoyalty, stageLoyaltyName);
     });
   }
 }

@@ -93,7 +93,7 @@ class InitializeApp implements Command {
     });
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      Journey.initialize(
+      Journey.instance().initialize(
           'e04b43c9-69c1-4172-9dfd-a3ef1aa17d5e',
           '663b16c8-c35e-4887-b964-35a74e5732d2',
           packageInfo.version,
