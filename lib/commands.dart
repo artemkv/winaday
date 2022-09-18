@@ -1,12 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:journey3_connector/journey3_connector.dart';
 import 'package:winaday/domain.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:quiver/collection.dart';
 import 'package:launch_review/launch_review.dart';
-import 'package:winaday/journey/journey.dart';
 import 'package:winaday/services/local_data.dart';
 import 'package:winaday/services/settings.dart';
 import 'services/google_sign_in.dart';

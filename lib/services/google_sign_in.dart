@@ -40,7 +40,7 @@ abstract class GoogleSignInFacade {
     });
   }
 
-  static Future<GoogleSignInAccount> signOut() async {
+  static Future<GoogleSignInAccount?> signOut() async {
     return await FirebaseAuth.instance
         .signOut()
         .then((_) => GoogleSignIn().signOut());

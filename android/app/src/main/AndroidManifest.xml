@@ -3,7 +3,8 @@
    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="One win a day"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -26,7 +27,7 @@
                  Flutter's first frame. -->
             <meta-data
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
-              android:resource="@drawable/launch_background"
+              android:resource="@color/ic_launcher_background"
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

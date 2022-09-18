@@ -2,8 +2,10 @@
 // The directive above disables sound null safety.
 // This is required because Google didn't update their sign-in package to null safery.
 import 'dart:io';
+import 'dart:developer' as developer;
 
-import 'package:winaday/journey/journey.dart';
+import 'package:journey3_connector/journey3_connector.dart';
+import 'package:logging/logging.dart';
 import 'package:winaday/services/notifications.dart';
 
 import 'app.dart';
@@ -13,6 +15,10 @@ Future<void> main() async {
   // TODO: move to initialization command
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
+
+  Logger.root.onRecord.listen((record) {
+    developer.log(record.message, level: record.level.value);
+  });
 
   FlutterError.onError = (FlutterErrorDetails details) async {
     await Journey.instance().reportEvent('crash', isCrash: true);

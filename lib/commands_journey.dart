@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:journey3_connector/journey3_connector.dart';
 
 import 'commands.dart';
-import 'journey/journey.dart';
 import 'messages.dart';
 
 const stageExploration = 2;

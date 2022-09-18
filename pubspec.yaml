@@ -37,20 +37,20 @@ dependencies:
     sdk: flutter
   firebase_core: "^1.10.0"
   firebase_auth: "^3.2.0"
-  google_sign_in: "^4.5.1"
+  google_sign_in: ^5.4.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^0.13.4
   convert: ^3.0.1
-  google_fonts: ^2.1.0
-  quiver: ^2.1.5
+  google_fonts: ^3.0.1
+  quiver: ^3.1.0
   url_launcher: ^6.0.17
   dotted_border: ^2.0.0+2
   uuid: ^3.0.5
-  scrollable_positioned_list: ^0.2.3
-  visibility_detector: ^0.2.2
+  scrollable_positioned_list: ^0.3.2
+  visibility_detector: ^0.3.3
   charts_flutter: ^0.12.0
   shared_preferences: ^2.0.13
   launch_review: ^3.0.1
@@ -59,6 +59,7 @@ dependencies:
   package_info_plus: ^1.4.0
   flutter_local_notifications: ^9.4.0
   flutter_native_timezone: ^2.0.0
+  journey3_connector: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -69,7 +70,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
   test: ^1.17.10
 
 # For information on the generic Dart part of this file, see the
