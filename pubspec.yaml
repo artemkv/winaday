@@ -59,7 +59,7 @@ dependencies:
   package_info_plus: ^1.4.0
   flutter_local_notifications: ^9.4.0
   flutter_native_timezone: ^2.0.0
-  journey3_connector: ^1.0.0
+  journey3_connector: ^1.1.0
 
 dev_dependencies:
   flutter_test:
