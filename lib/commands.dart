@@ -618,9 +618,14 @@ class DeleteAllUserData implements Command {
 
   @override
   void execute(void Function(Message) dispatch) {
-    var today = DateTime.now();
+    Future<void>.delayed(Duration.zero, () => deleteData(dispatch));
+  }
 
-    postDeleteAllUserData(GoogleSignInFacade.getIdToken).then((_) {
+  Future<void> deleteData(void Function(Message) dispatch) async {
+    var today = DateTime.now();
+    try {
+      await postDeleteAllUserData(GoogleSignInFacade.getIdToken);
+
       cache.clear();
       listCache.clear();
       calendarCache.clear();
@@ -628,13 +633,13 @@ class DeleteAllUserData implements Command {
       insightsCache.clear();
       cachedPriorities = null;
       killSession();
-      GoogleSignInFacade.signOut().then((_) {
+      try {
+        await GoogleSignInFacade.signOut();
+      } finally {
         dispatch(UserSignedOut());
-      }).catchError((err) {
-        dispatch(UserSignedOut());
-      });
-    }).catchError((err) {
+      }
+    } catch (err) {
       dispatch(DeletingAllUserDataFailed(date, today, err.toString()));
-    });
+    }
   }
 }
