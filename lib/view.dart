@@ -1775,7 +1775,10 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
   );
 }
 
-Widget stats(StatsModel model, void Function(Message) dispatch) {
+Widget stats(
+    BuildContext context, StatsModel model, void Function(Message) dispatch) {
+  double screenWidth = MediaQuery.of(context).size.width;
+
   return SingleChildScrollView(
       child: Column(children: [
     Padding(
@@ -1793,7 +1796,7 @@ Widget stats(StatsModel model, void Function(Message) dispatch) {
           padding:
               const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
           child: model.winsShowAsPie
-              ? pieChart("winsPie", getWinDaysDataPoints(model))
+              ? pieChart("winsPie", getWinDaysDataPoints(model), screenWidth)
               : histograms("winsHist", getWinDaysDataPoints(model)),
         )),
     Padding(
@@ -1815,7 +1818,8 @@ Widget stats(StatsModel model, void Function(Message) dispatch) {
             padding:
                 const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
             child: model.prioritiesShowAsPie
-                ? pieChart("prioritiesPie", getPriorityDataPoints(model))
+                ? pieChart(
+                    "prioritiesPie", getPriorityDataPoints(model), screenWidth)
                 : histograms("prioritiesHist", getPriorityDataPoints(model)))),
     Padding(
         padding:

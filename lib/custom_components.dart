@@ -627,7 +627,8 @@ class _MonthlyStatsViewState extends State<MonthlyStatsView> {
                           controller: _controller,
                           itemBuilder: (context, index) {
                             if (index == cur) {
-                              return stats(widget.model, widget.dispatch);
+                              return stats(
+                                  context, widget.model, widget.dispatch);
                             } else {
                               return Container();
                             }
@@ -710,7 +711,8 @@ class _YearlyStatsViewState extends State<YearlyStatsView> {
                           controller: _controller,
                           itemBuilder: (context, index) {
                             if (index == cur) {
-                              return stats(widget.model, widget.dispatch);
+                              return stats(
+                                  context, widget.model, widget.dispatch);
                             } else {
                               return Container();
                             }
