@@ -1,6 +1,3 @@
-// @dart=2.9
-// The directive above disables sound null safety.
-// This is required because Google didn't update their sign-in package to null safery.
 import 'dart:io';
 import 'dart:developer' as developer;
 

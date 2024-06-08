@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:winaday/domain.dart';
 import 'charts.dart';
 import 'custom_components.dart';
 import 'insights.dart';
@@ -195,7 +194,7 @@ Widget applicationFailedToInitialize(
                 padding: const EdgeInsets.all(12),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10)),
                   onPressed: () {
@@ -269,7 +268,7 @@ Widget userFailedToSignIn(
                 padding: const EdgeInsets.all(12),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10)),
                   onPressed: () {
@@ -311,7 +310,7 @@ Widget signInButton(
       padding: const EdgeInsets.all(12.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-            primary: Colors.white,
+            backgroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
         onPressed: consentGiven
             ? () {

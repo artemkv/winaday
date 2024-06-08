@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
         Locale('en', ''),
         Locale('ru', ''),
       ],
-      theme: ThemeData(primarySwatch: brownsOrange),
+      // TODO: need to migrate to the new material guidelines
+      theme: ThemeData(useMaterial3: false, primarySwatch: brownsOrange),
       home: const RootWidget(),
     );
   }

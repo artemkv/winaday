@@ -1,4 +1,3 @@
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:winaday/domain.dart';
@@ -10,9 +9,9 @@ import 'model.dart';
 class DataPoint {
   final String label;
   final int value;
-  final charts.Color color;
+//  final charts.Color color;
 
-  DataPoint(this.label, this.value, this.color);
+  DataPoint(this.label, this.value /*, this.color*/);
 }
 
 class LegendItem {
@@ -22,6 +21,7 @@ class LegendItem {
   LegendItem(this.label, this.color);
 }
 
+/*
 List<charts.Color> winDayColors = [
   charts.Color(r: grey.red, g: grey.green, b: grey.blue),
   charts.Color(r: crayolaBlue.red, g: crayolaBlue.green, b: crayolaBlue.blue),
@@ -32,6 +32,7 @@ List<charts.Color> winDayColors = [
 List<charts.Color> chartPriorityColors = priorityColors
     .map((c) => charts.Color(r: c.red, g: c.green, b: c.blue))
     .toList();
+*/
 
 List<DataPoint> getWinDaysDataPoints(StatsModel model) {
   if (model.daysTotal == 0) {
@@ -51,11 +52,16 @@ List<DataPoint> getWinDaysDataPoints(StatsModel model) {
   return [
     DataPoint(
         'Days without wins',
-        model.daysTotal - daysWithWinsCount - daysWithAwesomeWinsCount,
-        winDayColors[0]),
-    DataPoint('Days with wins', daysWithWinsCount, winDayColors[1]),
+        model.daysTotal -
+            daysWithWinsCount -
+            daysWithAwesomeWinsCount /*,
+        winDayColors[0]*/
+        ),
+    DataPoint('Days with wins', daysWithWinsCount /*, winDayColors[1]*/),
     DataPoint(
-        'Awesome achievement days', daysWithAwesomeWinsCount, winDayColors[2]),
+      'Awesome achievement days',
+      daysWithAwesomeWinsCount, /*winDayColors[2]*/
+    ),
   ];
 }
 
@@ -80,8 +86,12 @@ Map<String, int> getPriorityCounts(StatsModel model) {
 List<DataPoint> getPriorityDataPoints(StatsModel model) {
   var priorityCounts = getPriorityCounts(model);
   var dataPoints = model.priorityList.items
-      .map((p) => DataPoint(p.id, priorityCounts[p.id] ?? 0,
-          chartPriorityColors[p.color % chartPriorityColors.length]))
+      .map((p) => DataPoint(
+          p.id,
+          priorityCounts[p.id] ??
+              0 /*,
+          chartPriorityColors[p.color % chartPriorityColors.length]*/
+          ))
       .where((dp) => dp.value > 0)
       .toList();
 
@@ -120,7 +130,9 @@ List<LegendItem> getUnattendedPrioritiesLegend(StatsModel model) {
 }
 
 Widget pieChart(String id, List<DataPoint> dataPoints) {
-  var seriesList = [
+  return const Text("TODO");
+
+/*  var seriesList = [
     charts.Series<DataPoint, String>(
       id: id,
       domainFn: (DataPoint dp, _) => dp.label,
@@ -130,11 +142,13 @@ Widget pieChart(String id, List<DataPoint> dataPoints) {
     )
   ];
 
-  return charts.PieChart(seriesList, animate: false);
+  return charts.PieChart(seriesList, animate: false);*/
 }
 
 Widget histograms(String id, List<DataPoint> dataPoints) {
-  var seriesList = [
+  return const Text("TODO");
+
+/*  var seriesList = [
     charts.Series<DataPoint, String>(
       id: id,
       domainFn: (DataPoint dp, _) => dp.label,
@@ -149,7 +163,7 @@ Widget histograms(String id, List<DataPoint> dataPoints) {
       animate: false,
       barRendererDecorator: charts.BarLabelDecorator<String>(),
       domainAxis: const charts.OrdinalAxisSpec(
-          showAxisLine: true, renderSpec: charts.NoneRenderSpec()));
+          showAxisLine: true, renderSpec: charts.NoneRenderSpec()));*/
 }
 
 Widget legend(List<LegendItem> items) {

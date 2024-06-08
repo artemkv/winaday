@@ -3,7 +3,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:winaday/domain.dart';
 import 'package:winaday/services/settings.dart';
 
@@ -25,8 +25,7 @@ class NotificationService {
     InitializationSettings settings =
         const InitializationSettings(android: settingsAndroid);
 
-    bool? initialized = await notificationsPlugin.initialize(settings,
-        onSelectNotification: onSelectNotification);
+    bool? initialized = await notificationsPlugin.initialize(settings);
     if (!(initialized ?? false)) {
       log('Could not initialize the notification plugin',
           level: Level.SEVERE.value);
@@ -34,8 +33,7 @@ class NotificationService {
     }
 
     tz.initializeTimeZones();
-    final String currentTimeZone =
-        await FlutterNativeTimezone.getLocalTimezone();
+    final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(currentTimeZone));
   }
 
@@ -54,7 +52,6 @@ class NotificationService {
           'All you need a one small win a day!',
           getScheduledTime(appSettings),
           notificationDetails,
-          androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.wallClockTime,
           matchDateTimeComponents: DateTimeComponents.time);
@@ -62,8 +59,6 @@ class NotificationService {
       await notificationsPlugin.cancel(0);
     }
   }
-
-  Future<void> onSelectNotification(String? payload) async {}
 
   tz.TZDateTime getScheduledTime(AppSettings appSettings) {
     final now = tz.TZDateTime.now(tz.local);

@@ -32,6 +32,9 @@ abstract class GoogleSignInFacade {
         onSignOut();
       } else {
         user.getIdToken().then((idToken) {
+          if (idToken == null) {
+            throw "Current user's idToken is NULL";
+          }
           onSignIn(idToken);
         }).catchError((err) {
           onSignInFailed(err.toString());
@@ -48,9 +51,13 @@ abstract class GoogleSignInFacade {
 
   static Future<String> getIdToken() async {
     var user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return user.getIdToken(false);
+    if (user == null) {
+      throw "Current user is NULL";
     }
-    throw "Current user is NULL";
+    var idToken = await user.getIdToken(false);
+    if (idToken == null) {
+      throw "Current user's idToken is NULL";
+    }
+    return idToken;
   }
 }
