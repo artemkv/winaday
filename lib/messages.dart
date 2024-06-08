@@ -649,3 +649,36 @@ class AppSettingsSaved implements Message {
 
   const AppSettingsSaved(this.date, this.today);
 }
+
+@immutable
+class DataDeletionRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const DataDeletionRequested(this.date, this.today);
+}
+
+@immutable
+class CancelDataDeletionRequested implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const CancelDataDeletionRequested(this.date, this.today);
+}
+
+@immutable
+class DataDeletionConfirmed implements Message {
+  final DateTime date;
+  final DateTime today;
+
+  const DataDeletionConfirmed(this.date, this.today);
+}
+
+@immutable
+class DeletingAllUserDataFailed implements Message {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  const DeletingAllUserDataFailed(this.date, this.today, this.reason);
+}

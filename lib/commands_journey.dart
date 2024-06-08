@@ -294,3 +294,23 @@ class ReportLoyalUser implements Command {
     });
   }
 }
+
+@immutable
+class ReportUserDataDeletionFailed implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.instance().reportEvent('err_del_data', isError: true);
+    });
+  }
+}
+
+@immutable
+class ReportUserConfirmedDataDeletion implements Command {
+  @override
+  void execute(void Function(Message) dispatch) {
+    Future<void>.delayed(Duration.zero, () async {
+      await Journey.instance().reportEvent('del_data');
+    });
+  }
+}

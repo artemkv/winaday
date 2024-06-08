@@ -491,3 +491,28 @@ class AppSettingsSavingModel extends Model {
 
   const AppSettingsSavingModel(this.date);
 }
+
+@immutable
+class DataDeletionConfirmationStateModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final String text;
+
+  const DataDeletionConfirmationStateModel(this.date, this.today, this.text);
+}
+
+@immutable
+class DeletingUserDataModel extends Model {
+  final DateTime date;
+
+  const DeletingUserDataModel(this.date);
+}
+
+@immutable
+class FailedToDeleteUserDataModel extends Model {
+  final DateTime date;
+  final DateTime today;
+  final String reason;
+
+  const FailedToDeleteUserDataModel(this.date, this.today, this.reason);
+}

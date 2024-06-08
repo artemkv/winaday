@@ -684,6 +684,31 @@ ModelAndCommand reduce(Model model, Message message) {
         CommandList([LoadDailyWin(message.date), ReportAppSettingsSaved()]));
   }
 
+  if (message is DataDeletionRequested) {
+    return ModelAndCommand.justModel(
+        DataDeletionConfirmationStateModel(message.date, message.today, ""));
+  }
+  if (message is CancelDataDeletionRequested) {
+    return ModelAndCommand(
+        AppSettingsInititalizingModel(message.date, message.today),
+        CommandList(
+            [InitializeAppSettings(message.date), ReportNavigateToSettings()]));
+  }
+  if (message is DataDeletionConfirmed) {
+    return ModelAndCommand(
+        DeletingUserDataModel(message.date),
+        CommandList([
+          DeleteAllUserData(message.date),
+          ReportUserConfirmedDataDeletion()
+        ]));
+  }
+  if (message is DeletingAllUserDataFailed) {
+    return ModelAndCommand(
+        FailedToDeleteUserDataModel(
+            message.date, message.today, message.reason),
+        ReportUserDataDeletionFailed());
+  }
+
   return ModelAndCommand.justModel(model);
 }
 

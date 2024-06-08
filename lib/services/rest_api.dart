@@ -126,3 +126,7 @@ Future<dynamic> getWinDays(String from, String to, String session) async {
 Future<dynamic> getStats(String from, String to, String session) async {
   return await getJson('/winstats/$from/$to', session);
 }
+
+Future<dynamic> postDeleteAllUserData(Object data, String session) async {
+  return await postJson('/deletealldata', data, session: session);
+}

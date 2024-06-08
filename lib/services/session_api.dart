@@ -73,3 +73,7 @@ Future<dynamic> getStats(
     String from, String to, Future<String> Function() getIdToken) {
   return callApi(() => rest.getStats(from, to, session), getIdToken);
 }
+
+Future<dynamic> postDeleteAllUserData(Future<String> Function() getIdToken) {
+  return callApi(() => rest.postDeleteAllUserData({}, session), getIdToken);
+}

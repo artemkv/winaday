@@ -913,7 +913,7 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
                   )
                 ])),
             Padding(
-                padding: const EdgeInsets.only(left: 32.0),
+                padding: const EdgeInsets.only(left: 32.0, bottom: 24.0),
                 child: Row(children: [
                   Flexible(
                       child: Wrap(children: [
@@ -943,6 +943,25 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
                         child: const Text('SELECT TIME')),
                   )
                 ])),
+            const Divider(
+              height: 12,
+              thickness: 1,
+              indent: 64,
+              endIndent: 64,
+            ),
+            const Padding(
+                padding:
+                    EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+                child: Text("Account data",
+                    style: TextStyle(
+                        color: Colors.black, fontSize: TEXT_FONT_SIZE))),
+            Center(
+                child: ElevatedButton(
+                    onPressed: () {
+                      widget.dispatch(DataDeletionRequested(
+                          widget.model.date, widget.model.today));
+                    },
+                    child: const Text('DELETE ALL ACCOUNT DATA'))),
           ])),
     );
   }
@@ -964,5 +983,90 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
             _appSettings.showNotifications, newTime.hour, newTime.minute);
       });
     }
+  }
+}
+
+class DataDeletionConfirmationScreen extends StatefulWidget {
+  final DataDeletionConfirmationStateModel model;
+  final void Function(Message) dispatch;
+
+  const DataDeletionConfirmationScreen(
+      {Key? key, required this.model, required this.dispatch})
+      : super(key: key);
+
+  @override
+  State<DataDeletionConfirmationScreen> createState() =>
+      _DataDeletionConfirmationScreen();
+}
+
+class _DataDeletionConfirmationScreen
+    extends State<DataDeletionConfirmationScreen> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.model.text;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: const Text('Confirm data deletion'),
+        actions: [],
+      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            widget.dispatch(CancelDataDeletionRequested(
+                widget.model.date, widget.model.today));
+            return false;
+          },
+          child: Column(children: [
+            const Padding(
+                padding: EdgeInsets.all(TEXT_PADDING * 2),
+                child: Text("Type 'delete' then press 'DELETE'",
+                    style: TextStyle(fontSize: TEXT_FONT_SIZE))),
+            Padding(
+                padding: const EdgeInsets.only(
+                    top: TEXT_PADDING,
+                    left: TEXT_PADDING * 2,
+                    right: TEXT_PADDING * 2,
+                    bottom: TEXT_PADDING),
+                child: TextField(
+                  maxLength: 100,
+                  controller: _controller,
+                  autofocus: true,
+                  style: const TextStyle(fontSize: TEXT_FONT_SIZE),
+                  maxLines: 1,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.none,
+                  decoration: const InputDecoration(
+                      border: InputBorder.none, hintText: 'delete'),
+                )),
+            Center(
+                child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _controller,
+              builder: (context, value, child) {
+                return ElevatedButton(
+                  onPressed: value.text == "delete"
+                      ? () {
+                          widget.dispatch(DataDeletionConfirmed(
+                              widget.model.date, widget.model.today));
+                        }
+                      : null,
+                  child: const Text("DELETE"),
+                );
+              },
+            ))
+          ])),
+    );
   }
 }

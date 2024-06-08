@@ -609,3 +609,32 @@ class SaveAppSettings implements Command {
     });
   }
 }
+
+@immutable
+class DeleteAllUserData implements Command {
+  final DateTime date;
+
+  const DeleteAllUserData(this.date);
+
+  @override
+  void execute(void Function(Message) dispatch) {
+    var today = DateTime.now();
+
+    postDeleteAllUserData(GoogleSignInFacade.getIdToken).then((_) {
+      cache.clear();
+      listCache.clear();
+      calendarCache.clear();
+      statsCache.clear();
+      insightsCache.clear();
+      cachedPriorities = null;
+      killSession();
+      GoogleSignInFacade.signOut().then((_) {
+        dispatch(UserSignedOut());
+      }).catchError((err) {
+        dispatch(UserSignedOut());
+      });
+    }).catchError((err) {
+      dispatch(DeletingAllUserDataFailed(date, today, err.toString()));
+    });
+  }
+}

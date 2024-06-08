@@ -140,6 +140,16 @@ Widget home(
     return appSettingsSaving(model);
   }
 
+  if (model is DataDeletionConfirmationStateModel) {
+    return DataDeletionConfirmationScreen(model: model, dispatch: dispatch);
+  }
+  if (model is DeletingUserDataModel) {
+    return deletingAllUserData(model);
+  }
+  if (model is FailedToDeleteUserDataModel) {
+    return failedToDeleteUserData(model, dispatch);
+  }
+
   return unknownModel(model);
 }
 
@@ -2248,5 +2258,53 @@ Widget appSettingsSaving(AppSettingsSavingModel model) {
       title: const Text('Saving'),
     ),
     body: Center(child: spinner()),
+  );
+}
+
+Widget deletingAllUserData(DeletingUserDataModel model) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Deleting all user data'),
+    ),
+    body: Center(child: spinner()),
+  );
+}
+
+Widget failedToDeleteUserData(
+    FailedToDeleteUserDataModel model, void Function(Message) dispatch) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: const BackButton(),
+      title: const Text('Failed to delete data'),
+      elevation: 0.0,
+    ),
+    body: WillPopScope(
+        onWillPop: () async {
+          dispatch(CancelDataDeletionRequested(model.date, model.today));
+          return false;
+        },
+        child: Column(children: [
+          Expanded(
+              child: Center(
+                  child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(TEXT_PADDING),
+                child: Text("Failed to contact the server: " + model.reason,
+                    style: const TextStyle(
+                        fontSize: TEXT_FONT_SIZE, color: Colors.red))),
+            Expanded(
+                child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      dispatch(DataDeletionConfirmed(model.date, model.today));
+                    },
+                    child: Center(
+                        child: Text("Click to re-try",
+                            style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                    fontSize: TEXT_FONT_SIZE,
+                                    color: Colors.grey))))))
+          ])))
+        ])),
   );
 }
