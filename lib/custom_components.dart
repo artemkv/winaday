@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:winaday/theme.dart';
-import 'package:winaday/view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:uuid/uuid.dart';
 
+import 'theme.dart';
+import 'view.dart';
 import 'domain.dart';
 import 'messages.dart';
 import 'model.dart';

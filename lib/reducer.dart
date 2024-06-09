@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:winaday/commands_journey.dart';
-import 'package:winaday/dateutil.dart';
-import 'package:winaday/domain.dart';
 
+import 'commands_journey.dart';
+import 'dateutil.dart';
+import 'domain.dart';
 import 'model.dart';
 import 'messages.dart';
 import 'commands.dart';

@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'dart:developer' as developer;
-
 import 'package:journey3_connector/journey3_connector.dart';
-import 'package:logging/logging.dart';
-import 'package:winaday/services/notifications.dart';
-
-import 'app.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+
+import 'services/notifications.dart';
+import 'app.dart';
 
 Future<void> main() async {
   // TODO: move to initialization command

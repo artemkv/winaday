@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:winaday/dateutil.dart';
+import 'dateutil.dart';
 
 import 'domain.dart';
 

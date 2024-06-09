@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:winaday/domain.dart';
+import '../domain.dart';
 
 const String showNotificationsKey = "SHOW_NOTIFICATIONS";
 const String notificationTimeHourKey = "NOTIFICATION_HOUR";

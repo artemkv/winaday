@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:winaday/commands.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'commands.dart';
 import 'theme.dart';
 import 'model.dart';
 import 'reducer.dart';

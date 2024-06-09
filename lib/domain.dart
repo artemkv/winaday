@@ -1,8 +1,7 @@
 // These should be all immutable containers, no logic
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:winaday/dateutil.dart';
+import 'dateutil.dart';
 
 class OverallDayResult {
   static const noWinYet = 0;

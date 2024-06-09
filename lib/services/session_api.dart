@@ -1,4 +1,4 @@
-import 'package:winaday/services/rest_api.dart' as rest;
+import 'rest_api.dart' as rest;
 
 String session = "";
 

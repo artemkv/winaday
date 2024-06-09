@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:winaday/domain.dart';
-import 'package:winaday/theme.dart';
-import 'package:winaday/view.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'model.dart';
+import 'domain.dart';
+import 'theme.dart';
+import 'view.dart';
 
 class DataPoint {
   final String label;
