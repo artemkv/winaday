@@ -141,11 +141,11 @@ class _WinEditorState extends State<WinEditor> {
           )
         ],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             widget.dispatch(CancelEditingWinRequested(
                 widget.model.date, widget.model.today));
-            return false;
           },
           child: Column(children: [
             dayOverallResult(_controller, widget.model, widget.dispatch),
@@ -227,11 +227,11 @@ class _PriorityEditorState extends State<PriorityEditor> {
           )
         ],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             widget.dispatch(CancelEditingPriorityRequested(
                 widget.model.date, widget.model.today));
-            return false;
           },
           child: Column(children: [
             priorityBoxColorPicker(_controller, widget.model, widget.dispatch),
@@ -333,11 +333,11 @@ class _WinListState extends State<WinList> {
           )
         ],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             widget.dispatch(BackToDailyWinViewRequested(
                 widget.model.date, widget.model.today));
-            return false;
           },
           child: ScrollablePositionedList.separated(
             reverse: true,
@@ -429,11 +429,11 @@ class _CalendarViewState extends State<CalendarView> {
             )
           ],
         ),
-        body: WillPopScope(
-            onWillPop: () async {
+        body: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
               widget.dispatch(BackToDailyWinViewRequested(
                   widget.model.date, widget.model.today));
-              return false;
             },
             child: ScrollablePositionedList.builder(
               reverse: true,
@@ -602,11 +602,11 @@ class _MonthlyStatsViewState extends State<MonthlyStatsView> {
                     ])
           ],
         ),
-        body: WillPopScope(
-            onWillPop: () async {
+        body: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
               widget.dispatch(
                   ExitStatsRequested(widget.model.date, widget.model.today));
-              return false;
             },
             child: Column(children: [
               monthlyStatsHeader(widget.model.date, widget.model.today,
@@ -686,11 +686,11 @@ class _YearlyStatsViewState extends State<YearlyStatsView> {
                     ])
           ],
         ),
-        body: WillPopScope(
-            onWillPop: () async {
+        body: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
               widget.dispatch(
                   ExitStatsRequested(widget.model.date, widget.model.today));
-              return false;
             },
             child: Column(children: [
               yearlyStatsHeader(widget.model.date, widget.model.today,
@@ -883,11 +883,11 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
           )
         ],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             widget.dispatch(CancelEditingAppSettingsRequested(
                 widget.model.date, widget.model.today));
-            return false;
           },
           child: Column(children: [
             Padding(
@@ -1023,11 +1023,11 @@ class _DataDeletionConfirmationScreen
         title: const Text('Confirm data deletion'),
         actions: const [],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             widget.dispatch(CancelDataDeletionRequested(
                 widget.model.date, widget.model.today));
-            return false;
           },
           child: Column(children: [
             const Padding(

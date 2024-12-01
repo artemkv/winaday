@@ -228,7 +228,7 @@ class WinListItemWin extends WinListItem {
   }
 
   @override
-  int get hashCode => hashValues(date, win);
+  int get hashCode => Object.hash(date, win);
 }
 
 @immutable

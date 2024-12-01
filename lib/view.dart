@@ -351,8 +351,8 @@ Widget userConsent(
           const Text("I agree to ",
               style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
           InkWell(
-              onTap: () =>
-                  launch('https://winaday-web.artemkv.net/privacy-policy.html'),
+              onTap: () => launchUrl(Uri.parse(
+                  'https://winaday-web.artemkv.net/privacy-policy.html')),
               child: const Text("Privacy Policy",
                   style: TextStyle(
                       color: Colors.white,
@@ -361,8 +361,8 @@ Widget userConsent(
           const Text(" and ",
               style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
           InkWell(
-              onTap: () =>
-                  launch('https://winaday-web.artemkv.net/terms-of-use.html'),
+              onTap: () => launchUrl(Uri.parse(
+                  'https://winaday-web.artemkv.net/terms-of-use.html')),
               child: const Text("Terms of Use",
                   style: TextStyle(
                       color: Colors.white,
@@ -389,8 +389,8 @@ Widget userConsent(
             "I agree to processing of my personal data for providing me app functions. See more in ",
             style: TextStyle(color: Colors.white, fontSize: TEXT_FONT_SIZE)),
         InkWell(
-            onTap: () =>
-                launch('https://winaday-web.artemkv.net/privacy-policy.html'),
+            onTap: () => launchUrl(Uri.parse(
+                'https://winaday-web.artemkv.net/privacy-policy.html')),
             child: const Text("Privacy Policy",
                 style: TextStyle(
                     color: Colors.white,
@@ -991,10 +991,10 @@ Widget prioritiesLoading(
       leading: const BackButton(),
       title: const Text('Your Priorities'),
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitPrioritiesRequested(model.date, model.today));
-          return false;
         },
         child: Center(child: Column(children: [Expanded(child: spinner())]))),
   );
@@ -1007,10 +1007,10 @@ Widget prioritiesFailedToLoad(BuildContext context,
       leading: const BackButton(),
       title: const Text('Your Priorities'),
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitPrioritiesRequested(model.date, model.today));
-          return false;
         },
         child: Center(
             child: Column(children: [
@@ -1061,10 +1061,10 @@ Widget priorities(PrioritiesModel model, void Function(Message) dispatch) {
           )
         ],
       ),
-      body: WillPopScope(
-          onWillPop: () async {
+      body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
             dispatch(ExitPrioritiesRequested(model.date, model.today));
-            return false;
           },
           child: Center(
               child: GridView.count(
@@ -1082,10 +1082,10 @@ Widget creatingNewPriority(
       leading: const BackButton(),
       title: const Text('Your Priorities'),
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitPrioritiesRequested(model.date, model.today));
-          return false;
         },
         child: Center(child: Column(children: [Expanded(child: spinner())]))),
   );
@@ -1157,10 +1157,10 @@ Widget editPriorities(
         )
       ],
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(CancelEditingPrioritiesRequested(model.date, model.today));
-          return false;
         },
         child: Stack(children: [
           Center(
@@ -1336,10 +1336,10 @@ Widget editWinPriorities(
         )
       ],
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(CancelEditingWinRequested(model.date, model.today));
-          return false;
         },
         child: Center(
             child: GridView.count(
@@ -1381,10 +1381,10 @@ Widget winListLoading(
       leading: const BackButton(),
       title: const Text('One win a day'),
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(BackToDailyWinViewRequested(model.date, model.today));
-          return false;
         },
         child: Center(child: Column(children: [Expanded(child: spinner())]))),
   );
@@ -1397,10 +1397,10 @@ Widget winListFailedToLoad(
       leading: const BackButton(),
       title: const Text('One win a day'),
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(BackToDailyWinViewRequested(model.date, model.today));
-          return false;
         },
         child: Center(
             child: Column(children: [
@@ -1721,10 +1721,10 @@ Widget statsLoading(StatsLoadingModel model, void Function(Message) dispatch) {
         title: const Text('Your Statistics'),
         elevation: 0.0,
       ),
-      body: WillPopScope(
-        onWillPop: () async {
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitStatsRequested(model.date, model.today));
-          return false;
         },
         child: Column(children: [
           model.period == StatsPeriod.month
@@ -1747,10 +1747,10 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
       title: const Text('Your Statistics'),
       elevation: 0.0,
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitStatsRequested(model.date, model.today));
-          return false;
         },
         child: Column(children: [
           model.period == StatsPeriod.month
@@ -1973,10 +1973,10 @@ Widget insightsLoading(
         title: const Text('Your Insights'),
         elevation: 0.0,
       ),
-      body: WillPopScope(
-        onWillPop: () async {
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitInsightsRequested(model.date, model.today));
-          return false;
         },
         child: Column(children: [
           Expanded(
@@ -1994,10 +1994,10 @@ Widget insightsFailedToLoad(BuildContext context,
       title: const Text('Your Insights'),
       elevation: 0.0,
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitInsightsRequested(model.date, model.today));
-          return false;
         },
         child: Column(children: [
           Expanded(
@@ -2044,10 +2044,10 @@ Widget insights(InsightsModel model, void Function(Message) dispatch) {
         title: const Text('Your Insights'),
         elevation: 0.0,
       ),
-      body: WillPopScope(
-        onWillPop: () async {
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(ExitInsightsRequested(model.date, model.today));
-          return false;
         },
         child: SingleChildScrollView(
             child: Column(children: [
@@ -2242,10 +2242,10 @@ Widget appSettingsInitializing(
         title: const Text('Settings'),
         elevation: 0.0,
       ),
-      body: WillPopScope(
-        onWillPop: () async {
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(CancelEditingAppSettingsRequested(model.date, model.today));
-          return false;
         },
         child: Container(),
       ));
@@ -2277,10 +2277,10 @@ Widget failedToDeleteUserData(
       title: const Text('Failed to delete data'),
       elevation: 0.0,
     ),
-    body: WillPopScope(
-        onWillPop: () async {
+    body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
           dispatch(CancelDataDeletionRequested(model.date, model.today));
-          return false;
         },
         child: Column(children: [
           Expanded(

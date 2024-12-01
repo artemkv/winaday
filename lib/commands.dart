@@ -108,6 +108,7 @@ class InitializeApp implements Command {
 class SignIn implements Command {
   @override
   void execute(void Function(Message) dispatch) {
+    // ignore: body_might_complete_normally_catch_error
     GoogleSignInFacade.signInWithGoogle().catchError((err) {
       killSession();
       dispatch(SignInFailed(err.toString()));
