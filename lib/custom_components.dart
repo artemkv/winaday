@@ -88,8 +88,8 @@ class _DailyWinViewState extends State<DailyWinView> {
                       widget.model.priorityList,
                       widget.model.win));
                 },
-                child: const Icon(Icons.edit),
                 backgroundColor: crayolaBlue,
+                child: const Icon(Icons.edit),
               )
             : null));
   }
@@ -895,7 +895,7 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
                 child: Row(children: [
                   Checkbox(
                     checkColor: Colors.white,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
+                    fillColor: WidgetStateProperty.resolveWith(getColor),
                     value: _appSettings.showNotifications,
                     onChanged: (bool? value) {
                       setState(() {
@@ -966,7 +966,7 @@ class _AppSettingsEditorState extends State<AppSettingsEditor> {
     );
   }
 
-  Color getColor(Set<MaterialState> states) {
+  Color getColor(Set<WidgetState> states) {
     return brownsOrange;
   }
 
@@ -1021,7 +1021,7 @@ class _DataDeletionConfirmationScreen
       appBar: AppBar(
         leading: const BackButton(),
         title: const Text('Confirm data deletion'),
-        actions: [],
+        actions: const [],
       ),
       body: WillPopScope(
           onWillPop: () async {

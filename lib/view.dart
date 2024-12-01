@@ -154,7 +154,7 @@ Widget home(
 }
 
 Widget unknownModel(Model model) {
-  return Text("Unknown model: " + model.runtimeType.toString());
+  return Text("Unknown model: ${model.runtimeType}");
 }
 
 Widget applicationNotInitialized(void Function(Message) dispatch) {
@@ -165,7 +165,7 @@ Widget applicationNotInitialized(void Function(Message) dispatch) {
         child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(children: [
-              Expanded(child: Row()),
+              const Expanded(child: Row()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -177,7 +177,7 @@ Widget applicationNotInitialized(void Function(Message) dispatch) {
                           children: [mottoLine1(), mottoLine2()]))
                 ],
               ),
-              Expanded(child: Row()),
+              const Expanded(child: Row()),
             ]))),
   );
 }
@@ -198,7 +198,7 @@ Widget applicationFailedToInitialize(
                         fontWeight: FontWeight.bold))),
             Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text("Failed to initialize: " + model.reason,
+                child: Text("Failed to initialize: ${model.reason}",
                     style: const TextStyle(color: Colors.white, fontSize: 16))),
             Padding(
                 padding: const EdgeInsets.all(12),
@@ -228,7 +228,7 @@ Widget userNotSignedIn(
         child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(children: [
-              Expanded(child: Row()),
+              const Expanded(child: Row()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -272,7 +272,7 @@ Widget userFailedToSignIn(
                         fontWeight: FontWeight.bold))),
             Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text("Failed to sign in: " + model.reason,
+                child: Text("Failed to sign in: ${model.reason}",
                     style: const TextStyle(color: Colors.white, fontSize: 16))),
             Padding(
                 padding: const EdgeInsets.all(12),
@@ -340,7 +340,7 @@ Widget userConsent(
       Checkbox(
         value: model.privacyPolicyAccepted,
         checkColor: brownsOrange,
-        fillColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+        fillColor: WidgetStateProperty.resolveWith((states) => Colors.white),
         onChanged: (bool? accepted) {
           dispatch(UserConsentUpdated(
               accepted == true, model.personalDataProcessingAccepted));
@@ -377,7 +377,7 @@ Widget userConsent(
       Checkbox(
         value: model.personalDataProcessingAccepted,
         checkColor: brownsOrange,
-        fillColor: MaterialStateProperty.resolveWith((states) => Colors.white),
+        fillColor: WidgetStateProperty.resolveWith((states) => Colors.white),
         onChanged: (bool? accepted) {
           dispatch(UserConsentUpdated(
               model.privacyPolicyAccepted, accepted == true));
@@ -408,8 +408,8 @@ Widget signInInProgress() {
       type: MaterialType.transparency,
       child: Container(
           decoration: const BoxDecoration(color: THEME_COLOR),
-          child: Column(
-            children: const [],
+          child: const Column(
+            children: [],
           )));
 }
 
@@ -418,8 +418,8 @@ Widget signOutInProgress() {
       type: MaterialType.transparency,
       child: Container(
           decoration: const BoxDecoration(color: THEME_COLOR),
-          child: Column(
-            children: const [],
+          child: const Column(
+            children: [],
           )));
 }
 
@@ -475,7 +475,7 @@ Widget dailyWinFailedToLoad(BuildContext context,
                 context, model.date, model.today, model.winDays, dispatch)),
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
-            child: Text("Failed to contact the server: " + model.reason,
+            child: Text("Failed to contact the server: ${model.reason}",
                 style: const TextStyle(
                     fontSize: TEXT_FONT_SIZE, color: Colors.red))),
         Expanded(
@@ -625,31 +625,30 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
     child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        DrawerHeader(
-          decoration: const BoxDecoration(
+        const DrawerHeader(
+          decoration: BoxDecoration(
             color: crayolaBlue,
           ),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Text("One Win a Day",
-                        style: TextStyle(
-                          fontSize: TEXT_FONT_SIZE,
-                          color: Colors.white,
-                        ))),
-                Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Text("Track you wins every day",
-                        style: TextStyle(
-                          fontSize: TEXT_FONT_SIZE * 0.8,
-                          color: Colors.white,
-                        )))
-              ]),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+                padding: EdgeInsets.all(2.0),
+                child: Text("One Win a Day",
+                    style: TextStyle(
+                      fontSize: TEXT_FONT_SIZE,
+                      color: Colors.white,
+                    ))),
+            Padding(
+                padding: EdgeInsets.all(2.0),
+                child: Text("Track you wins every day",
+                    style: TextStyle(
+                      fontSize: TEXT_FONT_SIZE * 0.8,
+                      color: Colors.white,
+                    )))
+          ]),
         ),
         ListTile(
-          title: Row(children: const [
+          title: const Row(children: [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
                 child: Icon(Icons.center_focus_strong_outlined)),
@@ -661,7 +660,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           },
         ),
         ListTile(
-          title: Row(children: const [
+          title: const Row(children: [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
                 child: Icon(Icons.insights_outlined)),
@@ -673,7 +672,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           },
         ),
         ListTile(
-          title: Row(children: const [
+          title: const Row(children: [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
                 child: Icon(Icons.lightbulb_outline)),
@@ -704,7 +703,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
               },
             ),*/
         ListTile(
-          title: Row(children: const [
+          title: const Row(children: [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
                 child: Icon(Icons.settings_outlined)),
@@ -715,7 +714,7 @@ Widget drawer(BuildContext context, DateTime date, DateTime today,
           },
         ),
         ListTile(
-          title: Row(children: const [
+          title: const Row(children: [
             Padding(
                 padding: EdgeInsets.only(left: 4.0, right: 32.0),
                 child: Icon(Icons.logout)),
@@ -849,10 +848,10 @@ Widget winEditorSaving(WinEditorSavingModel model) {
 }
 
 Widget spinner() {
-  return Column(
+  return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: const [CircularProgressIndicator(value: null)]);
+      children: [CircularProgressIndicator(value: null)]);
 }
 
 Widget winEditorFailedToSave(
@@ -865,7 +864,7 @@ Widget winEditorFailedToSave(
         child: Column(children: [
       Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
-          child: Text("Failed to contact the server: " + model.reason,
+          child: Text("Failed to contact the server: ${model.reason}",
               style: const TextStyle(
                   fontSize: TEXT_FONT_SIZE, color: Colors.red))),
       Expanded(
@@ -892,7 +891,7 @@ Widget priorityEditorFailedToSave(
         child: Column(children: [
       Padding(
           padding: const EdgeInsets.all(TEXT_PADDING),
-          child: Text("Failed to contact the server: " + model.reason,
+          child: Text("Failed to contact the server: ${model.reason}",
               style: const TextStyle(
                   fontSize: TEXT_FONT_SIZE, color: Colors.red))),
       Expanded(
@@ -1017,7 +1016,7 @@ Widget prioritiesFailedToLoad(BuildContext context,
             child: Column(children: [
           Padding(
               padding: const EdgeInsets.all(TEXT_PADDING),
-              child: Text("Failed to contact the server: " + model.reason,
+              child: Text("Failed to contact the server: ${model.reason}",
                   style: const TextStyle(
                       fontSize: TEXT_FONT_SIZE, color: Colors.red))),
           Expanded(
@@ -1104,6 +1103,10 @@ Widget priorityBoxEditable(PrioritiesModel model, PriorityData priority,
 
 Widget priorityBox(PriorityData priority) {
   return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: getPriorityBoxColor(priority.color),
+      ),
       child: Center(
           child: Padding(
               padding: const EdgeInsets.all(12.0),
@@ -1112,11 +1115,7 @@ Widget priorityBox(PriorityData priority) {
                 style: GoogleFonts.openSans(
                     textStyle: const TextStyle(
                         color: Colors.white, fontSize: TEXT_FONT_SIZE)),
-              ))),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        color: getPriorityBoxColor(priority.color),
-      ));
+              ))));
 }
 
 Widget priorityBoxPlaceholder(
@@ -1185,6 +1184,10 @@ Widget draggablePriorityBox(
       feedback: Container(
           height: 130,
           width: 130,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: priorityColors[priority.color],
+          ),
           child: Center(
               child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -1195,17 +1198,19 @@ Widget draggablePriorityBox(
                             decoration: TextDecoration.none,
                             color: Colors.white,
                             fontSize: TEXT_FONT_SIZE)),
-                  ))),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: priorityColors[priority.color],
-          )),
+                  )))),
       childWhenDragging: exchangeWith != null
           ? priorityBox(exchangeWith)
           : priorityBox(priority),
       child: DragTarget<PriorityData>(
         builder: (context, candidateItems, rejectedItems) {
           return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.0),
+                color: candidateItems.isNotEmpty
+                    ? Colors.white
+                    : getPriorityBoxColor(priority.color),
+              ),
               child: Center(
                   child: Padding(
                       padding: const EdgeInsets.all(12.0),
@@ -1214,24 +1219,18 @@ Widget draggablePriorityBox(
                         style: GoogleFonts.openSans(
                             textStyle: const TextStyle(
                                 color: Colors.white, fontSize: TEXT_FONT_SIZE)),
-                      ))),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                color: candidateItems.isNotEmpty
-                    ? Colors.white
-                    : getPriorityBoxColor(priority.color),
-              ));
+                      ))));
         },
-        onWillAccept: (_) {
+        onWillAcceptWithDetails: (_) {
           onWillAccept(priority);
           return true;
         },
         onLeave: (data) {
           onWillAccept(null);
         },
-        onAccept: (exchangeWith) {
+        onAcceptWithDetails: (dragTargetDetails) {
           dispatch(PrioritiesReorderRequested(model.date, model.today,
-              model.priorityList, priority, exchangeWith));
+              model.priorityList, priority, dragTargetDetails.data));
         },
       ));
 }
@@ -1244,13 +1243,6 @@ Widget trashbin(EditPrioritiesModel model, void Function(Message) dispatch) {
         return Container(
             height: 140,
             width: 140,
-            child: const Center(
-                child: Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Icon(
-                      Icons.delete_outline,
-                      color: Colors.grey,
-                    ))),
             decoration: BoxDecoration(
                 color: candidateItems.isNotEmpty
                     ? Colors.grey.shade200
@@ -1259,10 +1251,17 @@ Widget trashbin(EditPrioritiesModel model, void Function(Message) dispatch) {
                 border: Border.all(
                     color:
                         candidateItems.isNotEmpty ? Colors.grey : Colors.grey,
-                    width: 2.0)));
-      }, onAccept: (priority) {
-        dispatch(DeletePriorityRequested(
-            model.date, model.today, model.priorityList, priority));
+                    width: 2.0)),
+            child: const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Colors.grey,
+                    ))));
+      }, onAcceptWithDetails: (dragTargetDetails) {
+        dispatch(DeletePriorityRequested(model.date, model.today,
+            model.priorityList, dragTargetDetails.data));
       }));
 }
 
@@ -1368,9 +1367,9 @@ Widget priorityBoxSelectable(EditWinPrioritiesModel model,
                 child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Container(
-                        child: const Icon(Icons.check_circle_outline),
                         decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.white))))
+                            shape: BoxShape.circle, color: Colors.white),
+                        child: const Icon(Icons.check_circle_outline))))
             : Container())
       ]));
 }
@@ -1407,7 +1406,7 @@ Widget winListFailedToLoad(
             child: Column(children: [
           Padding(
               padding: const EdgeInsets.all(TEXT_PADDING),
-              child: Text("Failed to contact the server: " + model.reason,
+              child: Text("Failed to contact the server: ${model.reason}",
                   style: const TextStyle(
                       fontSize: TEXT_FONT_SIZE, color: Colors.red))),
           Expanded(
@@ -1471,7 +1470,7 @@ Widget winListItemRetryLoadMore(
       child: Column(children: [
         Padding(
             padding: const EdgeInsets.all(TEXT_PADDING),
-            child: Text("Failed to contact the server: " + reason,
+            child: Text("Failed to contact the server: $reason",
                 style: const TextStyle(
                     fontSize: TEXT_FONT_SIZE, color: Colors.red))),
         Row(children: [
@@ -1563,16 +1562,16 @@ Iterable<Widget> getPriorityTags(PriorityListData priorityList, WinData win) {
                 padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
                 child: Container(
                     height: 20.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(2.0),
+                        border: Border.all(color: getPriorityBoxColor(x.color)),
+                        color: getPriorityBoxColor(x.color)),
                     child: Padding(
                         padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                         child: Text(getFirstWord(x.text),
                             style: GoogleFonts.openSans(
                                 textStyle: const TextStyle(
-                                    color: Colors.white, fontSize: 10)))),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2.0),
-                        border: Border.all(color: getPriorityBoxColor(x.color)),
-                        color: getPriorityBoxColor(x.color))))
+                                    color: Colors.white, fontSize: 10))))))
           ]);
 }
 
@@ -1580,7 +1579,7 @@ String getFirstWord(String text) {
   List<String> wordList = text.split(" ");
   if (wordList.isNotEmpty) {
     if (wordList.length > 1) {
-      return wordList[0] + "...";
+      return "${wordList[0]}...";
     }
     return wordList[0];
   } else {
@@ -1764,7 +1763,7 @@ Widget statsFailedToLoad(BuildContext context, StatsFailedToLoadModel model,
                   child: Column(children: [
             Padding(
                 padding: const EdgeInsets.all(TEXT_PADDING),
-                child: Text("Failed to contact the server: " + model.reason,
+                child: Text("Failed to contact the server: ${model.reason}",
                     style: const TextStyle(
                         fontSize: TEXT_FONT_SIZE, color: Colors.red))),
             Expanded(
@@ -2006,7 +2005,7 @@ Widget insightsFailedToLoad(BuildContext context,
                   child: Column(children: [
             Padding(
                 padding: const EdgeInsets.all(TEXT_PADDING),
-                child: Text("Failed to contact the server: " + model.reason,
+                child: Text("Failed to contact the server: ${model.reason}",
                     style: const TextStyle(
                         fontSize: TEXT_FONT_SIZE, color: Colors.red))),
             Expanded(
@@ -2289,7 +2288,7 @@ Widget failedToDeleteUserData(
                   child: Column(children: [
             Padding(
                 padding: const EdgeInsets.all(TEXT_PADDING),
-                child: Text("Failed to contact the server: " + model.reason,
+                child: Text("Failed to contact the server: ${model.reason}",
                     style: const TextStyle(
                         fontSize: TEXT_FONT_SIZE, color: Colors.red))),
             Expanded(

@@ -186,7 +186,7 @@ class Combination {
 
   @override
   String toString() {
-    return a + ',' + b;
+    return '$a,$b';
   }
 
   List<String> toList() {

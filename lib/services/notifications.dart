@@ -54,7 +54,8 @@ class NotificationService {
           notificationDetails,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.wallClockTime,
-          matchDateTimeComponents: DateTimeComponents.time);
+          matchDateTimeComponents: DateTimeComponents.time,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle);
     } else {
       await notificationsPlugin.cancel(0);
     }
