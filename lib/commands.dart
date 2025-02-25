@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'firebase_options.dart';
 import 'package:flutter/foundation.dart';
 import 'package:journey3_connector/journey3_connector.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quiver/collection.dart';
-import 'package:launch_review/launch_review.dart';
 import 'package:uuid/uuid.dart';
 
 import 'services/local_data.dart';
@@ -518,7 +518,7 @@ class NavigateToRatingInAppStore implements Command {
   void execute(void Function(Message) dispatch) {
     Future<void>.delayed(
             Duration.zero, () => LocalData.setReviewFlowCompleted())
-        .then((_) => LaunchReview.launch());
+        .then((_) => StoreRedirect.redirect());
   }
 }
 
