@@ -1790,24 +1790,13 @@ Widget stats(
 
   return SingleChildScrollView(
       child: Column(children: [
-    Padding(
-        padding:
-            const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
-        child: dualChoice(
-            "Pie chart",
-            "Histograms",
-            model.winsShowAsPie ? 0 : 1,
-            StatsTogglePieHistogramsWins(),
-            dispatch)),
     SizedBox(
         height: 300,
         child: Padding(
-          padding:
-              const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
-          child: model.winsShowAsPie
-              ? pieChart("winsPie", getWinDaysDataPoints(model), screenWidth)
-              : histograms("winsHist", getWinDaysDataPoints(model)),
-        )),
+            padding:
+                const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
+            child:
+                pieChart("winsPie", getWinDaysDataPoints(model), screenWidth))),
     Padding(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
@@ -1816,24 +1805,27 @@ Widget stats(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
         child: dualChoice(
-            "Pie chart",
-            "Histograms",
-            model.prioritiesShowAsPie ? 0 : 1,
-            StatsTogglePieHistogramsPriorities(),
+            "All days",
+            "Only awesome",
+            model.prioritiesOnlyAwesome ? 0 : 1,
+            StatsTogglePrioritiesAllOrOnlyAwesome(),
             dispatch)),
     SizedBox(
         height: 300,
         child: Padding(
             padding:
                 const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
-            child: model.prioritiesShowAsPie
+            child: model.prioritiesOnlyAwesome
                 ? pieChart(
-                    "prioritiesPie", getPriorityDataPoints(model), screenWidth)
-                : histograms("prioritiesHist", getPriorityDataPoints(model)))),
+                    "all wins", getAnyDayPriorityDataPoints(model), screenWidth)
+                : pieChart("only awesome wins",
+                    getAwesomeDayPriorityDataPoints(model), screenWidth))),
     Padding(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
-        child: legend(getPrioritiesLegend(model))),
+        child: model.prioritiesOnlyAwesome
+            ? legend(getAnyDayPrioritiesLegend(model))
+            : legend(getAwesomeDayPrioritiesLegend(model))),
     const Divider(
       height: 12,
       thickness: 1,
@@ -1847,7 +1839,9 @@ Widget stats(
     Padding(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 16),
-        child: legend(getUnattendedPrioritiesLegend(model))),
+        child: model.prioritiesOnlyAwesome
+            ? legend(getAnyDayUnattendedPrioritiesLegend(model))
+            : legend(getAwesomeDayUnattendedPrioritiesLegend(model))),
     Padding(
         padding:
             const EdgeInsets.only(left: 32, right: 32, top: 16, bottom: 32),

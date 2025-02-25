@@ -417,8 +417,7 @@ class StatsModel extends Model {
   final int daysTotal;
   final PriorityListData priorityList;
   final WinListShortData stats;
-  final bool winsShowAsPie;
-  final bool prioritiesShowAsPie;
+  final bool prioritiesOnlyAwesome;
 
   const StatsModel(
       this.date,
@@ -429,8 +428,7 @@ class StatsModel extends Model {
       this.daysTotal,
       this.priorityList,
       this.stats,
-      this.winsShowAsPie,
-      this.prioritiesShowAsPie);
+      this.prioritiesOnlyAwesome);
 }
 
 @immutable

@@ -515,10 +515,7 @@ class ExitStatsRequested implements Message {
 }
 
 @immutable
-class StatsTogglePieHistogramsWins implements Message {}
-
-@immutable
-class StatsTogglePieHistogramsPriorities implements Message {}
+class StatsTogglePrioritiesAllOrOnlyAwesome implements Message {}
 
 @immutable
 class MoveToNextMonthStats implements Message {

@@ -523,7 +523,6 @@ ModelAndCommand reduce(Model model, Message message) {
         getDaysInIntervalUpToToday(message.from, message.to, message.today),
         message.priorityList,
         message.stats,
-        true,
         true));
   }
   if (message is ExitStatsRequested) {
@@ -531,7 +530,7 @@ ModelAndCommand reduce(Model model, Message message) {
         DailyWinLoadingModel(message.date, message.today, WinDaysData.empty()),
         LoadDailyWin(message.date));
   }
-  if (message is StatsTogglePieHistogramsWins) {
+  if (message is StatsTogglePrioritiesAllOrOnlyAwesome) {
     if (model is StatsModel) {
       return ModelAndCommand(
           StatsModel(
@@ -543,25 +542,7 @@ ModelAndCommand reduce(Model model, Message message) {
               model.daysTotal,
               model.priorityList,
               model.stats,
-              !model.winsShowAsPie,
-              model.prioritiesShowAsPie),
-          ReportToggleStatsPieToHistograms());
-    }
-  }
-  if (message is StatsTogglePieHistogramsPriorities) {
-    if (model is StatsModel) {
-      return ModelAndCommand(
-          StatsModel(
-              model.date,
-              model.today,
-              model.period,
-              model.from,
-              model.to,
-              model.daysTotal,
-              model.priorityList,
-              model.stats,
-              model.winsShowAsPie,
-              !model.prioritiesShowAsPie),
+              !model.prioritiesOnlyAwesome),
           ReportToggleStatsPieToHistograms());
     }
   }
